@@ -37,6 +37,9 @@ set history=500
 filetype plugin on
 filetype indent on
 
+"设置行号
+set nu
+
 " Set to auto read when a file is changed from the outside
 set autoread
 au FocusGained,BufEnter * checktime
