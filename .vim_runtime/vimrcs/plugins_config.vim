@@ -326,3 +326,10 @@ nnoremap  <leader>fe :call CscopeFind('e', expand('<cword>'))<CR>
 nnoremap  <leader>ff :call CscopeFind('f', expand('<cword>'))<CR>
 " i: Find files #including this file
 nnoremap  <leader>fi :call CscopeFind('i', expand('<cword>'))<CR>"
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-commentary
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+autocmd FileType java,c,cpp,php,go set commentstring=//\ %s
+autocmd FileType shell set commentstring=#\ %s
