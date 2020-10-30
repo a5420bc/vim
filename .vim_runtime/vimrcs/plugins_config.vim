@@ -47,8 +47,8 @@ nmap <C-n> <Plug>yankstack_substitute_newer_paste
 let g:ctrlp_working_path_mode = 0
 
 " Quickly find and open a file in the current working directory
-let g:ctrlp_map = '<C-f>'
-map <leader>j :CtrlP<cr>
+"let g:ctrlp_map = '<C-f>'
+map <leader>cj :CtrlP<cr>
 
 " Quickly find and open a buffer
 map <leader>b :CtrlPBuffer<cr>
@@ -344,3 +344,17 @@ let g:gutentags_auto_add_gtags_cscope = 0
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " change focus to quickfix window after search (optional).
 let g:gutentags_plus_switch = 1
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" gutentags-plus 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:run_tmux(opts)
+    " asyncrun has temporarily changed dir for you
+    " getcwd() in the runner function is the target directory defined in `-cwd=xxx`  
+    let cwd = getcwd()   
+    call VimuxRunCommand('cd ' . shellescape(cwd) . '; ' . a:opts.cmd)
+endfunction
+
+let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
+let g:asyncrun_runner.tmux = function('s:run_tmux')
