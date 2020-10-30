@@ -9,10 +9,12 @@ https://github.com/ueaner/vimrc/blob/master/support/INSTALL_VIM.md
 #### ctags
 yum install ctags
 #### gtags
-从官网下载最新版本https://www.gnu.org/software/global/download.html
+```
 sudo yum install ncurses-devel
 sudo yum install gperf
 sudo yum install texi2html texinfo 
+```
+从官网下载最新版本https://www.gnu.org/software/global/download.html
 tar xzcf 压缩包后进入到目录中
 ./configure --prefix=安装目录  --libdir=lib库目录
 make && make install
