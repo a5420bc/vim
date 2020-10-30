@@ -3,6 +3,7 @@
 * Vim7
 * ctags
 * gtags
+* git > 1.5
 ### 软件安装
 #### ctags
 yum install ctags
@@ -29,6 +30,13 @@ export PAHT="$PATH:/usr/local/gtags/bin"
 通过vim --version查看vim的版本和是否支持lua，如果不支持，需要重新编译安装
 参考如何安装支持Lua的Vim
 https://github.com/ueaner/vimrc/blob/master/support/INSTALL_VIM.md
+
+#### git
+通过官网下载git最新版本，如果使用旧版vim对git支持部分缺失
+使用如下设置使git默认使用VIM
+```
+git config --global core.editor "vim"
+```
 
 ## 功能
 ### 缓冲区
