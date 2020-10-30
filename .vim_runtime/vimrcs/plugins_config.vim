@@ -302,34 +302,45 @@ set autochdir
 "map <c-]> g<c-]>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" cscope
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-"设置查找cscope和ctag
-set cscopetag
-set csto=0
-map <C-]> :cstag <C-R>=expand("<cword>")<CR><CR>
-nnoremap <leader>fa :call CscopeFindInteractive(expand('<cword>'))<CR>
-nnoremap <leader>l :call ToggleLocationList()<CR>
-" s: Find this C symbol
-nnoremap  <leader>fs :call CscopeFind('s', expand('<cword>'))<CR>
-" g: Find this definition
-nnoremap  <leader>fg :call CscopeFind('g', expand('<cword>'))<CR>
-" d: Find functions called by this function
-nnoremap  <leader>fd :call CscopeFind('d', expand('<cword>'))<CR>
-" c: Find functions calling this function
-nnoremap  <leader>fc :call CscopeFind('c', expand('<cword>'))<CR>
-" t: Find this text string
-nnoremap  <leader>ft :call CscopeFind('t', expand('<cword>'))<CR>
-" e: Find this egrep pattern
-nnoremap  <leader>fe :call CscopeFind('e', expand('<cword>'))<CR>
-" f: Find this file
-nnoremap  <leader>ff :call CscopeFind('f', expand('<cword>'))<CR>
-" i: Find files #including this file
-nnoremap  <leader>fi :call CscopeFind('i', expand('<cword>'))<CR>"
-
-
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-commentary
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 autocmd FileType java,c,cpp,php,go set commentstring=//\ %s
 autocmd FileType shell set commentstring=#\ %s
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" gutentags 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" gutentags 搜索工程目录的标志，当前文件路径向上递归直到碰到这些文件/目录名
+let g:gutentags_project_root = ['.root', '.svn', '.git', '.hg', '.project']
+
+" 所生成的数据文件的名称
+let g:gutentags_ctags_tagfile = '.tags'
+
+" 同时开启 ctags 和 gtags 支持：
+let g:gutentags_modules = []
+if executable('ctags')
+    let g:gutentags_modules += ['ctags']
+endif
+if executable('gtags-cscope') && executable('gtags')
+    let g:gutentags_modules += ['gtags_cscope']
+endif
+
+" 将自动生成的 ctags/gtags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
+let g:gutentags_cache_dir = expand('~/.cache/tags')
+
+" 配置 ctags 的参数，老的 Exuberant-ctags 不能有 --extra=+q，注意
+let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
+let g:gutentags_ctags_extra_args += ['--c++-kinds=+px']
+let g:gutentags_ctags_extra_args += ['--c-kinds=+px']
+
+" 如果使用 universal ctags 需要增加下面一行，老的 Exuberant-ctags 不能加下一行
+let g:gutentags_ctags_extra_args += ['--output-format=e-ctags']
+
+" 禁用 gutentags 自动加载 gtags 数据库的行为
+let g:gutentags_auto_add_gtags_cscope = 0
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" gutentags-plus 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" change focus to quickfix window after search (optional).
+let g:gutentags_plus_switch = 1
