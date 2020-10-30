@@ -29,3 +29,8 @@ export PAHT="$PATH:/usr/local/gtags/bin"
 通过vim --version查看vim的版本和是否支持lua，如果不支持，需要重新编译安装
 参考如何安装支持Lua的Vim
 https://github.com/ueaner/vimrc/blob/master/support/INSTALL_VIM.md
+
+##功能
+###缓冲区
+####bufexploer
+支持使用
