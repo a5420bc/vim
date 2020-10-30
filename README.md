@@ -30,7 +30,7 @@ export PAHT="$PATH:/usr/local/gtags/bin"
 参考如何安装支持Lua的Vim
 https://github.com/ueaner/vimrc/blob/master/support/INSTALL_VIM.md
 
-##功能
-###缓冲区
-####bufexploer
+## 功能
+### 缓冲区
+#### bufexploer
 支持使用
