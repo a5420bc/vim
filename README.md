@@ -15,9 +15,11 @@ sudo yum install gperf
 sudo yum install texi2html texinfo 
 ```
 从官网下载最新版本https://www.gnu.org/software/global/download.html
+```
 tar xzcf 压缩包后进入到目录中
 ./configure --prefix=安装目录  --libdir=lib库目录
 make && make install
+```
 之后需要将prefix/gtags/bin目录加入到PATH环境变量，如prefix=/usr/local
 ```
 export PAHT="$PATH:/usr/local/gtags/bin"
