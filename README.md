@@ -1,6 +1,4 @@
 # vim
-## 如何安装支持Lua的Vim
-https://github.com/ueaner/vimrc/blob/master/support/INSTALL_VIM.md
 ## 要求
 * Vim7
 * ctags
@@ -26,3 +24,8 @@ export PAHT="$PATH:/usr/local/gtags/bin"
 ```
 如果安装失败,需要sh reconfig.sh，再执行./configure
 参考http://www.cghlife.com/tool/install-gnu-global-on-centos7.html?jgdyzq=b9rze1
+
+#### vim
+通过vim --version查看vim的版本和是否支持lua，如果不支持，需要重新编译安装
+参考如何安装支持Lua的Vim
+https://github.com/ueaner/vimrc/blob/master/support/INSTALL_VIM.md
