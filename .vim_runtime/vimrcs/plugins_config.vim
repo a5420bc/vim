@@ -347,7 +347,7 @@ let g:gutentags_plus_switch = 1
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" gutentags-plus 
+" asyncrun 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 function! s:run_tmux(opts)
     " asyncrun has temporarily changed dir for you
@@ -358,3 +358,43 @@ endfunction
 
 let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
 let g:asyncrun_runner.tmux = function('s:run_tmux')
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-startify
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"设置首页内容顺序
+let g:startify_lists = [
+          \ { 'type': 'sessions',  'header': ['   Sessions']        },
+          \ { 'type': 'files',     'header': ['   MRU']             },
+          \ { 'type': 'dir',       'header': ['   MRU '. getcwd()]  },
+          \ { 'type': 'bookmarks', 'header': ['   Bookmarks']       },
+          \ { 'type': 'commands',  'header': ['   Commands']        },
+          \ ]
+"自动保存session
+let g:startify_session_persistence = 1
+"定义自定义标题
+let g:startify_custom_header = [
+				\ '█████╗ ██╗███╗   ██╗ ██████╗      ██╗██╗███████╗',
+				\ '██╔══██╗██║████╗  ██║██╔════╝      ██║██║██╔════╝',
+				\ '██████╔╝██║██╔██╗ ██║██║  ███╗     ██║██║█████╗ ', 
+				\ '██╔══██╗██║██║╚██╗██║██║   ██║██   ██║██║██╔══╝ ', 
+				\ '██████╔╝██║██║ ╚████║╚██████╔╝╚█████╔╝██║███████╗',
+				\ '╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚════╝ ╚═╝╚══════╝',
+            \]
+" 不展示empty buffer 和quit界面
+let g:startify_enable_special = 0
+" 自动加载session
+let g:startify_session_autoload  = 1
+
+" 保存当前的session
+nnoremap <leader>ls :SSave<CR>
+" 切换session
+nnoremap <leader>ls :SLoad
+" 关闭当前session
+nnoremap <leader>ll :SClose<CR>
+
+                                                 
+
+
+
