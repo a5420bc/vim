@@ -1,12 +1,26 @@
 # vim
 ## 要求
 * Vim7
-* ctags
+* ctags[如需golang支持，需要安装universal-ctags]
 * gtags
 * git > 1.5
 ### 软件安装
 #### ctags
 yum install ctags
+#### universal-ctags
+从镜像地址下载https://hub.fastgit.org/universal-ctags/ctags
+```
+cd YOUR_PATH/ctags
+./autogen.sh
+./configure --prefix=YOUR_BIN_PATH
+make && make install
+```
+在bashrc中设置PATH
+```
+export PAHT="$PATH:/usr/local/ctags/bin"
+```
+如果不想设置PATH也可以直接使用`./configure`安装
+
 #### gtags
 ```
 sudo yum install ncurses-devel
@@ -21,7 +35,7 @@ make && make install
 ```
 之后需要将prefix/gtags/bin目录加入到PATH环境变量，如prefix=/usr/local
 ```
-export PAHT="$PATH:/usr/local/gtags/bin"
+export PATH="$PATH:/usr/local/gtags/bin"
 ```
 如果安装失败,需要sh reconfig.sh，再执行./configure
 参考http://www.cghlife.com/tool/install-gnu-global-on-centos7.html?jgdyzq=b9rze1
