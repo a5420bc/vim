@@ -10,15 +10,12 @@
 设置goproxy：
 
 遇到网络问题：这样解决，可以把下述配置加入/etc/profile，然后soruce /etc/profile使其生效
-
+```
 # Enable the go modules feature
-
 export GO111MODULE=on
-
 # Set the GOPROXY environment variable
-
 export GOPROXY=https://goproxy.io
-
+```
 然后任意打开一个.go的文件，然后运行 :GoInstallBinaries自动安装插件。
 
 
