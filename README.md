@@ -1,6 +1,6 @@
 # vim
 ## 要求
-* Vim7
+* Vim7.4\[+lua\]
 * ctags[如需golang支持，需要安装universal-ctags]
 * gtags
 * git > 1.5
