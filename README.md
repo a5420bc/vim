@@ -1,7 +1,7 @@
 # vim
 ## 要求
-* Vim7.4\[+lua\]
-* ctags[如需golang支持，需要安装universal-ctags]
+* Vim7.4\[+lua\] \[如需golang支持需要安装vim-8\]
+* ctags\[如需golang支持，需要安装universal-ctags\]
 * gtags
 * git > 1.5
 ### 软件安装
