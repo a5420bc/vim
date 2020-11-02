@@ -1,5 +1,5 @@
-#go
-##vim-go安装
+# go
+## vim-go安装
 首先输入命令
 ```
 :GoInstallBinarie
