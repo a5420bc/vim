@@ -14,7 +14,7 @@
 # Enable the go modules feature
 export GO111MODULE=on
 # Set the GOPROXY environment variable
-export GOPROXY=https://goproxy.io
+export GOPROXY=https://goproxy.io,direct
 ```
 然后任意打开一个.go的文件，然后运行 :GoInstallBinaries自动安装插件。
 
