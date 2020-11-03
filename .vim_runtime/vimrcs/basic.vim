@@ -152,6 +152,7 @@ endtry
 set background=dark
 
 " Set extra options when running in GUI mode
+set t_Co=256
 if has("gui_running")
     set guioptions-=T
     set guioptions-=e

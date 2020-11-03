@@ -12,6 +12,8 @@ let s:vim_runtime = expand('<sfile>:p:h')."/.."
 call pathogen#infect(s:vim_runtime.'/sources_forked/{}')
 call pathogen#infect(s:vim_runtime.'/sources_non_forked/{}')
 call pathogen#infect(s:vim_runtime.'/my_plugins/{}')
+call pathogen#infect(s:vim_runtime.'/plugins_go/{}')
+"call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
 call pathogen#helptags()
 
 
@@ -44,20 +46,20 @@ nmap <C-n> <Plug>yankstack_substitute_newer_paste
 """"""""""""""""""""""""""""""
 " => CTRL-P
 """"""""""""""""""""""""""""""
-let g:ctrlp_working_path_mode = 0
+" let g:ctrlp_working_path_mode = 0
 
 " Quickly find and open a file in the current working directory
 "let g:ctrlp_map = '<C-f>'
-map <leader>cj :CtrlP<cr>
+" map <leader>cj :CtrlP<cr>
 
 " Quickly find and open a buffer
-map <leader>b :CtrlPBuffer<cr>
+" map <leader>b :CtrlPBuffer<cr>
 
 " Quickly find and open a recently opened file
-map <leader>m :CtrlPMRU<CR>
+" map <leader>m :CtrlPMRU<CR>
 
-let g:ctrlp_max_height = 20
-let g:ctrlp_custom_ignore = 'node_modules\|^\.DS_Store\|^\.git\|^\.coffee'
+" let g:ctrlp_max_height = 20
+" let g:ctrlp_custom_ignore = 'node_modules\|^\.DS_Store\|^\.git\|^\.coffee'
 
 
 """"""""""""""""""""""""""""""
@@ -205,7 +207,6 @@ call neomake#configure#automake('w')
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " TagBar
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:tagbar_ctags_bin = "/usr/local/bin/ctags"
 map <leader>tt :TagbarToggle<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -325,8 +326,8 @@ if executable('gtags-cscope') && executable('gtags')
     let g:gutentags_modules += ['gtags_cscope']
 endif
 
-" 将自动生成的 ctags/gtags 文件全部放入 ~/.cache/tags 目录中，避免污染工程目录
-let g:gutentags_cache_dir = expand('~/.cache/tags')
+" 将自动生成的 ctags/gtags 文件全部放入 ~/.cache/gtags 目录中，避免污染工程目录
+let g:gutentags_cache_dir = expand('~/.cache/gtags')
 
 " 配置 ctags 的参数，老的 Exuberant-ctags 不能有 --extra=+q，注意
 let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extra=+q']
@@ -394,7 +395,50 @@ nnoremap <leader>ls :SLoad
 " 关闭当前session
 nnoremap <leader>ll :SClose<CR>
 
-                                                 
 
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" leaderf
+" """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:Lf_RootMarkers =  ['.root', '.svn', '.git', '.hg', '.project']
+
+let g:Lf_CacheDirectory = expand('~/.cache')
+
+" 指定使用python2
+let g:Lf_PythonVersion = 2
+
+" don't show the help in normal mode
+let g:Lf_HideHelp = 1
+let g:Lf_UseCache = 0
+let g:Lf_UseVersionControlTool = 0
+let g:Lf_IgnoreCurrentBufferName = 1
+" popup mode
+let g:Lf_WindowPosition = 'popup'
+let g:Lf_PreviewInPopup = 1
+let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
+let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+
+let g:Lf_ShortcutF = "<leader>f"
+noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
+noremap <leader>ff :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+noremap <Leader>fa :<C-U><C-R>=printf("Leaderf rg -F -e %s ", "")<CR>
+
+"noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", "")<CR>
+" search visually selected text literally
+xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+noremap go :<C-U>Leaderf! rg --recall<CR>
+
+let g:Lf_CacheDirectory = expand('~')
+let g:Lf_GtagsAutoGenerate = 1
+" should use `Leaderf gtags --update` first
+let g:Lf_Gtagslabel = 'pygments'
+noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 
