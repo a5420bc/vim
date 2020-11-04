@@ -12,7 +12,7 @@ let s:vim_runtime = expand('<sfile>:p:h')."/.."
 call pathogen#infect(s:vim_runtime.'/sources_forked/{}')
 call pathogen#infect(s:vim_runtime.'/sources_non_forked/{}')
 call pathogen#infect(s:vim_runtime.'/my_plugins/{}')
-call pathogen#infect(s:vim_runtime.'/plugins_go/{}')
+call pathogen#infect(s:vim_runtime.'/plugins_vim8/{}')
 "call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
 call pathogen#helptags()
 
@@ -161,7 +161,7 @@ let g:ale_linters = {
 \   'go': ['go', 'golint', 'errcheck']
 \}
 
-nmap <silent> <leader>a <Plug>(ale_next_wrap)
+" nmap <silent> <leader>a <Plug>(ale_next_wrap)
 
 " Disabling highlighting
 let g:ale_set_highlights = 0
@@ -424,9 +424,9 @@ noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>ff :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
-noremap <Leader>fa :<C-U><C-R>=printf("Leaderf rg -F -e %s ", "")<CR>
+noremap <leader>fa :<C-U><C-R>=printf("Leaderf rg -F -e %s ", "")<CR>
 
-"noremap <C-B> :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+noremap <leader>fs :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
 noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", "")<CR>
 " search visually selected text literally
 xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
