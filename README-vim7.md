@@ -1,4 +1,5 @@
 # vim
+因vim7使用的静态代码分析工具gtags，ctags所以代码分析能力有限，如果要更强力的代码补全和查询，需要vim8版本[vim8版本]()
 ## 要求
 * Vim7.4\[+lua\] \[建议直接安装vim-8\]
 * ctags
@@ -7,7 +8,7 @@
 ### 软件安装
 #### ctags
 yum install ctags
-#### universal-ctags
+#### universal-ctags\[ctags的git维护版本\]
 从镜像地址下载https://hub.fastgit.org/universal-ctags/ctags
 ```
 cd YOUR_PATH/ctags
@@ -42,8 +43,35 @@ export PATH="$PATH:/usr/local/gtags/bin"
 
 #### vim
 通过vim --version查看vim的版本和是否支持lua，如果不支持，需要重新编译安装
+
 参考如何安装支持Lua的Vim
+
 https://github.com/ueaner/vimrc/blob/master/support/INSTALL_VIM.md
+
+参考下列configure命令追加python3支持
+```
+./configure --with-features=huge \ 
+--enable-multibyte \
+--enable-luainterp \
+--enable-pythoninterp \
+--enable-python3interp \
+--enable-cscope \
+--enable-gui=auto \
+--enable-gtk2-check \
+--enable-fontset \
+--enable-largefile \
+--disable-netbeans \
+--with-compiledby="bingjie" \
+--enable-fail-if-missing \
+--prefix=/usr/local
+```
+--prefix制定安装路径，--with-compileby添加编译信息
+
+如果需要制定python config路径追加以下内容
+```
+--enable-python3interp=dynamic \
+--with-python3-config-dir=/usr/lib/python3.7/config \
+```
 
 #### git
 通过官网下载git最新版本，如果使用旧版vim-fugitive无法使用部分功能
@@ -57,3 +85,8 @@ git config --global core.editor "vim"
 ### 缓冲区
 #### bufexploer
 支持使用
+
+## 其他
+[vim插件推荐](https://zhuanlan.zhihu.com/p/58816186)
+[vim插件列表](https://github.com/mhinz/vim-galore/blob/master/PLUGINS.md)
+[vim插件搜索](https://vimawesome.com/)
