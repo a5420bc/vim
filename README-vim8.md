@@ -1,6 +1,25 @@
-# go
+# vim8
+## 要求
+* coc.nvim
+* vim8
+### coc.nvim\[支持lsp的代码补全插件\]
+使用如下命令安装nodejs
+```
+curl -sL install-node.now.sh | sh
+```
+需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，确保直接输入nodejs能够运行
+
+yarn安装
+```
+sudo npm install yarn -g
+```
+这个具体是啥我也不清楚，反正也是coc.nvim需要的,如果这样也下不下来参考[centos yarn安装](https://www.nginx.cn/5516.html)
+
+### vim8
+vim8安装方式和vim7相同，可以参考[vim7](README.md)
+
 ## vim-go安装
-首先输入命令
+首先在vim中输入命令
 ```
 :GoInstallBinarie
 ```
