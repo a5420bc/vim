@@ -34,7 +34,7 @@ sudo npm install yarn -g
 
 这里需要注意的是通过开启 `lua` 和 `python` 的支持, 来使用 lua 和 python 开发的插件。
 如：[gundo], [YouCompleteMe] 等需要 python 支持, [neocomplete] 需要 lua 的支持。
-
+   
     # cd vim/
     # ./configure --prefix=/usr \
      --with-compiledby="bingjie" \
@@ -116,16 +116,16 @@ export GOPROXY=https://goproxy.io,direct
        }
     }
     ```
-### 支持php
-    安装
+### 支持php  
+  安装
     ```
     :CocInstall coc-phpls
     ```
-    使用
+  使用
     ```
     :CocConfig
     ```
-    打开配置文件，添加
+  打开配置文件，添加
     ```
     "languageserver": {
       "intelephense": {
@@ -138,7 +138,7 @@ export GOPROXY=https://goproxy.io,direct
       }
     }
     ```
-    如果之前有安装go支持，那么整体的config文件如下
+  如果之前有安装go支持，那么整体的config文件如下
     ```
     {
         "coc.preferences.rootPatterns":[".root", ".svn", ".git", ".hg", ".project"],
@@ -160,7 +160,7 @@ export GOPROXY=https://goproxy.io,direct
        }
     }
     ```
-    其他的lsp安装可以参考[coc-lsp](https://hub.fastgit.org/neoclide/coc.nvim/wiki/Language-servers)
+  其他的lsp安装可以参考[coc-lsp](https://hub.fastgit.org/neoclide/coc.nvim/wiki/Language-servers)
     
 ## 其他
 [vim插件推荐](https://zhuanlan.zhihu.com/p/58816186)
