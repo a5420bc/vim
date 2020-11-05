@@ -7,7 +7,7 @@
 ```
 curl -sL install-node.now.sh | sh
 ```
-需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，确保直接输入nodejs能够运行
+需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，查看一下安装信息确认到底安装哪, 确保直接输入nodejs能够运行
 
 yarn安装
 ```
