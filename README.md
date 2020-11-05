@@ -38,3 +38,7 @@ export GOPROXY=https://goproxy.io,direct
 
 如果以上方法不成功,参考[vim-go安装](README-vim-go.md)
 
+## 其他
+[vim插件推荐](https://zhuanlan.zhihu.com/p/58816186)
+[vim插件列表](https://github.com/mhinz/vim-galore/blob/master/PLUGINS.md)
+[vim插件搜索](https://vimawesome.com/)
