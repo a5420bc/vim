@@ -1,25 +1,4 @@
-# go
-## vim-go安装
-首先输入命令
-```
-:GoInstallBinarie
-```
-由于存在翻墙问题
-### 方法一：
-
-设置goproxy：
-
-遇到网络问题：这样解决，可以把下述配置加入/etc/profile，然后soruce /etc/profile使其生效
-```
-# Enable the go modules feature
-export GO111MODULE=on
-# Set the GOPROXY environment variable
-export GOPROXY=https://goproxy.io,direct
-```
-然后任意打开一个.go的文件，然后运行 :GoInstallBinaries自动安装插件。
-
-
-### 方法二：可以直接执行：
+### 方法一：可以直接执行：
 ```
 go get github.com/golang/tools/cmd/goimports
 
@@ -28,7 +7,7 @@ go get github.com/golang/tools/cmd/guru
 go get github.com/golang/tools/cmd/gorename
 ```
 
-### 方法三：
+### 方法二：
 
 先将依赖的项目都git clone到本地。
 ```
