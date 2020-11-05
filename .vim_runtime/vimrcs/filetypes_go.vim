@@ -14,7 +14,14 @@ au FileType go nmap <leader>t <Plug>(go-test)
 au FileType go nmap <Leader>ds <Plug>(go-def-split)
 au FileType go nmap <Leader>dv <Plug>(go-def-vertical)
 au FileType go nmap <Leader>dt <Plug>(go-def-tab)
-au FileType go nmap <Leader>e <Plug>(go-rename)
+" au FileType go nmap <Leader>e <Plug>(go-rename)
+autocmd FileType go nmap <silent> gl <Plug>(go-caller)
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" coc.nvim
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
 
 " TextEdit might fail if hidden is not set.
 set hidden
@@ -28,7 +35,7 @@ set cmdheight=2
 
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
-set updatetime=100
+set updatetime=50
 
 " Don't pass messages to |ins-completion-menu|.
 set shortmess+=c
@@ -95,12 +102,10 @@ endfunction
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
-" Symbol renaming.
-nmap <leader>rn <Plug>(coc-rename)
 
 " Formatting selected code.
 xmap <leader>f  <Plug>(coc-format-selected)
-nmap <leader>f  <Plug>(coc-format-selected)
+" nmap <leader>f  <Plug>(coc-format-selected)
 
 augroup mygroup
   autocmd!
@@ -188,7 +193,8 @@ let g:coc_disable_transparent_cursor = 1
 " 文件过大时禁止使用coc
 autocmd BufAdd * if getfsize(expand('<afile>')) > 1024*1024 |
 				\ let b:coc_enabled=0 |
-				\ ndif
+				\ endif
+
 " 默认不要预览界面
-let g:coc_enable_locationlist = 0 autocmd User CocLocationsChange
-	CocList --normal location
+let g:coc_enable_locationlist = 0 
+autocmd User CocLocationsChange	CocList --normal location
