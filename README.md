@@ -90,7 +90,81 @@ export GOPROXY=https://goproxy.io,direct
 
 如果以上方法不成功,参考[vim-go安装](README-vim-go.md)
 
+## 功能
+### 支持go语言
+* 如果版本在go 1.11以下或者项目不支持module，那么只能使用vim-go
+* 如果支持go mudule，可以使用coc.nvim的功能
+    安装coc-go
+    ```
+    :CocInstall coc-go
+    ```
+    安装完成后，使用
+    ```
+    :CocConfig
+    ```
+    打开配置目录加入如下的配置文件，重启vim
+    ```
+    {
+        "coc.preferences.rootPatterns":[".root", ".svn", ".git", ".hg", ".project"],
+        "languageserver": {
+            "golang": {
+                "command": "gopls",
+                "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/", ".root"],
+                "disableWorkspaceFolders": true,
+                "filetypes": ["go"]
+            }
+       }
+    }
+    ```
+### 支持php
+    安装
+    ```
+    :CocInstall coc-phpls
+    ```
+    使用
+    ```
+    :CocConfig
+    ```
+    打开配置文件，添加
+    ```
+    "languageserver": {
+      "intelephense": {
+          "command": "intelephense",
+          "args": ["--stdio"],
+          "filetypes": ["php"],
+          "initializationOptions": {
+             "storagePath": "/tmp/intelephense"
+          }
+      }
+    }
+    ```
+    如果之前有安装go支持，那么整体的config文件如下
+    ```
+    {
+        "coc.preferences.rootPatterns":[".root", ".svn", ".git", ".hg", ".project"],
+        "languageserver": {
+            "golang": {
+                "command": "gopls",
+                "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/", ".root"],
+                "disableWorkspaceFolders": true,
+                "filetypes": ["go"]
+            },
+            "intelephense": {
+                  "command": "intelephense",
+                  "args": ["--stdio"],
+                  "filetypes": ["php"],
+                  "initializationOptions": {
+                     "storagePath": "/tmp/intelephense"
+                  }
+            }
+       }
+    }
+    ```
+    其他的lsp安装可以参考[coc-lsp](https://hub.fastgit.org/neoclide/coc.nvim/wiki/Language-servers)
+    
 ## 其他
 [vim插件推荐](https://zhuanlan.zhihu.com/p/58816186)
+
 [vim插件列表](https://github.com/mhinz/vim-galore/blob/master/PLUGINS.md)
+
 [vim插件搜索](https://vimawesome.com/)
