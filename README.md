@@ -117,16 +117,18 @@ export GOPROXY=https://goproxy.io,direct
     }
     ```
 ### 支持php  
-  安装
-    ```
-    :CocInstall coc-phpls
-    ```
-  使用
-    ```
-    :CocConfig
-    ```
-  打开配置文件，添加
-    ```
+   安装
+   ```
+   :CocInstall coc-phpls
+   ```
+   
+   使用
+   ```
+   :CocConfig
+   ```
+   
+   打开配置文件，添加
+   ```
     "languageserver": {
       "intelephense": {
           "command": "intelephense",
@@ -137,10 +139,12 @@ export GOPROXY=https://goproxy.io,direct
           }
       }
     }
-    ```
-  如果之前有安装go支持，那么整体的config文件如下
-    ```
-    {
+   ```
+   
+   如果之前有安装go支持，那么整体的config文件如下
+   
+   ```
+   {
         "coc.preferences.rootPatterns":[".root", ".svn", ".git", ".hg", ".project"],
         "languageserver": {
             "golang": {
@@ -159,8 +163,8 @@ export GOPROXY=https://goproxy.io,direct
             }
        }
     }
-    ```
-  其他的lsp安装可以参考[coc-lsp](https://hub.fastgit.org/neoclide/coc.nvim/wiki/Language-servers)
+   ```
+   其他的lsp安装可以参考[coc-lsp](https://hub.fastgit.org/neoclide/coc.nvim/wiki/Language-servers)
     
 ## 其他
 [vim插件推荐](https://zhuanlan.zhihu.com/p/58816186)
