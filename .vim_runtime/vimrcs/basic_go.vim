@@ -16,6 +16,11 @@ au FileType go nmap <Leader>dv <Plug>(go-def-vertical)
 au FileType go nmap <Leader>dt <Plug>(go-def-tab)
 " au FileType go nmap <Leader>e <Plug>(go-rename)
 autocmd FileType go nmap <silent> gl <Plug>(go-caller)
+" 缩写命令切换测试文件和主文件
+autocmd FileType go nnoremap ga :GoAlternate<CR>
+autocmd FileType go nmap gtj :CocCommand go.tags.add json<cr>
+autocmd FileType go nmap gty :CocCommand go.tags.add yaml<cr>
+autocmd FileType go nmap gtx :CocCommand go.tags.clear<cr>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " coc.nvim
@@ -198,3 +203,35 @@ autocmd BufAdd * if getfsize(expand('<afile>')) > 1024*1024 |
 " 默认不要预览界面
 let g:coc_enable_locationlist = 0 
 autocmd User CocLocationsChange	CocList --normal location
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" tagbar
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 为tagbar添加go语言支持
+let g:tagbar_type_go = {  
+    \ 'ctagstype' : 'go',
+    \ 'kinds'     : [
+        \ 'p:package',
+        \ 'i:imports:1',
+        \ 'c:constants',
+        \ 'v:variables',
+        \ 't:types',
+        \ 'n:interfaces',
+        \ 'w:fields',
+        \ 'e:embedded',
+        \ 'm:methods',
+        \ 'r:constructor',
+        \ 'f:functions'
+    \ ],
+    \ 'sro' : '.',
+    \ 'kind2scope' : {
+        \ 't' : 'ctype',
+        \ 'n' : 'ntype'
+    \ },
+    \ 'scope2kind' : {
+        \ 'ctype' : 't',
+        \ 'ntype' : 'n'
+    \ },
+    \ 'ctagsbin'  : 'gotags',
+    \ 'ctagsargs' : '-sort -silent'
+\ }
