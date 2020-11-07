@@ -13,7 +13,7 @@ call pathogen#infect(s:vim_runtime.'/sources_forked/{}')
 call pathogen#infect(s:vim_runtime.'/sources_non_forked/{}')
 call pathogen#infect(s:vim_runtime.'/my_plugins/{}')
 call pathogen#infect(s:vim_runtime.'/plugins_vim8/{}')
-"""call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
+"call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
 call pathogen#helptags()
 
 
@@ -317,10 +317,26 @@ nnoremap <leader>ll :SClose<CR>
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:Lf_RootMarkers =  ['.root', '.svn', '.git', '.hg', '.project']
 
-let g:Lf_CacheDirectory = expand('~/.cache')
+" 默认设置以根目录搜索
+let g:Lf_WorkingDirectoryMode = 'Ac'
+" 搜索时显示隐藏文件
+let g:Lf_ShowHidden = 1
 
-" 指定使用python2
-let g:Lf_PythonVersion = 2
+" 隐藏可以执行文件和git仓
+let g:Lf_WildIgnore = {
+            \ 'dir': ['.svn','.git','.hg'],
+            \ 'file': ['*.sw?','~$*','*.bak','*.exe','*.o','*.so','*.py[co]']
+            \}
+
+let g:Lf_CacheDirectory = expand('~/.cache')
+ 
+" 依据python版本使用特定的python
+if has('python')
+    " 指定使用python2
+    let g:Lf_PythonVersion = 2
+elseif has('python3')
+    let g:Lf_PythonVersion = 3
+endif
 
 " don't show the help in normal mode
 let g:Lf_HideHelp = 1
