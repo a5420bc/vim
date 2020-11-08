@@ -70,6 +70,11 @@ sudo npm install yarn -g
 
 如果有新版本可以直接覆盖编译。
 
+**以下为 mac os 下的安装**。
+```
+brew install vim
+```
+
 ### vim-go安装
 首先在vim中输入命令
 ```
@@ -84,15 +89,21 @@ sudo npm install yarn -g
 # Enable the go modules feature
 export GO111MODULE=on
 # Set the GOPROXY environment variable
-export GOPROXY=https://goproxy.io,direct
+export GOPROXY="https://goproxy.io",direct
 ```
 然后任意打开一个.go的文件，然后运行 :GoInstallBinaries自动安装插件。
 
 如果以上方法不成功,参考[vim-go安装](README-vim-go.md)
 
+如果你当前既有支持go module的项目，同时也有gopath的项目，需要设置
+```
+export GO111MODULE=auto
+```
+
+
 ## 功能
 ### 支持go语言
-* 如果版本在go 1.11以下或者项目不支持module，那么只能使用vim-go
+* 如果版本在go 1.11以下，那么只能使用vim-go
 * 如果支持go mudule，可以使用coc.nvim的功能
     安装coc-go
     ```
@@ -165,7 +176,9 @@ export GOPROXY=https://goproxy.io,direct
     }
    ```
    其他的lsp安装可以参考[coc-lsp](https://hub.fastgit.org/neoclide/coc.nvim/wiki/Language-servers)
-    
+## 功能
+### 代码搜索
+
 ## 其他
 [vim插件推荐](https://zhuanlan.zhihu.com/p/58816186)
 
