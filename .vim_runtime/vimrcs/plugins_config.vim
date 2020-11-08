@@ -30,8 +30,8 @@ map <leader>o :BufExplorer<cr>
 """"""""""""""""""""""""""""""
 " => MRU plugin
 """"""""""""""""""""""""""""""
-let MRU_Max_Entries = 400
-map <leader>m :MRU<CR>
+" let MRU_Max_Entries = 400
+" map <leader>m :MRU<CR>
 
 
 """"""""""""""""""""""""""""""
@@ -86,7 +86,7 @@ set grepprg=/bin/grep\ -nH
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Nerd Tree
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:NERDTreeWinPos = "right"
+let g:NERDTreeWinPos = "left"
 let NERDTreeShowHidden=0
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let g:NERDTreeWinSize=35
@@ -361,7 +361,7 @@ noremap <leader>fs :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", exp
 noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -e %s ", "")<CR>
 " search visually selected text literally
 xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
-noremap go :<C-U>Leaderf! rg --recall<CR>
+noremap <leader>fg :<C-U>Leaderf! rg --recall<CR>
 
 let g:Lf_CacheDirectory = expand('~')
 
