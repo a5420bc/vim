@@ -13,7 +13,7 @@ call pathogen#infect(s:vim_runtime.'/sources_forked/{}')
 call pathogen#infect(s:vim_runtime.'/sources_non_forked/{}')
 call pathogen#infect(s:vim_runtime.'/my_plugins/{}')
 call pathogen#infect(s:vim_runtime.'/plugins_vim8/{}')
-"call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
+"""""""""""""call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
 call pathogen#helptags()
 
 
@@ -364,7 +364,14 @@ xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
 noremap go :<C-U>Leaderf! rg --recall<CR>
 
 let g:Lf_CacheDirectory = expand('~')
-let g:Lf_GtagsAutoGenerate = 1
+
+" 当系统有gtags时才生成gtags文件
+if executable('gtags')
+    let g:Lf_GtagsAutoGenerate = 1
+else
+    let g:Lf_GtagsAutoGenerate = 0
+endif
+
 " should use `Leaderf gtags --update` first
 let g:Lf_Gtagslabel = 'pygments'
 noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
