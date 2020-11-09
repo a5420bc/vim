@@ -3,6 +3,7 @@
 ## 要求
 * coc.nvim
 * vim8
+* rg
 * coc-go
 * coc-phpls
 
@@ -77,6 +78,8 @@ sudo npm install yarn -g
 ```
 brew install vim
 ```
+
+### rg\[leaderf搜索功能需要的支持插件\]
 
 ### vim-go安装
 首先在vim中输入命令
