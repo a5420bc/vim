@@ -214,23 +214,23 @@ export GO111MODULE=auto
 
 使用vim的前缀键<leader>为";"
     
-使用<;>f  | <leader>f   进行文件搜索
+使用<;>f  | \<leader\>f   进行文件搜索
     
-使用<;>fb | <leader>fb  对当前buffer进行搜索
+使用<;>fb | \<leader\>fb  对当前buffer进行搜索
     
-使用<;>fm | <leader>fm  对打开文件的mru进行搜索
+使用<;>fm | \<leader\>fm  对打开文件的mru进行搜索
     
-使用<;>ft | <leader>ft  对当前的tag进行搜索
+使用<;>ft | \<leader\>ft  对当前的tag进行搜索
     
-使用<;>ff | <leader>ff  对方法进行搜索(需要gtags支持或者ctags支持\[ctags不支持go\])
+使用<;>ff | \<leader\>ff  对方法进行搜索(需要gtags支持或者ctags支持\[ctags不支持go\])
     
-使用<;>fa | <leader>fa  使用普通文本进行关键字搜索(需要rg扩展)
+使用<;>fa | \<leader\>fa  使用普通文本进行关键字搜索(需要rg扩展)
     
-使用<;>fs | <leader>fa  对当前缓冲区进行关键字搜索(需要rg扩展)
+使用<;>fs | \<leader\>fa  对当前缓冲区进行关键字搜索(需要rg扩展)
     
 使用<CTRL+F>            使用正则表达式进行搜索
 
-使用<;>fg | <leader>fg  重新打开之前的搜索结果窗口
+使用<;>fg | \<leader\>fg  重新打开之前的搜索结果窗口
     
 选中模式中使用gf，使用选中文本进行普通搜索
 
@@ -244,9 +244,9 @@ export GO111MODULE=auto
 ### 文件跳转
 本项目使用[nerdtree](https://github.com/preservim/nerdtree)进行文件树管理
 
-使用<;>nn | <leader>nn 打开关闭文件树窗口
+使用<;>nn | \<leader\>nn 打开关闭文件树窗口
     
-使用<leader>nf         定位当前文件在文件树中的位置
+使用\<leader\>nf         定位当前文件在文件树中的位置
     
 使用j,k                浏览当前文件树
 
