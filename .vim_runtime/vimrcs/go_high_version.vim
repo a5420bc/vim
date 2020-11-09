@@ -106,7 +106,8 @@ function! s:show_documentation()
 endfunction
 
 " Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold * silent call CocActionAsync('highlight')
+" 禁止使用鼠标高亮,开启时还是太卡了
+" autocmd CursorHold * silent call CocActionAsync('highlight')
 
 
 " Formatting selected code.
