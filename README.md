@@ -3,6 +3,9 @@
 ## 要求
 * coc.nvim
 * vim8
+* coc-go
+* coc-phpls
+
 ### coc.nvim\[支持lsp的代码补全插件\]
 使用如下命令安装nodejs
 ```
@@ -100,9 +103,7 @@ export GOPROXY="https://goproxy.io",direct
 export GO111MODULE=auto
 ```
 
-
-## 功能
-### 支持go语言
+### coc-go\[支持go语言\]
 * 如果版本在go 1.11以下，那么只能使用vim-go
 * 如果支持go mudule，可以使用coc.nvim的功能
     安装coc-go
@@ -127,7 +128,7 @@ export GO111MODULE=auto
        }
     }
     ```
-### 支持php  
+### coc-phpls\[支持php\]  
    安装
    ```
    :CocInstall coc-phpls
