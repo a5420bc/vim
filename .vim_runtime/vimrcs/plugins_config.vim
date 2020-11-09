@@ -304,13 +304,17 @@ let g:startify_enable_special = 0
 let g:startify_session_autoload  = 1
 
 " 保存当前的session
-nnoremap <leader>ls :SSave<CR>
+nnoremap <leader>ss :SSave<CR>
 " 切换session
-nnoremap <leader>ls :SLoad
+nnoremap <leader>ss :SLoad
 " 关闭当前session
-nnoremap <leader>ll :SClose<CR>
+nnoremap <leader>sc :SClose<CR>
 
-
+" session保存时默认关闭nerdtree防止打开出错
+let g:startify_session_before_save = [
+            \ 'echo "Cleaning up before saving.."',
+            \ 'silent! NERDTreeTabsClose'
+            \ ]
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " leaderf
@@ -340,9 +344,11 @@ endif
 
 " don't show the help in normal mode
 let g:Lf_HideHelp = 1
-let g:Lf_UseCache = 0
 let g:Lf_UseVersionControlTool = 0
 let g:Lf_IgnoreCurrentBufferName = 1
+" 禁止用缓存保证每次都能看到最新的内容
+let g:Lf_UseCache = 0
+let g:Lf_UseMemoryCache = 0
 " popup mode
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_PreviewInPopup = 1
@@ -360,12 +366,12 @@ noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>ff :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
-noremap <leader>fa :<C-U><C-R>=printf("Leaderf rg -F -S  -e %s ", "")<CR>
+noremap <leader>fa :<C-U><C-R>=printf("Leaderf rg -F -S --match-path -e %s ", "")<CR>
 
 noremap <leader>fs :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
-noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -S -e %s ", "")<CR>
+noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -S --match-path -e %s ", "")<CR>
 " search visually selected text literally
-xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F -e %s ", leaderf#Rg#visual())<CR>
+xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F --match-path -e %s ", leaderf#Rg#visual())<CR>
 noremap <leader>fg :<C-U>Leaderf! rg --recall<CR>
 
 let g:Lf_CacheDirectory = expand('~')
