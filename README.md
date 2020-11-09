@@ -179,48 +179,79 @@ export GO111MODULE=auto
 ## 功能
 ### 窗口跳转
 使用<CTRL+j> 跳到下面窗口
+
 使用<CTRL+k> 跳到上面窗口
+
 使用<CTRL+h> 跳到左面窗口
+
 使用<CTRL+l> 跳到右面窗口
 
 ### 缓冲区浏览
 本项目使用[bufexplorer](https://github.com/jlanzarotta/bufexplorer)进行缓冲区管理
+
 使用<;>o | <leader>o  打开缓冲区列表
+    
 使用j,k               在缓冲区列表浏览
+
 使用d                 删除缓冲区项目
+
 使用f                 水平分割当前窗口,且选中项目在当前文件下
+
 使用F                 水平分割当前窗口,且选中项目在当前文件上
+
 使用v                 垂直分割当前窗口,且选中项目在当前文件右侧
+
 使用V                 水平分割当前窗口,且选中项目在当前文件左侧
+
 使用q                 退出缓冲区浏览列表
+
 
 
 ### 代码搜索
 本项目使用[leaderf](https://github.com/Yggdroot/LeaderF)
+
 如果项目非svn文件或git文件,需要在项目根目录中新建.root文件标记项目根目录
+
 使用vim的前缀键<leader>为";"
+    
 使用<;>f  | <leader>f   进行文件搜索
+    
 使用<;>fb | <leader>fb  对当前buffer进行搜索
+    
 使用<;>fm | <leader>fm  对打开文件的mru进行搜索
+    
 使用<;>ft | <leader>ft  对当前的tag进行搜索
+    
 使用<;>ff | <leader>ff  对方法进行搜索(需要gtags支持或者ctags支持\[ctags不支持go\])
+    
 使用<;>fa | <leader>fa  使用普通文本进行关键字搜索(需要rg扩展)
+    
 使用<;>fs | <leader>fa  对当前缓冲区进行关键字搜索(需要rg扩展)
+    
 使用<CTRL+F>            使用正则表达式进行搜索
+
 使用<;>fg | <leader>fg  重新打开之前的搜索结果窗口
+    
 选中模式中使用gf，使用选中文本进行普通搜索
 
 ### 代码注释
 本项目使用[vim-commentary](https://github.com/tpope/vim-commentary)控制代码注释
+
 使用gcc对代码注释/取消注释
+
 对选中的部分，使用gc进行注释/取消注释
 
 ### 文件跳转
 本项目使用[nerdtree](https://github.com/preservim/nerdtree)进行文件树管理
+
 使用<;>nn | <leader>nn 打开关闭文件树窗口
+    
 使用<leader>nf         定位当前文件在文件树中的位置
+    
 使用j,k                浏览当前文件树
+
 使用q                  退出文件树窗口
+
 使用m                  进入文件管理模式
 
 
