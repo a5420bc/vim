@@ -313,8 +313,11 @@ nnoremap <leader>sc :SClose<CR>
 " session保存时默认关闭nerdtree防止打开出错
 let g:startify_session_before_save = [
             \ 'echo "Cleaning up before saving.."',
-            \ 'silent! NERDTreeTabsClose'
+            \ 'silent! NERDTreeClose'
             \ ]
+
+" 当只剩下非编辑窗口时直接退出vim
+autocmd BufEnter * if 0 == len(filter(range(1, winnr('$')), 'empty(getbufvar(winbufnr(v:val), "&bt"))')) | qa! | endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " leaderf
