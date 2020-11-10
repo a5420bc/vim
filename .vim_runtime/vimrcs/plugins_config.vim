@@ -126,7 +126,7 @@ let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ 'active': {
       \   'left': [ ['mode', 'paste'],
-      \             ['fugitive', 'readonly', 'filename', 'modified'] ],
+      \             ['fugitive', 'readonly', 'filename', 'modified', 'absolutepath'] ],
       \   'right': [ [ 'lineinfo' ], ['percent'] ]
       \ },
       \ 'component': {
@@ -306,7 +306,7 @@ let g:startify_session_autoload  = 1
 " 保存当前的session
 nnoremap <leader>ss :SSave<CR>
 " 切换session
-nnoremap <leader>ss :SLoad
+nnoremap <leader>sl :SLoad
 " 关闭当前session
 nnoremap <leader>sc :SClose<CR>
 
@@ -363,12 +363,12 @@ let g:Lf_RgConfig = [
         \ "--glob=!git/*",
     \ ]
 
-let g:Lf_ShortcutF = "<leader>f"
+let g:Lf_ShortcutF = "<leader>ff"
 noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
-noremap <leader>ff :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+noremap <leader>fc :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
 noremap <leader>fa :<C-U><C-R>=printf("Leaderf rg -F -S --match-path -e %s ", "")<CR>
 
 noremap <leader>fs :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
@@ -394,3 +394,12 @@ noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
 noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
 noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-gitgutter
+" """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:gitgutter_enabled = 1
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-nerdtree-sync
+" """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:nerdtree_sync_cursorline = 1
