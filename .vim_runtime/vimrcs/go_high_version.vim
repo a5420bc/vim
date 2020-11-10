@@ -4,6 +4,17 @@
 let g:go_autodetect_gopath = 1
 let g:go_fmt_command = "goimports"
 let g:go_def_mode = 'gopls'
+
+" 高亮设置
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_extra_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_types = 1
+
 au FileType go nmap <Leader>s <Plug>(go-implements)
 au FileType go nmap <Leader>i <Plug>(go-info)
 au FileType go nmap <Leader>gd <Plug>(go-doc)
@@ -174,7 +185,7 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 " Add (Neo)Vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline.
-set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
+" set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
 
 " Mappings for CoCList
 " Show all diagnostics.
@@ -205,3 +216,17 @@ autocmd BufAdd * if getfsize(expand('<afile>')) > 1024*1024 |
 " 默认不要预览界面
 let g:coc_enable_locationlist = 0 
 autocmd User CocLocationsChange	CocList --normal location
+
+let g:lightline = {
+            \ 'colorscheme': 'wombat',
+            \ 'active': {
+            \   'left': [ [ 'mode', 'paste' ],
+            \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
+            \ },
+            \ 'component_function': {
+            \   'cocstatus': 'coc#status'
+            \ },
+            \ }
+
+autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+
