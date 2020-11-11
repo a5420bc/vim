@@ -161,7 +161,7 @@ nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
 " Show commands.
 nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
 " Find symbol of current document.
-nnoremap <silent><nowait> <space>o  :<C-u>CocList outline<cr>
+nnoremap <silent><nowait> <space>co  :<C-u>CocList outline<cr>
 " Search workspace symbols.
 nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
 " Do default action for next item.
@@ -199,6 +199,7 @@ autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-which-key
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+set timeoutlen=500
 call which_key#register('<space>', "g:which_key_map")
 call which_key#register('g', "g:prefix_g_map")
 
