@@ -2,11 +2,28 @@
 推荐安装vim8版本如果就是想用vim7参考(README-vim7.md)
 ## 要求
 * python2.7
+* ctags
 * coc.nvim
 * vim8
 * rg
 * coc-go
 * coc-phpls
+
+### ctags
+yum install ctags
+#### universal-ctags\[ctags的git维护版本\]
+从镜像地址下载https://hub.fastgit.org/universal-ctags/ctags
+```
+cd YOUR_PATH/ctags
+./autogen.sh
+./configure --prefix=YOUR_BIN_PATH
+make && make install
+```
+在bashrc中设置PATH
+```
+export PAHT="$PATH:/usr/local/ctags/bin"
+```
+如果不想设置PATH也可以直接使用`./configure`安装
 
 ### coc.nvim\[支持lsp的代码补全插件\]
 使用如下命令安装nodejs
