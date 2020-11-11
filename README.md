@@ -38,7 +38,7 @@ sudo npm install yarn -g
 
 这里需要注意的是通过开启 `lua` 和 `python` 的支持, 来使用 lua 和 python 开发的插件。
 如：[gundo], [YouCompleteMe] 等需要 python 支持, [neocomplete] 需要 lua 的支持。
-   
+
     # cd vim/
     # ./configure --prefix=/usr \
      --with-compiledby="bingjie" \
@@ -50,7 +50,7 @@ sudo npm install yarn -g
      --enable-pythoninterp \
      --disable-netbeans \
      --enable-gui=no
-
+    
     make -j4
     make install
 
@@ -136,12 +136,12 @@ export GO111MODULE=auto
    ```
    :CocInstall coc-phpls
    ```
-   
+
    使用
    ```
    :CocConfig
    ```
-   
+
    打开配置文件，添加
    ```
     "languageserver": {
@@ -155,9 +155,9 @@ export GO111MODULE=auto
       }
     }
    ```
-   
+
    如果之前有安装go支持，那么整体的config文件如下
-   
+
    ```
    {
         "coc.preferences.rootPatterns":[".root", ".svn", ".git", ".hg", ".project"],
@@ -180,20 +180,36 @@ export GO111MODULE=auto
     }
    ```
    其他的lsp安装可以参考[coc-lsp](https://hub.fastgit.org/neoclide/coc.nvim/wiki/Language-servers)
+## 说明
+
+VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader\>为"\<space\>"
+
+| 按键说明  | 文本       |
+| --------- | ---------- |
+| vim前缀键 | \<leader\> |
+| Ctrl      | \<C\>      |
+| 空格      | \<space\>  |
+
+
+
 ## 功能
+
 ### 窗口跳转
-使用<CTRL+j> 跳到下面窗口
+使用\<C-j\> 跳到下面窗口
 
-使用<CTRL+k> 跳到上面窗口
+使用\<C-k\> 跳到上面窗口
 
-使用<CTRL+h> 跳到左面窗口
+使用\<C-h\> 跳到左面窗口
 
-使用<CTRL+l> 跳到右面窗口
+使用\<C-l\> 跳到右面窗口
+
+![windows](https://imgchr.com/i/BXXxSO)
 
 ### 缓冲区浏览
+
 本项目使用[bufexplorer](https://github.com/jlanzarotta/bufexplorer)进行缓冲区管理
 
-使用<;>o | <leader>o  打开缓冲区列表
+使用\<leader\>o  打开缓冲区列表
     
 使用j,k               在缓冲区列表浏览
 
@@ -215,40 +231,44 @@ export GO111MODULE=auto
 本项目使用[leaderf](https://github.com/Yggdroot/LeaderF)
 
 如果项目非svn文件或git文件,需要在项目根目录中新建.root文件标记项目根目录
+    
+使用\<leader\>f   进行文件搜索
+    
+使用<leader\>fb  对当前buffer进行搜索
+    
+使用\<leader\>fm  对打开文件的mru进行搜索
+    
+使用<leader\>ft  对当前的tag进行搜索
+    
+使用<leader\>ff  对方法进行搜索(需要gtags支持或者ctags支持\[ctags不支持go\])
+    
+使用<leader\>fa  使用普通文本进行关键字搜索(需要rg扩展)
+    
+使用 \<leader\>fa  对当前缓冲区进行关键字搜索(需要rg扩展)
+    
+使用\<leader\>fs使用正则表达式进行搜索
 
-使用vim的前缀键<leader>为";"
-    
-使用<;>f  | \<leader\>f   进行文件搜索
-    
-使用<;>fb | \<leader\>fb  对当前buffer进行搜索
-    
-使用<;>fm | \<leader\>fm  对打开文件的mru进行搜索
-    
-使用<;>ft | \<leader\>ft  对当前的tag进行搜索
-    
-使用<;>ff | \<leader\>ff  对方法进行搜索(需要gtags支持或者ctags支持\[ctags不支持go\])
-    
-使用<;>fa | \<leader\>fa  使用普通文本进行关键字搜索(需要rg扩展)
-    
-使用<;>fs | \<leader\>fa  对当前缓冲区进行关键字搜索(需要rg扩展)
-    
-使用<CTRL+F>            使用正则表达式进行搜索
-
-使用<;>fg | \<leader\>fg  重新打开之前的搜索结果窗口
+使用\<leader\>fg  重新打开之前的搜索结果窗口
     
 选中模式中使用gf，使用选中文本进行普通搜索
 
+
+
 ### 代码注释
+
 本项目使用[vim-commentary](https://github.com/tpope/vim-commentary)控制代码注释
 
 使用gcc对代码注释/取消注释
 
 对选中的部分，使用gc进行注释/取消注释
 
+
+
 ### 文件跳转
+
 本项目使用[nerdtree](https://github.com/preservim/nerdtree)进行文件树管理
 
-使用<;>nn | \<leader\>nn 打开关闭文件树窗口
+使用 \<leader\>nn 打开关闭文件树窗口
     
 使用\<leader\>nf         定位当前文件在文件树中的位置
     
@@ -257,6 +277,20 @@ export GO111MODULE=auto
 使用q                  退出文件树窗口
 
 使用m                  进入文件管理模式
+
+
+
+## 代码跳转
+
+普通模式使用gr   查看引用
+
+普通模式使用gd   查看定义
+
+普通模式使用gf    跳转文件
+
+普通模式使用gi    查看实现\(implement\)
+
+
 
 
 ## 其他
