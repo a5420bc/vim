@@ -46,7 +46,10 @@ au FocusGained,BufEnter * checktime
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
-let mapleader = "\<space>"
+let mapleader = " "
+" 取消所有插入模式space的快捷键，防止输入space卡顿
+au VimEnter * iunmap <space>p
+au VimEnter * iunmap <buffer> <silent> <SPACE>
 
 " Fast saving
 nmap <leader>w :w!<cr>
