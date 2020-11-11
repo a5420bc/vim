@@ -384,6 +384,7 @@ let g:Lf_RgConfig = [
     \ ]
 
 let g:Lf_ShortcutF = "<leader>ff"
+let g:Lf_ShortcutB = "<leader>fb"
 noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
@@ -391,8 +392,8 @@ noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>fc :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
 noremap <leader>fa :<C-U><C-R>=printf("Leaderf rg -F -S --match-path -e %s ", "")<CR>
 
-noremap <leader>fs :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
-noremap <C-F> :<C-U><C-R>=printf("Leaderf! rg -S --match-path -e %s ", "")<CR>
+noremap <leader>fw :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
+noremap <leader>fs :<C-U><C-R>=printf("Leaderf! rg -S --match-path -e %s ", "")<CR>
 " search visually selected text literally
 xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F --match-path -e %s ", leaderf#Rg#visual())<CR>
 noremap <leader>fg :<C-U>Leaderf! rg --recall<CR>

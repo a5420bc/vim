@@ -46,7 +46,7 @@ au FocusGained,BufEnter * checktime
 
 " With a map leader it's possible to do extra key combinations
 " like <leader>w saves the current file
-let mapleader = "<space>"
+let mapleader = "\<space>"
 
 " Fast saving
 nmap <leader>w :w!<cr>
@@ -215,7 +215,7 @@ vnoremap <silent> # :<C-u>call VisualSelection('', '')<CR>?<C-R>=@/<CR><CR>
 " => Moving around, tabs, windows and buffers
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Map <Space> to / (search) and Ctrl-<Space> to ? (backwards search)
-map <space> /
+map <leader><space> /
 map <C-space> ?
 
 " Disable highlight when <leader><cr> is pressed
