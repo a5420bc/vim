@@ -203,7 +203,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 使用\<C-l\> 跳到右面窗口
 
-![windows](https://imgchr.com/i/BXXxSO)
+![windows][1]
 
 ### 缓冲区浏览
 
@@ -299,3 +299,5 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 [vim插件列表](https://github.com/mhinz/vim-galore/blob/master/PLUGINS.md)
 
 [vim插件搜索](https://vimawesome.com/)
+
+[1] https://github.com/a5420bc/images/vim/split.gif
