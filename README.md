@@ -13,6 +13,13 @@
 curl -sL install-node.now.sh | sh
 ```
 需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，查看一下安装信息确认到底安装哪, 确保直接输入nodejs能够运行
+**若下载失败可以尝试**
+````
+wget https://npm.taobao.org/mirrors/node/v14.15.0/node-v14.15.0-linux-x64.tar.xz
+tar zxJf node-v14.15.0-linux-x64.tar.xz
+mv node-v14.15.0-linux-x64.tar.xz nodejs
+export $PATH="$PATH:{YOUR-PAHT}/nodejs/bin"
+````
 
 yarn安装
 ```
