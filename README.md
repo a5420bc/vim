@@ -16,7 +16,7 @@ curl -sL install-node.now.sh | sh
 **若下载失败可以尝试**
 ````
 wget https://npm.taobao.org/mirrors/node/v14.15.0/node-v14.15.0-linux-x64.tar.xz
-tar zxJf node-v14.15.0-linux-x64.tar.xz
+tar -vxJf node-v14.15.0-linux-x64.tar.xz
 mv node-v14.15.0-linux-x64.tar.xz nodejs
 export $PATH="$PATH:{YOUR-PAHT}/nodejs/bin"
 ````
