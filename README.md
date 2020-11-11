@@ -1,6 +1,7 @@
 # vim8
 推荐安装vim8版本如果就是想用vim7参考(README-vim7.md)
 ## 要求
+* python2.7
 * coc.nvim
 * vim8
 * rg
@@ -15,9 +16,9 @@ curl -sL install-node.now.sh | sh
 需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，查看一下安装信息确认到底安装哪, 确保直接输入nodejs能够运行
 **若下载失败可以尝试**
 ````
-wget https://npm.taobao.org/mirrors/node/v14.15.0/node-v14.15.0-linux-x64.tar.xz
-tar -vxJf node-v14.15.0-linux-x64.tar.xz
-mv node-v14.15.0-linux-x64.tar.xz nodejs
+wget https://npm.taobao.org/mirrors/node/v10.13.0/node-v10.13.0-linux-x64.tar.gz
+tar -zxcv node-v10.13.0-linux-x64.tar.gz
+mv node-v10.13.0-linux-x64 nodejs
 export $PATH="$PATH:{YOUR-PAHT}/nodejs/bin"
 ````
 
