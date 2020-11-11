@@ -80,6 +80,10 @@ brew install vim
 ```
 
 ### rg\[leaderf搜索功能需要的支持插件\]
+wget https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
+tar xzvf https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
+mv https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz riggrep
+ln -s $YOUR-PATH/riggrep/rg /usr/bin/rg
 
 ### vim-go安装
 首先在vim中输入命令
