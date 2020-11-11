@@ -300,4 +300,4 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 [vim插件搜索](https://vimawesome.com/)
 
-[1] https://github.com/a5420bc/images/vim/split.gif
+[1]: https://github.com/a5420bc/images/blob/main/vim/split.gif
