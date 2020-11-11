@@ -205,6 +205,24 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 ![windows][1]
 
+### 代码树导航
+本项目使用[nerdtree](https://github.com/preservim/nerdtree)进行文件树管理
+
+使用 \<leader\>nn 打开关闭文件树窗口
+    
+使用\<leader\>nf         定位当前文件在文件树中的位置
+    
+使用j,k                  浏览当前文件树
+
+使用q                    退出文件树窗口
+
+使用?                    查看帮助
+
+使用m                    进入文件管理模式
+
+![nerdtree-basic][2]
+
+
 ### 缓冲区浏览
 
 本项目使用[bufexplorer](https://github.com/jlanzarotta/bufexplorer)进行缓冲区管理
@@ -263,23 +281,6 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 对选中的部分，使用gc进行注释/取消注释
 
 
-
-### 文件跳转
-
-本项目使用[nerdtree](https://github.com/preservim/nerdtree)进行文件树管理
-
-使用 \<leader\>nn 打开关闭文件树窗口
-    
-使用\<leader\>nf         定位当前文件在文件树中的位置
-    
-使用j,k                浏览当前文件树
-
-使用q                  退出文件树窗口
-
-使用m                  进入文件管理模式
-
-
-
 ## 代码跳转
 
 普通模式使用gr   查看引用
@@ -301,3 +302,4 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 [vim插件搜索](https://vimawesome.com/)
 
 [1]: https://github.com/a5420bc/images/blob/main/vim/split.gif
+[2]: https://github.com/a5420bc/images/blob/main/vim/record.gif
