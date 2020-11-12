@@ -309,6 +309,8 @@ nnoremap <leader>ss :SSave<CR>
 nnoremap <leader>sl :SLoad
 " 关闭当前session
 nnoremap <leader>sc :SClose<CR>
+" 删除session
+nnoremap <leader>sd :SDelete<CR>
 
 " session保存时默认关闭nerdtree防止打开出错
 let g:startify_session_before_save = [
