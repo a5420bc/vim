@@ -1,11 +1,29 @@
 # vim8
 推荐安装vim8版本如果就是想用vim7参考(README-vim7.md)
 ## 要求
+* python2.7
+* ctags
 * coc.nvim
 * vim8
 * rg
 * coc-go
 * coc-phpls
+
+### ctags
+yum install ctags
+#### universal-ctags\[ctags的git维护版本\]
+从镜像地址下载https://hub.fastgit.org/universal-ctags/ctags
+```
+cd YOUR_PATH/ctags
+./autogen.sh
+./configure --prefix=YOUR_BIN_PATH
+make && make install
+```
+在bashrc中设置PATH
+```
+export PAHT="$PATH:/usr/local/ctags/bin"
+```
+如果不想设置PATH也可以直接使用`./configure`安装
 
 ### coc.nvim\[支持lsp的代码补全插件\]
 使用如下命令安装nodejs
@@ -13,6 +31,13 @@
 curl -sL install-node.now.sh | sh
 ```
 需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，查看一下安装信息确认到底安装哪, 确保直接输入nodejs能够运行
+**若下载失败可以尝试**
+````
+wget https://npm.taobao.org/mirrors/node/v10.13.0/node-v10.13.0-linux-x64.tar.gz
+tar -zxcv node-v10.13.0-linux-x64.tar.gz
+mv node-v10.13.0-linux-x64 nodejs
+export $PATH="$PATH:{YOUR-PAHT}/nodejs/bin"
+````
 
 yarn安装
 ```
@@ -80,6 +105,10 @@ brew install vim
 ```
 
 ### rg\[leaderf搜索功能需要的支持插件\]
+wget https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
+tar xzvf https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
+mv https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz riggrep
+ln -s $YOUR-PATH/riggrep/rg /usr/bin/rg
 
 ### vim-go安装
 首先在vim中输入命令
@@ -203,7 +232,25 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 使用\<C-l\> 跳到右面窗口
 
-![windows](https://imgchr.com/i/BXXxSO)
+![windows][1]
+
+### 代码树导航
+本项目使用[nerdtree](https://github.com/preservim/nerdtree)进行文件树管理
+
+使用 \<leader\>nn 打开关闭文件树窗口
+    
+使用\<leader\>nf         定位当前文件在文件树中的位置
+    
+使用j,k                  浏览当前文件树
+
+使用q                    退出文件树窗口
+
+使用?                    查看帮助
+
+使用m                    进入文件管理模式
+
+![nerdtree-basic][2]
+
 
 ### 缓冲区浏览
 
@@ -263,23 +310,6 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 对选中的部分，使用gc进行注释/取消注释
 
 
-
-### 文件跳转
-
-本项目使用[nerdtree](https://github.com/preservim/nerdtree)进行文件树管理
-
-使用 \<leader\>nn 打开关闭文件树窗口
-    
-使用\<leader\>nf         定位当前文件在文件树中的位置
-    
-使用j,k                浏览当前文件树
-
-使用q                  退出文件树窗口
-
-使用m                  进入文件管理模式
-
-
-
 ## 代码跳转
 
 普通模式使用gr   查看引用
@@ -299,3 +329,6 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 [vim插件列表](https://github.com/mhinz/vim-galore/blob/master/PLUGINS.md)
 
 [vim插件搜索](https://vimawesome.com/)
+
+[1]: https://github.com/a5420bc/images/blob/main/vim/split.gif
+[2]: https://github.com/a5420bc/images/blob/main/vim/record.gif
