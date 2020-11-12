@@ -26,18 +26,22 @@ export PAHT="$PATH:/usr/local/ctags/bin"
 如果不想设置PATH也可以直接使用`./configure`安装
 
 ### coc.nvim\[支持lsp的代码补全插件\]
-使用如下命令安装nodejs
-```
-curl -sL install-node.now.sh | sh
-```
-需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，查看一下安装信息确认到底安装哪, 确保直接输入nodejs能够运行
-**若下载失败可以尝试**
+方法一:
+
 ````
 wget https://npm.taobao.org/mirrors/node/v10.13.0/node-v10.13.0-linux-x64.tar.gz
 tar -zxcv node-v10.13.0-linux-x64.tar.gz
 mv node-v10.13.0-linux-x64 nodejs
 export $PATH="$PATH:{YOUR-PAHT}/nodejs/bin"
 ````
+
+方法二:
+
+使用如下命令安装nodejs
+```
+curl -sL install-node.now.sh | sh
+```
+需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，查看一下安装信息确认到底安装哪, 确保直接输入nodejs能够运行
 
 yarn安装
 ```
@@ -105,10 +109,12 @@ brew install vim
 ```
 
 ### rg\[leaderf搜索功能需要的支持插件\]
+```
 wget https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
-tar xzvf https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
-mv https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz riggrep
+tar xzvf ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
+mv ripgrep-12.1.1-x86_64-unknown-linux-musl riggrep
 ln -s $YOUR-PATH/riggrep/rg /usr/bin/rg
+```
 
 ### vim-go安装
 首先在vim中输入命令
