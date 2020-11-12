@@ -424,3 +424,33 @@ let g:gitgutter_enabled = 1
 " vim-nerdtree-sync
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:nerdtree_sync_cursorline = 1
+
+let g:vim_php_refactoring_use_default_mapping = 0
+
+" 取消coc占用的映射
+augroup php_ftplugin
+    autocmd!
+    autocmd Filetype php
+\       for m in ['<leader>rn']
+\       | execute('silent! unmap <buffer> '.m)
+\       | endfor
+augroup END
+
+au FileType php nnoremap <Leader>rn :call PhpRenameLocalVariable()<CR>
+au FileType php nnoremap <Leader>rc :call PhpRenameClassVariable()<CR>
+au FileType php nnoremap <Leader>rm :call PhpRenameMethod()<CR>
+au FileType php nnoremap <Leader>ru :call PhpExtractUse()<CR>
+au FileType php vnoremap <Leader>rc :call PhpExtractConst()<CR>
+au FileType php nnoremap <Leader>rp :call PhpExtractClassProperty()<CR>
+au FileType php vnoremap <Leader>rm :call PhpExtractMethod()<CR>
+au FileType php nnoremap <Leader>rcp :call PhpCreateProperty()<CR>
+" 感觉neomake和coc-phpls都有这个功能
+" au FileType php nnoremap <Leader>du :call PhpDetectUnusedUseStatements()<CR>
+" 对齐这个功能也感觉一般般
+" vnoremap <unique> <Leader>== :call PhpAlignAssigns()<CR>
+" 生成setter和getter
+au FileType php nnoremap <Leader>rs :call PhpCreateSettersAndGetters()<CR>
+" 生成Getter
+au FileType php nnoremap <Leader>rcg :call PhpCreateGetters()<CR>
+" 调用phpDoc生成注释
+au FileType php nnoremap <Leader>ra :call PhpDocAll()<CR>
