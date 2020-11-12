@@ -168,9 +168,9 @@ nnoremap <silent><nowait> <space>co  :<C-u>CocList outline<cr>
 " Search workspace symbols.
 nnoremap <silent><nowait> <space>s  :<C-u>CocList -I symbols<cr>
 " Do default action for next item.
-nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
+" nnoremap <silent><nowait> <space>j  :<C-u>CocNext<CR>
 " Do default action for previous item.
-nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
+" nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
@@ -217,7 +217,29 @@ let g:which_key_map =  {}
 let g:prefix_g_map = {}
 
 let g:which_key_map = {
-            \ "name":'+快捷键说明'
+            \ "name":'+快捷键说明',
+            \ "<CR>":'取消搜索高亮',
+            \ ",":'遍历paster历史',
+            \ "a":'coc代码诊断',
+            \ "c":'coc命令[coc command]',
+            \ "cd":'设置当前目录为工作目录',
+            \ "d":'git差异显示开关',
+            \ "l":'localtion开关',
+            \ "q":'quickfix开关',
+            \ "s":'coc symbols搜索',
+            \ "ss":'会话保存',
+            \ "sl":'会话加载',
+            \ "sc":'会话关闭',
+            \ "sd":'会话删除',
+            \ "w":'保存',
+            \ "z":'专注模式',
+            \ "p":'打开coc之前的窗口',
+            \ "qf":'快速修复当前代码问题',
+            \ "pp":'粘贴模式开关',
+            \ "ac":'coc代码动作',
+            \ "m":'切换为unix空格',
+            \ "j":'切换到下一个buffer',
+            \ "k":'切换到下一个buffer',
             \ } 
 
 " 搜索功能
@@ -240,6 +262,29 @@ let g:which_key_map.f = {
             \ "p": '查看上一项'
             \ } 
 
+let g:which_key_map.r = {
+            \ "name":'+代码重构',
+            \ "n": '重命名',
+            \ "c": '重命名类属性',
+            \ "cp": '创建属性',
+            \ "m": '重命名方法',
+            \ "p": '提取类属性',
+            \ "s": '生成setter和getter',
+            \ "u": '提取类use前缀',
+            \ "a": '生成php注释',
+            \ } 
+
+let g:which_key_map.t = {
+            \ "name":'+tab操作',
+            \ " ": '切换到下一个tab',
+            \ "m": '移动到指定tab',
+            \ "n": '新建tab',
+            \ "o": '关闭除当前tab的所有tab',
+            \ "t": 'tagbar开关',
+            \ "l": '移动到最后一个tab',
+            \ "e": '当前文件路径[你自己试一下吧~]',
+            \ } 
+
 " 文件数配置
 let g:which_key_map.n = {
             \ "name":'+文件树导航',
@@ -249,11 +294,7 @@ let g:which_key_map.n = {
             \ }
 
 " 暂不定义
-let g:which_key_map.g = {"name": "git undo"}
-
-" tab操作
-let g:which_key_map.g = {"name": "tab操作"}
-
+let g:which_key_map.h = {"name": "git差异[基本不用]"}
 
 let g:prefix_g_map = {
             \ "name":'+g前缀操作',
