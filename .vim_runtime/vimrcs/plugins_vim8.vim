@@ -14,6 +14,8 @@ nmap <silent> gr <Plug>(coc-references)
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
 
+set tagfunc=CocTagFunc
+
 " TextEdit might fail if hidden is not set.
 set hidden
 
