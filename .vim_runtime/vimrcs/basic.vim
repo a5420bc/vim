@@ -342,6 +342,8 @@ noremap <Leader>m mmHmt:%s/<C-V><cr>//ge<cr>'tzt'm
 " Toggle paste mode on and off
 map <leader>pp :setlocal paste!<cr>
 
+" 输入o或者O或者<CR>不要自动添加注释头(多数情况下只输入一行注释)
+au FileType * setlocal formatoptions-=ro
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Helper functions
