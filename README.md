@@ -1,5 +1,5 @@
 # vim8
-推荐安装vim8版本如果就是想用vim7参考(README-vim7.md)
+推荐安装vim8版本如果就是想用[vim7参考](README-vim7.md)
 ## 要求
 * python2.7
 * ctags
