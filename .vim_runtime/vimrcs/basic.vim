@@ -40,6 +40,9 @@ filetype indent on
 "设置行号
 set nu
 
+" 支持鼠标操作
+set mouse=a
+
 " Set to auto read when a file is changed from the outside
 set autoread
 au FocusGained,BufEnter * checktime
