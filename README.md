@@ -1,5 +1,5 @@
 # vim8
-推荐安装vim8版本如果就是想用vim7参考(README-vim7.md)
+推荐安装vim8版本如果就是想用[vim7参考](README-vim7.md)
 ## 要求
 * python2.7
 * ctags
@@ -9,212 +9,17 @@
 * coc-go
 * coc-phpls
 
-### ctags
-yum install ctags
-#### universal-ctags\[ctags的git维护版本\]
-从镜像地址下载https://hub.fastgit.org/universal-ctags/ctags
-```
-cd YOUR_PATH/ctags
-./autogen.sh
-./configure --prefix=YOUR_BIN_PATH
-make && make install
-```
-在bashrc中设置PATH
-```
-export PAHT="$PATH:/usr/local/ctags/bin"
-```
-如果不想设置PATH也可以直接使用`./configure`安装
+参考[依赖安装](REQUIREMENT.md)
 
-### coc.nvim\[支持lsp的代码补全插件\]
-方法一:
+## 安装
 
-````
-wget https://npm.taobao.org/mirrors/node/v10.13.0/node-v10.13.0-linux-x64.tar.gz
-tar -zxcv node-v10.13.0-linux-x64.tar.gz
-mv node-v10.13.0-linux-x64 nodejs
-export $PATH="$PATH:{YOUR-PAHT}/nodejs/bin"
-````
-
-方法二:
-
-使用如下命令安装nodejs
-```
-curl -sL install-node.now.sh | sh
-```
-需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，查看一下安装信息确认到底安装哪, 确保直接输入nodejs能够运行
-
-yarn安装
-```
-sudo npm install yarn -g
-```
-这个具体是啥我也不清楚，反正也是coc.nvim需要的,如果这样也下不下来参考[centos yarn安装](https://www.nginx.cn/5516.html)
-
-### vim8
-**以下为 CentOS 下的安装**。
-
-#### 安装依赖
-
-    # yum install ncurses-devel lua-devel python-devel cscope ctags git gcc
-
-如果需要支持 ruby 或其他语言写的扩展，请安装相应语言的开发包，并在 VIM 编译中添加相应的参数，
-如: `--enable-rubyinterp`。
-
-#### 下载 VIM 源码包
-
-    # git clone https://github.com/vim/vim.git
-
-#### 编译安装 VIM
-
-这里需要注意的是通过开启 `lua` 和 `python` 的支持, 来使用 lua 和 python 开发的插件。
-如：[gundo], [YouCompleteMe] 等需要 python 支持, [neocomplete] 需要 lua 的支持。
-
-    # cd vim/
-    # ./configure --prefix=/usr \
-     --with-compiledby="bingjie" \
-     --with-features=huge \
-     --enable-fail-if-missing \
-     --enable-multibyte \
-     --enable-cscope \
-     --enable-luainterp \
-     --enable-pythoninterp \
-     --disable-netbeans \
-     --enable-gui=no
-    
-    make -j4
-    make install
-
-使用 `./configure --help` 查看更多编译参数帮组。
-
-* --prefix制定安装路径，--with-compileby添加编译信息
-
-* 如果需要制定python config路径追加以下内容
-```
---enable-python3interp=dynamic \
---with-python3-config-dir=/usr/lib/python3.7/config \
-```
-* 现在可以通过 `vim --version` 看到 `+lua` 和 `+python` 字样，表示成功。
-
-如果需要重新编译，先执行：
-
-    # rm -f src/auto/config.cache
-    # make distclean
-
-再把上述 `configure make make install` 来一遍。
-
-如果有新版本可以直接覆盖编译。
-
-**以下为 mac os 下的安装**。
-```
-brew install vim
+```shell
+# github的镜像地址
+cd ~
+git clone https://hub.fastgit.org/a5420bc/vim
+./vim/.vim_runtime/install_awesome_vim8.sh
 ```
 
-### rg\[leaderf搜索功能需要的支持插件\]
-```
-wget https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
-tar xzvf ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
-mv ripgrep-12.1.1-x86_64-unknown-linux-musl riggrep
-ln -s $YOUR-PATH/riggrep/rg /usr/bin/rg
-```
-
-### vim-go安装
-首先在vim中输入命令
-```
-:GoInstallBinarie
-```
-由于存在翻墙问题
-
-需要设置goproxy(需要go1.11 module支持)：
-
-遇到网络问题：这样解决，可以把下述配置加入/etc/profile，然后soruce /etc/profile使其生效
-```
-# Enable the go modules feature
-export GO111MODULE=on
-# Set the GOPROXY environment variable
-export GOPROXY="https://goproxy.io",direct
-```
-然后任意打开一个.go的文件，然后运行 :GoInstallBinaries自动安装插件。
-
-如果以上方法不成功,参考[vim-go安装](README-vim-go.md)
-
-如果你当前既有支持go module的项目，同时也有gopath的项目，需要设置
-```
-export GO111MODULE=auto
-```
-
-### coc-go\[支持go语言\]
-* 如果版本在go 1.11以下，那么只能使用vim-go
-* 如果支持go mudule，可以使用coc.nvim的功能
-    安装coc-go
-    ```
-    :CocInstall coc-go
-    ```
-    安装完成后，使用
-    ```
-    :CocConfig
-    ```
-    打开配置目录加入如下的配置文件，重启vim
-    ```
-    {
-        "coc.preferences.rootPatterns":[".root", ".svn", ".git", ".hg", ".project"],
-        "languageserver": {
-            "golang": {
-                "command": "gopls",
-                "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/", ".root"],
-                "disableWorkspaceFolders": true,
-                "filetypes": ["go"]
-            }
-       }
-    }
-    ```
-### coc-phpls\[支持php\]  
-   安装
-   ```
-   :CocInstall coc-phpls
-   ```
-
-   使用
-   ```
-   :CocConfig
-   ```
-
-   打开配置文件，添加
-   ```
-    "languageserver": {
-      "intelephense": {
-          "command": "intelephense",
-          "args": ["--stdio"],
-          "filetypes": ["php"],
-          "initializationOptions": {
-             "storagePath": "/tmp/intelephense"
-          }
-      }
-    }
-   ```
-
-   如果之前有安装go支持，那么整体的config文件如下
-
-   ```
-   {
-        "coc.preferences.rootPatterns":[".root", ".svn", ".git", ".hg", ".project"],
-        "languageserver": {
-            "golang": {
-                "command": "gopls",
-                "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/", ".root"],
-                "disableWorkspaceFolders": true,
-                "filetypes": ["go"]
-            },
-            "intelephense": {
-                  "command": "intelephense",
-                  "args": ["--stdio"],
-                  "filetypes": ["php"],
-                  "initializationOptions": {
-                     "storagePath": "/tmp/intelephense"
-                  }
-            }
-       }
-    }
-   ```
-   其他的lsp安装可以参考[coc-lsp](https://hub.fastgit.org/neoclide/coc.nvim/wiki/Language-servers)
 ## 说明
 
 VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader\>为"\<space\>"
@@ -225,7 +30,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | Ctrl      | \<C\>      |
 | 空格      | \<space\>  |
 
-
+**如果项目非svn文件或git文件,需要在项目根目录中新建.root文件标记项目根目录**
 
 ## 功能
 
@@ -241,71 +46,126 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 
 
-### 代码树导航
+### 目录树导航
 
 本项目使用[nerdtree](https://github.com/preservim/nerdtree)进行文件树管理
 
-使用 \<leader\>nn 打开关闭文件树窗口
-    
-使用\<leader\>nf         定位当前文件在文件树中的位置
-    
-使用j,k                  浏览当前文件树
+| 命令         | 模式     | 描述                         |
+| ------------ | -------- | ---------------------------- |
+| \<leader\>nn | 普通模式 | 打开关闭文件树窗口           |
+| \<leader\>nf | 普通模式 | 定位当前文件在文件树中的位置 |
 
-使用q                    退出文件树窗口
+**打开nerdtree后，当光标在nerdtree界面上时,可以使用如下操作:**
 
-使用?                    查看帮助
-
-使用m                    进入文件管理模式
+| 命令 | 模式     | 描述             |
+| ---- | -------- | ---------------- |
+| j,k  | 普通模式 | 浏览当前文件树   |
+| q    | 普通模式 | 退出文件树窗口   |
+| ？   | 普通模式 | 查看帮助         |
+| m    | 普通模式 | 进入文件管理模式 |
 
 ![nerdtree-basic][2]
+
+**当按下m时会出现选择界面如下:**
+
+![nerdtree-file][3]
+
+
+
+
+
+| 按键      | 描述                                          | 提供者                      |
+| --------- | --------------------------------------------- | --------------------------- |
+| j         | 下一个                                        | coc-explorer/nerdtree/defx  |
+| k         | 上一个                                        | coc-explorer/nerdtree/defx  |
+| h         | 收起目录或跳到上级目录                        | coc-explorer/nerdtree/defx  |
+| l         | 展开目录/打开文件                             | coc-explorer/nerdtree/defx  |
+| H         | 递归收起目录                                  | coc-explorer                |
+| L         | 递归打开目录                                  | coc-explorer/nerdtree/defx  |
+| J         | 跳到下一个可以展开的地方                      | coc-explorer/               |
+| K         | 跳到上一个可以展开的地方                      | coc-explorer/               |
+| enter     | 进入目录并切换工作目录为进入的目录            | coc-explorer/nerdtree/defx/ |
+| backspace | 跳到上一级目并切换工作目录为切换的目录        | coc-explorer/nerdtree/defx/ |
+| r         | 刷新目录                                      | coc-explorer/nerdtree/defx/ |
+| v         | 选中/取消选中，并向下移动                     | coc-explorer/defx/          |
+| V         | 选中/取消选中，并向上移动                     | coc-explorer/defx/          |
+| *         | 选中/取消选中                                 | coc-explorer/defx/          |
+| w         | 水平打开                                      | coc-explorer/nerdtree/defx/ |
+| W         | 垂直打开                                      | coc-explorer/nerdtree/defx/ |
+| t         | 新tab中打开                                   | coc-explorer/nerdtree/defx/ |
+|           |                                               |                             |
+| dd        | 剪切文件                                      | coc-explorer/defx/          |
+| Y         | 复制文件                                      | coc-explorer/defx/          |
+| D         | 删除文件                                      | coc-explorer/defx/          |
+| P         | 粘贴文件                                      | coc-explorer/defx/          |
+| R         | 重命名文件                                    | coc-explorer/defx/          |
+| N         | 添加文件或者目录，如果最后有`/`则表示添加目录 | coc-explorer/defx/          |
+| yp        | 复制文件路径                                  | coc-explorer/defx/          |
+| yn        | 复制文件名称                                  | coc-explorer/               |
+| .         | 显示/关闭隐藏文件                             | coc-explorer/nerdtree/defx/ |
+|           |                                               | coc-explorer/nerdtree/defx/ |
+| x         | 使用系统默认应用打开文件                      | coc-explorer/defx/          |
+| f         | 搜索文件                                      | coc-explorer                |
+| F         | 递归搜索文件                                  | coc-explorer                |
+|           |                                               |                             |
+| <leader>f | 悬浮或者在当前窗口打开                        | coc-explorer/defx/          |
 
 
 ### 缓冲区浏览
 
-本项目使用[bufexplorer](https://github.com/jlanzarotta/bufexplorer)进行缓冲区管理
+本项目使用[bufexplorer](https://github.com/jlanzarotta/bufexplorer)进行缓冲区管理(vim默认会将打开的文件放入buffer中，类似于一般IDE的tab页卡)
 
-使用\<leader\>o  打开缓冲区列表
-    
-使用j,k               在缓冲区列表浏览
+使用**\<leader\>o**打开bufferexplorer界面
 
-使用d                 删除缓冲区项目
-
-使用f                 水平分割当前窗口,且选中项目在当前文件下
-
-使用F                 水平分割当前窗口,且选中项目在当前文件上
-
-使用v                 垂直分割当前窗口,且选中项目在当前文件右侧
-
-使用V                 水平分割当前窗口,且选中项目在当前文件左侧
-
-使用q                 退出缓冲区浏览列表
+| 命令 | 模式                              | 描述                                      |
+| ---- | --------------------------------- | ----------------------------------------- |
+| j,k  | 普通模式\[打卡bufferexplorer界面] | 在缓冲区列表浏览                          |
+| d    | 普通模式\[打卡bufferexplorer界面] | 删除缓冲区项目                            |
+| f    | 普通模式\[打卡bufferexplorer界面] | 水平分割当前窗口,且选中项目在当前文件下   |
+| F    | 普通模式\[打卡bufferexplorer界面] | 水平分割当前窗口,且选中项目在当前文件上   |
+| v    | 普通模式\[打卡bufferexplorer界面] | 垂直分割当前窗口,且选中项目在当前文件右侧 |
+| V    | 普通模式\[打卡bufferexplorer界面] | 水平分割当前窗口,且选中项目在当前文件左侧 |
+| q    | 普通模式\[打卡bufferexplorer界面] | 退出缓冲区浏览列表                        |
 
 
 
-### 代码搜索
-本项目使用[leaderf](https://github.com/Yggdroot/LeaderF)
+### 文本搜索
+**本项目使用[leaderf](https://github.com/Yggdroot/LeaderF)**
 
-如果项目非svn文件或git文件,需要在项目根目录中新建.root文件标记项目根目录
-    
-使用\<leader\>f   进行文件搜索
-    
-使用<leader\>fb  对当前buffer进行搜索
-    
-使用\<leader\>fm  对打开文件的mru进行搜索
-    
-使用<leader\>ft  对当前的tag进行搜索
-    
-使用<leader\>ff  对方法进行搜索(需要gtags支持或者ctags支持\[ctags不支持go\])
-    
-使用<leader\>fa  使用普通文本进行关键字搜索(需要rg扩展)
-    
-使用 \<leader\>fa  对当前缓冲区进行关键字搜索(需要rg扩展)
-    
-使用\<leader\>fs使用正则表达式进行搜索
+| 命令         | 模式     | 描述                                                        |
+| ------------ | -------- | ----------------------------------------------------------- |
+| \<leader\>fb | 普通模式 | 对当前buffer进行搜索                                        |
+| \<leader\>fm | 普通模式 | 对打开文件的mru进行搜索                                     |
+| <leader\>fc  | 普通模式 | 对方法进行搜索(需要gtags支持或者ctags支持\[ctags不支持go\]) |
+| <leader\>ff  | 普通模式 | 文件搜索                                                    |
+| <leader\>fw  | 普通模式 | 对当前缓冲区进行关键字搜索(需要rg支持)                      |
+| <leader\>fa  | 普通模式 | 使用普通文本进行关键字搜索(需要rg支持)                      |
+| \<leader\>fg | 普通模式 | 重新打开之前的搜索结果窗口                                  |
+| <leader\>fs  | 普通模式 | 正则表达式关键字搜索(需要rg支持)                            |
+| gf           | 选中模式 | 使用选中文本进行普通搜索                                    |
 
-使用\<leader\>fg  重新打开之前的搜索结果窗口
-    
-选中模式中使用gf，使用选中文本进行普通搜索
+**当打开搜索窗口后，支持如下操作**
+
+| 命令               | 模式     | 功能                                            |
+| ------------------ | -------- | ----------------------------------------------- |
+| \<ESC\><br>\<C-C\> | 搜索窗口 | quit from LeaderF                               |
+| \<Ctrl-R\>         | 搜索窗口 | 模糊搜索模式和正则模式切换                      |
+| \<Ctrl-F\>         | 搜索窗口 | 全路径匹配和名称匹配切换                        |
+| \<Tab\>            | 搜索窗口 | 浏览模式和输入模式切换                          |
+| \<C-V><br/>\<S-Insert\> | 搜索窗口 | paste from clipboard                            |
+| \<C-U>        | 搜索窗口[输入模式] | 清除输入                        |
+| \<C-J>         | 搜索窗口[输入模式] | 向下移动 |
+| \<C-K>          | 搜索窗口[输入模式] | 向上移动 |
+| \<Up\><br/>\<Down\> | 搜索窗口 | 查看搜索历史 |
+| \<C-X> | 搜索窗口 | 水平打开 |
+| \<C-]> | 搜索窗口 | 垂直打开 |
+| \<F5\> | 搜索窗口 | 刷新缓存 |
+| \<BS\> | 搜索窗口[输入模式] | 删除字符 |
+| j | 搜索窗口[普通模式] | 向下移动 |
+| k | 搜索窗口[普通模式] | 向上移动 |
+| \<Ctrl-P\> | 搜索窗口 | 预览结果 |
+| \<C-Up\> | 搜索窗口[预览] | 向上移动预览窗口 |
+| \<C-Down\> | 搜索窗口[预览] | 向下移动预览窗口 |
 
 
 
@@ -318,15 +178,42 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 对选中的部分，使用gc进行注释/取消注释
 
 
-## 代码跳转
 
-普通模式使用gr   查看引用
+### 代码跳转  
 
-普通模式使用gd   查看定义
+| 命令   | 模式     | 功能                  |
+| ------ | -------- | --------------------- |
+| \<C-]> | 普通模式 | 跳转至定义            |
+| \<C-T> | 普通模式 | 返回跳转前内容        |
+| gr     | 普通模式 | 查看引用              |
+| gd     | 普通模式 | 查看定义              |
+| K      | 普通模式 | 查看函数签名          |
+| gf     | 普通模式 | 跳转文件              |
+| gi     | 普通模式 | 查看实现\(implement\) |
 
-普通模式使用gf    跳转文件
 
-普通模式使用gi    查看实现\(implement\)
+
+### 代码补全
+
+| 命令      | 模式     | 功能               |
+| --------- | -------- | ------------------ |
+| \<Tab\>   | 普通模式 | 选择补全项目       |
+| \<S-Tab\> | 普通模式 | 选择之前的全部项目 |
+| \<C-C>    | 普通模式 | 取消补全           |
+| \<CR\>    | 普通模式 | 确认补全           |
+
+
+
+### 代码重构
+
+由于代码重构和具体使用的语言关联，需要额外的插件支持，本项目目前只支持了go、php，通用的重构操作由coc.nvim提供
+
+| 命令         | 模式     | 功能                                                    |
+| ------------ | -------- | ------------------------------------------------------- |
+| \<leader\>a  | 选择模式 | 基于LSP提示可用的重构操作                               |
+| \<leader\>rn | 普通模式 | 重命名[go支持全部重命名，php该命令只支持local variable] |
+
+**php重构更多操作请按下\<leader\>r查看**
 
 
 
@@ -338,5 +225,9 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 [vim插件搜索](https://vimawesome.com/)
 
+
+
 [1]: https://github.com/a5420bc/images/blob/main/vim/split.gif
 [2]: https://github.com/a5420bc/images/blob/main/vim/record.gif
+
+[3]:https://github.com/a5420bc/images/blob/main/vim/nerdtree_operate.png
