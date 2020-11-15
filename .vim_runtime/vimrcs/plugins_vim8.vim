@@ -183,8 +183,8 @@ autocmd BufAdd * if getfsize(expand('<afile>')) > 1024*1024 |
 				\ endif
 
 " 默认不要预览界面
-" let g:coc_enable_locationlist = 0 
-" autocmd User CocLocationsChange	CocList --normal location
+let g:coc_enable_locationlist = 0 
+autocmd User CocLocationsChange	CocList --normal location
 
 let g:lightline = {
             \ 'colorscheme': 'wombat',
