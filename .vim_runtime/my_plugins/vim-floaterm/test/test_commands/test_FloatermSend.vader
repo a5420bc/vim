@@ -1,0 +1,15 @@
+" vim:ft=vim
+
+Execute(FloatermSend):
+  FloatermNew
+  FloatermToggle
+  FloatermSend
+
+Execute(FloatermSend with argument):
+  FloatermKill!
+  FloatermSend ls
+
+Execute (Exit):
+  stopinsert
+  FloatermKill!
+  sleep 100m

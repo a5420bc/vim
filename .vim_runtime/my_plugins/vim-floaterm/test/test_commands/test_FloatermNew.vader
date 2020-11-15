@@ -1,0 +1,20 @@
+" vim:ft=vim
+
+Execute(FloatermNew):
+  FloatermNew
+  AssertEqual 'floaterm', &filetype
+
+Execute(FloatermNew!):
+  FloatermKill!
+  FloatermNew!
+  AssertEqual 'floaterm', &filetype
+
+Execute(FloatermNew with arguments):
+  FloatermKill!
+  FloatermNew --height=0.6 --width=0.4 --wintype=floating --name=test --position=topleft --autoclose=0 ls
+  AssertEqual 'floaterm', &filetype
+
+Execute (Exit):
+  stopinsert
+  FloatermKill!
+  sleep 100m

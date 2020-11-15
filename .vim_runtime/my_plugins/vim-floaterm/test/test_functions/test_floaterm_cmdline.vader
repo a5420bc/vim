@@ -1,0 +1,128 @@
+" vim:ft=vim
+
+Execute(Test floaterm#cmdline#parse):
+  let argstr ='--height=0.6 --width=0.4 --wintype=floating --name=floaterm1 --position=topleft --autoclose=2 ranger --cmd="cd ~"'
+  let [cmd, opts] = floaterm#cmdline#parse(split(argstr))
+  AssertEqual 'ranger --cmd="cd ~"', cmd
+  AssertEqual {
+    \'wintype': 'floating',
+    \'name': 'floaterm1',
+    \'autoclose': 2,
+    \'width': 0.4,
+    \'height': 0.6,
+    \'position': 'topleft'
+    \}, opts
+
+Execute(Test floaterm#cmdline#parse expand feature):
+  silent !touch test.txt && echo first.line > test.txt
+  edit ./test.txt
+  normal! gg0
+
+  " %<
+  AssertEqual expand('%<'), floaterm#cmdline#parse(split('%<'))[0]
+  " %\(:[phtreS8\~\.]\)
+  AssertEqual expand('%'), floaterm#cmdline#parse(split('%'))[0]
+  AssertEqual expand('%:p'), floaterm#cmdline#parse(split('%:p'))[0]
+  AssertEqual expand('%:h'), floaterm#cmdline#parse(split('%:h'))[0]
+  AssertEqual expand('%:t'), floaterm#cmdline#parse(split('%:t'))[0]
+  AssertEqual expand('%:r'), floaterm#cmdline#parse(split('%:r'))[0]
+  AssertEqual expand('%:e'), floaterm#cmdline#parse(split('%:e'))[0]
+  AssertEqual expand('%:S'), floaterm#cmdline#parse(split('%:S'))[0]
+  AssertEqual expand('%:8'), floaterm#cmdline#parse(split('%:8'))[0]
+  AssertEqual expand('%:~'), floaterm#cmdline#parse(split('%:~'))[0]
+  AssertEqual expand('%:.'), floaterm#cmdline#parse(split('%:.'))[0]
+  " %\(:g\=s?.*?.*?\)
+  AssertEqual expand('%:s?test?main?'), floaterm#cmdline#parse(split('%:s?test?main?'))[0]
+  AssertEqual expand('%:gs?test?main?'), floaterm#cmdline#parse(split('%:gs?test?main?'))[0]
+  AssertEqual '\%', floaterm#cmdline#parse(split('\%'))[0]
+  AssertEqual '\%:p', floaterm#cmdline#parse(split('\%:p'))[0]
+  " %\(\(:g\=s?.*?.*?\)\|\(:[phtreS8\~\.]\)\)*
+  AssertEqual expand('%:p:h'), floaterm#cmdline#parse(split('%:p:h'))[0]
+  AssertEqual expand('%:p:s?test?main?'), floaterm#cmdline#parse(split('%:p:s?test?main?'))[0]
+
+  " <cfile><
+  AssertEqual expand('<cfile><'), floaterm#cmdline#parse(split('<cfile><'))[0]
+  " <cfile>\(:[phtreS8\~\.]\)
+  AssertEqual expand('<cfile>'), floaterm#cmdline#parse(split('<cfile>'))[0]
+  AssertEqual expand('<cfile>:p'), floaterm#cmdline#parse(split('<cfile>:p'))[0]
+  AssertEqual expand('<cfile>:h'), floaterm#cmdline#parse(split('<cfile>:h'))[0]
+  AssertEqual expand('<cfile>:t'), floaterm#cmdline#parse(split('<cfile>:t'))[0]
+  AssertEqual expand('<cfile>:r'), floaterm#cmdline#parse(split('<cfile>:r'))[0]
+  AssertEqual expand('<cfile>:e'), floaterm#cmdline#parse(split('<cfile>:e'))[0]
+  AssertEqual expand('<cfile>:S'), floaterm#cmdline#parse(split('<cfile>:S'))[0]
+  AssertEqual expand('<cfile>:8'), floaterm#cmdline#parse(split('<cfile>:8'))[0]
+  AssertEqual expand('<cfile>:~'), floaterm#cmdline#parse(split('<cfile>:~'))[0]
+  AssertEqual expand('<cfile>:.'), floaterm#cmdline#parse(split('<cfile>:.'))[0]
+  " <cfile>\(:g\=s?.*?.*?\)
+  AssertEqual expand('<cfile>:s?test?main?'), floaterm#cmdline#parse(split('<cfile>:s?test?main?'))[0]
+  AssertEqual expand('<cfile>:gs?test?main?'), floaterm#cmdline#parse(split('<cfile>:gs?test?main?'))[0]
+  AssertEqual '\<cfile>', floaterm#cmdline#parse(split('\<cfile>'))[0]
+  AssertEqual '\<cfile>:p', floaterm#cmdline#parse(split('\<cfile>:p'))[0]
+  " <cfile>\(\(:g\=s?.*?.*?\)\|\(:[phtreS8\~\.]\)\)*
+  AssertEqual expand('<cfile>:p:h'), floaterm#cmdline#parse(split('<cfile>:p:h'))[0]
+  AssertEqual expand('<cfile>:p:s?test?main?'), floaterm#cmdline#parse(split('<cfile>:p:s?test?main?'))[0]
+
+  silent !rm test.txt
+
+Execute(Test floaterm#cmdline#complete):
+  AssertEqual [
+    \'--name=',
+    \'--height=',
+    \'--width=',
+    \'--title=',
+    \'--wintype=',
+    \'--position=',
+    \'--autoclose=',
+    \], floaterm#cmdline#complete(v:null, 'FloatermNew ', 12)[:6]
+  AssertEqual [
+    \'--wintype=normal',
+    \'--wintype=floating'
+    \], floaterm#cmdline#complete(v:null, 'FloatermNew --wintype=', 22)
+  AssertEqual [
+    \'--wintype=normal',
+    \], floaterm#cmdline#complete(v:null, 'FloatermNew --wintype=n', 23)
+  AssertEqual [
+    \'--position=top',
+    \'--position=right',
+    \'--position=bottom',
+    \'--position=left',
+    \'--position=center',
+    \'--position=topleft',
+    \'--position=topright',
+    \'--position=bottomleft',
+    \'--position=bottomright',
+    \'--position=auto',
+    \], floaterm#cmdline#complete(v:null, 'FloatermNew --position=', 23)
+  AssertEqual [
+    \'--position=top',
+    \'--position=topleft',
+    \'--position=topright',
+    \], floaterm#cmdline#complete(v:null, 'FloatermNew --position=t', 24)
+  AssertEqual [
+    \'--name=',
+    \'--height=',
+    \'--width=',
+    \'--title=',
+    \'--wintype=',
+    \'--position=',
+    \'--autoclose=',
+    \], floaterm#cmdline#complete(v:null, 'FloatermUpdate ', 15)
+
+Execute(Test floaterm#cmdline#floaterm_names):
+  FloatermNew --name=floaterm1
+  AssertEqual ['floaterm1'], floaterm#cmdline#floaterm_names()
+
+Execute(Test floaterm#cmdline#floaterm_names2):
+  FloatermNew --name=floaterm2
+  AssertEqual [
+    \'--name=',
+    \], floaterm#cmdline#floaterm_names2(v:null, 'FloatermSend ', 13)
+  AssertEqual [
+    \'--name=floaterm1',
+    \'--name=floaterm2',
+    \], floaterm#cmdline#floaterm_names2(v:null, 'FloatermSend --name=', 20)
+
+Execute(Exit):
+  stopinsert
+  FloatermKill!
+  sleep 100m
