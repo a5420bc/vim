@@ -1,0 +1,17 @@
+align-assignments	refactoring-toolbox.txt	/*align-assignments*
+create-property	refactoring-toolbox.txt	/*create-property*
+create-set-get	refactoring-toolbox.txt	/*create-set-get*
+detect-unused-use	refactoring-toolbox.txt	/*detect-unused-use*
+document-all	refactoring-toolbox.txt	/*document-all*
+extract-class-property	refactoring-toolbox.txt	/*extract-class-property*
+extract-method	refactoring-toolbox.txt	/*extract-method*
+extract-use-statement	refactoring-toolbox.txt	/*extract-use-statement*
+refactoring-toolbox	refactoring-toolbox.txt	/*refactoring-toolbox*
+refactoring-toolbox-contents	refactoring-toolbox.txt	/*refactoring-toolbox-contents*
+refactoring-toolbox-examples	refactoring-toolbox.txt	/*refactoring-toolbox-examples*
+refactoring-toolbox-intro	refactoring-toolbox.txt	/*refactoring-toolbox-intro*
+refactoring-toolbox-mappings	refactoring-toolbox.txt	/*refactoring-toolbox-mappings*
+refactoring-toolbox-playground	refactoring-toolbox.txt	/*refactoring-toolbox-playground*
+rename-class-variable	refactoring-toolbox.txt	/*rename-class-variable*
+rename-local-variable	refactoring-toolbox.txt	/*rename-local-variable*
+rename-method	refactoring-toolbox.txt	/*rename-method*
