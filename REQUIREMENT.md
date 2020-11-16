@@ -121,6 +121,14 @@ sudo npm install yarn -g
 
 * --prefix制定安装路径，--with-compileby添加编译信息
 
+* vim不能同时支持python2和python3请选择其一
+
+* 需要编译支持python3时需要导入环境变量
+```
+export LDFLAGS="-rdynamic
+```
+> [解释1](https://github.com/vim/vim/issues/3629) [解释2](https://www.cnblogs.com/taowang2016/p/11075620.html)
+
 * 如果需要制定python config路径追加以下内容
 
 ```
