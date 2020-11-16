@@ -5,8 +5,7 @@
 // 下载源码
 wget http://www.python.org/ftp/python/2.7.13/Python-2.7.13.tar.xz
 // 解压文件
-xz -d Python-2.7.13.tar.xz
-tar -xvf Python-2.7.13.tar
+tar -xvJf Python-2.7.13.tar
 
 // 进入解压后的文件夹
 cd Python-2.7.13
