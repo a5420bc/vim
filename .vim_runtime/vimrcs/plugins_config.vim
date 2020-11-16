@@ -1,4 +1,4 @@
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Important:
 "       This requires that you install https://github.com/amix/vimrc !
 "
@@ -24,7 +24,7 @@ let g:bufExplorerDefaultHelp=0
 let g:bufExplorerShowRelativePath=1
 let g:bufExplorerFindActive=1
 let g:bufExplorerSortBy='name'
-map <leader>o :BufExplorer<cr>
+nnoremap <silent> <leader>o :BufExplorer<cr>
 
 
 """"""""""""""""""""""""""""""
@@ -90,9 +90,59 @@ let g:NERDTreeWinPos = "left"
 let NERDTreeShowHidden=0
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let g:NERDTreeWinSize=35
-map <leader>nn :NERDTreeToggle<cr>
+" map <leader>nn :NERDTreeToggle<cr>
+nmap <space>nn :CocCommand explorer --toggle<CR>
 map <leader>nb :NERDTreeFromBookmark<Space>
-map <leader>nf :NERDTreeFind<cr>
+" map <leader>nf :NERDTreeFind<cr>
+nmap <space>nf :CocCommand explorer --focus<CR>
+
+" 指定coc-setting目录
+ let g:coc_config_home = fnamemodify($MYVIMRC, ':h') . '/.vim_runtime/config/' 
+
+
+" 指定安装插件
+let g:coc_global_extensions = ['coc-json', 'coc-floaterm', 'coc-explorer', 'coc-phpls', 'coc-json', 'coc-go']
+
+let g:coc_explorer_global_presets = {
+\   '.vim': {
+\     'root-uri': '~/.vim',
+\   },
+\   'tab': {
+\     'position': 'tab',
+\     'quit-on-open': v:true,
+\   },
+\   'floating': {
+\     'position': 'floating',
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'floatingTop': {
+\     'position': 'floating',
+\     'floating-position': 'center-top',
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'floatingLeftside': {
+\     'position': 'floating',
+\     'floating-position': 'left-center',
+\     'floating-width': 50,
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'floatingRightside': {
+\     'position': 'floating',
+\     'floating-position': 'right-center',
+\     'floating-width': 50,
+\     'open-action-strategy': 'sourceWindow',
+\   },
+\   'simplify': {
+\     'file-child-template': '[selection | clip | 1] [indent][icon | 1] [filename omitCenter 1]'
+\   }
+\ }
+
+" Use preset argument to open it
+nmap <space>ed :CocCommand explorer --preset .vim<CR>
+nmap <space>ef :CocCommand explorer --preset floating<CR>
+
+" List all presets
+nmap <space>el :CocList explPresets
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -207,7 +257,9 @@ call neomake#configure#automake('w')
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " TagBar
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-map <leader>tt :TagbarToggle<CR>
+" 取消bufexplorer的映射
+let g:bufExplorerDisableDefaultKeyMapping=1
+map <leader>bt :TagbarToggle<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ctags
@@ -378,7 +430,7 @@ let g:Lf_UseMemoryCache = 0
 let g:Lf_WindowPosition = 'popup'
 let g:Lf_PreviewInPopup = 1
 let g:Lf_StlSeparator = { 'left': "\ue0b0", 'right': "\ue0b2", 'font': "DejaVu Sans Mono for Powerline" }
-let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 }
+let g:Lf_PreviewResult = {'Function': 0, 'BufTag': 0 , 'floaterm': 1}
 
 let g:Lf_RgConfig = [
         \ "--max-columns=150",
@@ -456,3 +508,18 @@ au FileType php nnoremap <Leader>rs :call PhpCreateSettersAndGetters()<CR>
 au FileType php nnoremap <Leader>rcg :call PhpCreateGetters()<CR>
 " 调用phpDoc生成注释
 au FileType php nnoremap <Leader>ra :call PhpDocAll()<CR>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-floaterm
+" """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nnoremap   <silent>   <leader>tc    :FloatermNew<CR>
+tnoremap   <silent>   <leader>tc   <C-\><C-n>:FloatermNew<CR>
+nnoremap   <silent>   <leader>tp    :FloatermPrev<CR>
+tnoremap   <silent>   <leader>tp    <C-\><C-n>:FloatermPrev<CR>
+nnoremap   <silent>   <leader>tn    :FloatermNext<CR>
+tnoremap   <silent>   <leader>tn    <C-\><C-n>:FloatermNext<CR>
+nnoremap   <silent>   <leader>tt   :FloatermToggle<CR>
+nnoremap   <silent>   <leader>tk   :FloatermKill!<CR>
+nnoremap   <silent>   <leader>tl   :CocList floaterm<CR>
+" 如果以其他键开头会卡
+tnoremap   <silent>   <leader>tt   <C-\><C-n>:FloatermToggle<CR>
