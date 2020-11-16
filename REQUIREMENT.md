@@ -20,6 +20,18 @@ make install
 yum install xz
 ```
 
+### python3
+```
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz
+tar -xzvf Python-3.7.0.tgz
+yum install -y libffi-devel
+ cd Python-3.7.0
+./configure --prefix=/usr/local/python3
+make
+make install
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+```
+
 ### ctags
 
 yum install ctags
