@@ -1,0 +1,21 @@
+{
+    "explorer.icon.enableNerdfont": true,
+    "explorer.previewAction.onHover":false,
+    "explorer.file.showHiddenFiles":true,
+    "languageserver": {
+        "golang": {
+            "command": "gopls",
+            "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/", ".root"],
+            "disableWorkspaceFolders": true,
+            "filetypes": ["go"]
+        },
+        "intelephense": {
+               "command": "intelephense",
+               "args": ["--stdio"],
+               "filetypes": ["php"],
+               "initializationOptions": {
+                  "storagePath": "/tmp/intelephense"
+               }
+         }
+   }
+}
