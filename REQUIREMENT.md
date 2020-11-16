@@ -25,10 +25,8 @@ yum install xz
 yum install ctags
 
 #### universal-ctags\[ctags的git维护版本\]
-
-从镜像地址下载https://hub.fastgit.org/universal-ctags/ctags
-
 ```
+https://hub.fastgit.org/universal-ctags/ctags
 cd YOUR_PATH/ctags
 ./autogen.sh
 ./configure --prefix=YOUR_BIN_PATH
@@ -49,8 +47,9 @@ export PAHT="$PATH:/usr/local/ctags/bin"
 
 ````
 wget https://npm.taobao.org/mirrors/node/v10.13.0/node-v10.13.0-linux-x64.tar.gz
-tar -zxcv node-v10.13.0-linux-x64.tar.gz
+tar zxvf node-v10.13.0-linux-x64.tar.gz
 mv node-v10.13.0-linux-x64 nodejs
+#bashrc或者profile中加入
 export $PATH="$PATH:{YOUR-PAHT}/nodejs/bin"
 ````
 
@@ -85,7 +84,7 @@ sudo npm install yarn -g
 
 #### 下载 VIM 源码包
 
-    # git clone https://github.com/vim/vim.git
+    # git clone https://hub.fastgit.org/vim/vim.git
 
 #### 编译安装 VIM
 
@@ -99,7 +98,6 @@ sudo npm install yarn -g
      --enable-fail-if-missing \
      --enable-multibyte \
      --enable-cscope \
-     --enable-luainterp \
      --enable-pythoninterp \
      --disable-netbeans \
      --enable-gui=no
@@ -116,6 +114,10 @@ sudo npm install yarn -g
 ```
 --enable-python3interp=dynamic \
 --with-python3-config-dir=/usr/lib/python3.7/config \
+```
+* 如需lua支持加上
+```
+ --enable-luainterp \
 ```
 
 * 现在可以通过 `vim --version` 看到 `+lua` 和 `+python` 字样，表示成功。
