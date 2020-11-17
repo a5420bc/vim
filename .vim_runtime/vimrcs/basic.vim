@@ -43,6 +43,10 @@ set nu
 " 支持鼠标操作
 set mouse=a
 
+" 系统剪贴板支持
+set clipboard=unnamed
+set clipboard+=unnamedplus
+
 " Set to auto read when a file is changed from the outside
 set autoread
 au FocusGained,BufEnter * checktime
