@@ -55,6 +55,8 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<leader\>nn | 普通模式 | 打开关闭文件树窗口           |
 | \<leader\>nf | 普通模式 | 定位当前文件在文件树中的位置 |
 
+![coc-explorer][2]
+
 **打开coc-explorer后，当光标在coc-explorer界面上时,可以使用如下操作:**
 
 | 命令   | 模式     | 描述                      |
@@ -75,14 +77,14 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | .      | 普通模式 | 切换隐藏文件              |
 | R      | 普通模式 | 强制刷新                  |
 
-
+![explorer-op][3]
 
 
 ### 缓冲区浏览
 
 本项目使用[bufexplorer](https://github.com/jlanzarotta/bufexplorer)进行缓冲区管理(vim默认会将打开的文件放入buffer中，类似于一般IDE的tab页卡)
 
-使用**\<leader\>o**打开bufferexplorer界面
+使用 **\<leader\>o** 打开bufferexplorer界面
 
 | 命令 | 模式                              | 描述                                      |
 | ---- | --------------------------------- | ----------------------------------------- |
@@ -134,7 +136,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<C-Down\> | 搜索窗口[预览] | 向下移动预览窗口 |
 | \<Ctrl-F\>         | 搜索窗口 | 全路径匹配和名称匹配切换                        |
 
-
+![bufexplorer][4]
 
 ### 代码注释
 
@@ -199,6 +201,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 
 [1]: https://github.com/a5420bc/images/blob/main/vim/split.gif
-[2]: https://github.com/a5420bc/images/blob/main/vim/record.gif
+[2]: https://github.com/a5420bc/images/blob/main/vim/open_explorer.gif
+[3]:https://github.com/a5420bc/images/blob/main/vim/explorer_op.gif
+[4]:https://github.com/a5420bc/images/blob/main/vim/bufexplorer.gif
 
-[3]:https://github.com/a5420bc/images/blob/main/vim/nerdtree_operate.png
