@@ -97,8 +97,7 @@ map <leader>nb :NERDTreeFromBookmark<Space>
 nmap <space>nf :CocCommand explorer --focus<CR>
 
 " 指定coc-setting目录
- let g:coc_config_home = fnamemodify($MYVIMRC, ':h') . '/.vim_runtime/config/' 
-
+let g:coc_config_home = $HOME .'/vim/.vim_runtime/config/' 
 
 " 指定安装插件
 let g:coc_global_extensions = ['coc-json', 'coc-floaterm', 'coc-explorer', 'coc-phpls', 'coc-json', 'coc-go']
@@ -176,18 +175,23 @@ let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ 'active': {
       \   'left': [ ['mode', 'paste'],
-      \             ['fugitive', 'readonly', 'filename', 'modified', 'absolutepath'] ],
-      \   'right': [ [ 'lineinfo' ], ['percent'] ]
+      \             ['cocstatus', 'fugitive', 'readonly', 'filename', 'modified', 'absolutepath'] ],
+      \   'right': [ [ 'lineinfo' ], ['percent'], ['fileformat', 'fileencoding', 'filetype']]
       \ },
       \ 'component': {
       \   'readonly': '%{&filetype=="help"?"":&readonly?"🔒":""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \   'fugitive': '%{exists("*FugitiveHead")?FugitiveHead():""}'
+      \   'fugitive': '%{exists("*FugitiveHead")?FugitiveHead():""}',
+      \   'relativepath': '%f',
+      \   'absolutepath': '%F'
       \ },
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
       \   'fugitive': '(exists("*FugitiveHead") && ""!=FugitiveHead())'
+      \ },
+      \ 'component_function': {
+      \   'cocstatus': 'coc#status'
       \ },
       \ 'separator': { 'left': ' ', 'right': ' ' },
       \ 'subseparator': { 'left': ' ', 'right': ' ' }
@@ -523,3 +527,8 @@ nnoremap   <silent>   <leader>tk   :FloatermKill!<CR>
 nnoremap   <silent>   <leader>tl   :CocList floaterm<CR>
 " 如果以其他键开头会卡
 tnoremap   <silent>   <leader>tt   <C-\><C-n>:FloatermToggle<CR>
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vimspector
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:vimspector_enable_mappings = 'HUMAN'
