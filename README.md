@@ -6,8 +6,6 @@
 * coc.nvim
 * vim8
 * rg
-* coc-go
-* coc-phpls
 
 参考[依赖安装](REQUIREMENT.md)
 
@@ -24,13 +22,15 @@ git clone https://hub.fastgit.org/a5420bc/vim
 
 VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader\>为"\<space\>"
 
-| 按键      | 说明       |
+| 按键      | 文中表示   |
 | --------- | ---------- |
 | vim前缀键 | \<leader\> |
 | Ctrl      | \<C\>      |
 | 空格      | \<space\>  |
+| 回车      | \<CR\>     |
+| 退格      | \<BS\>     |
 
-**如果项目非svn文件或git文件,需要在项目根目录中新建.root文件标记项目根目录**
+**部分功能需要项目根目录表示，如果项目非svn文件或git文件,需要在项目根目录中新建.root文件标记项目根目录**
 
 ## 功能
 
@@ -48,67 +48,34 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 ### 目录树导航
 
-本项目使用[nerdtree](https://github.com/preservim/nerdtree)进行文件树管理
+本项目使用[coc-explorer](https://github.com/weirongxu/coc-explorer)进行文件树管理
 
 | 命令         | 模式     | 描述                         |
 | ------------ | -------- | ---------------------------- |
 | \<leader\>nn | 普通模式 | 打开关闭文件树窗口           |
 | \<leader\>nf | 普通模式 | 定位当前文件在文件树中的位置 |
 
-**打开nerdtree后，当光标在nerdtree界面上时,可以使用如下操作:**
+**打开coc-explorer后，当光标在coc-explorer界面上时,可以使用如下操作:**
 
-| 命令 | 模式     | 描述             |
-| ---- | -------- | ---------------- |
-| j,k  | 普通模式 | 浏览当前文件树   |
-| q    | 普通模式 | 退出文件树窗口   |
-| ？   | 普通模式 | 查看帮助         |
-| m    | 普通模式 | 进入文件管理模式 |
+| 命令   | 模式     | 描述                      |
+| ------ | -------- | ------------------------- |
+| j,k    | 普通模式 | 浏览当前文件树            |
+| q      | 普通模式 | 退出文件树窗口            |
+| ？     | 普通模式 | 查看帮助                  |
+| c      | 普通模式 | 进入文件管理模式          |
+| o      | 普通模式 | 打开/折叠节点             |
+| \<CR\> | 普通模式 | 打开/折叠节点或者打开文件 |
+| s      | 普通模式 | 水平打开文件              |
+| E      | 普通模式 | 垂直打开文件              |
+| \<BS\> | 普通模式 | 回到上级目录              |
+| c      | 普通模式 | 标记拷贝文件              |
+| x      | 普通模式 | 剪切文件/目录             |
+| p      | 普通模式 | 粘贴文件/目录             |
+| r      | 普通模式 | 重命名                    |
+| .      | 普通模式 | 切换隐藏文件              |
+| R      | 普通模式 | 强制刷新                  |
 
-![nerdtree-basic][2]
 
-**当按下m时会出现选择界面如下:**
-
-![nerdtree-file][3]
-
-
-
-
-
-| 按键      | 描述                                          | 提供者                      |
-| --------- | --------------------------------------------- | --------------------------- |
-| j         | 下一个                                        | coc-explorer/nerdtree/defx  |
-| k         | 上一个                                        | coc-explorer/nerdtree/defx  |
-| h         | 收起目录或跳到上级目录                        | coc-explorer/nerdtree/defx  |
-| l         | 展开目录/打开文件                             | coc-explorer/nerdtree/defx  |
-| H         | 递归收起目录                                  | coc-explorer                |
-| L         | 递归打开目录                                  | coc-explorer/nerdtree/defx  |
-| J         | 跳到下一个可以展开的地方                      | coc-explorer/               |
-| K         | 跳到上一个可以展开的地方                      | coc-explorer/               |
-| enter     | 进入目录并切换工作目录为进入的目录            | coc-explorer/nerdtree/defx/ |
-| backspace | 跳到上一级目并切换工作目录为切换的目录        | coc-explorer/nerdtree/defx/ |
-| r         | 刷新目录                                      | coc-explorer/nerdtree/defx/ |
-| v         | 选中/取消选中，并向下移动                     | coc-explorer/defx/          |
-| V         | 选中/取消选中，并向上移动                     | coc-explorer/defx/          |
-| *         | 选中/取消选中                                 | coc-explorer/defx/          |
-| w         | 水平打开                                      | coc-explorer/nerdtree/defx/ |
-| W         | 垂直打开                                      | coc-explorer/nerdtree/defx/ |
-| t         | 新tab中打开                                   | coc-explorer/nerdtree/defx/ |
-|           |                                               |                             |
-| dd        | 剪切文件                                      | coc-explorer/defx/          |
-| Y         | 复制文件                                      | coc-explorer/defx/          |
-| D         | 删除文件                                      | coc-explorer/defx/          |
-| P         | 粘贴文件                                      | coc-explorer/defx/          |
-| R         | 重命名文件                                    | coc-explorer/defx/          |
-| N         | 添加文件或者目录，如果最后有`/`则表示添加目录 | coc-explorer/defx/          |
-| yp        | 复制文件路径                                  | coc-explorer/defx/          |
-| yn        | 复制文件名称                                  | coc-explorer/               |
-| .         | 显示/关闭隐藏文件                             | coc-explorer/nerdtree/defx/ |
-|           |                                               | coc-explorer/nerdtree/defx/ |
-| x         | 使用系统默认应用打开文件                      | coc-explorer/defx/          |
-| f         | 搜索文件                                      | coc-explorer                |
-| F         | 递归搜索文件                                  | coc-explorer                |
-|           |                                               |                             |
-| <leader>f | 悬浮或者在当前窗口打开                        | coc-explorer/defx/          |
 
 
 ### 缓冲区浏览
@@ -149,23 +116,23 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | 命令               | 模式     | 功能                                            |
 | ------------------ | -------- | ----------------------------------------------- |
 | \<ESC\><br>\<C-C\> | 搜索窗口 | quit from LeaderF                               |
-| \<Ctrl-R\>         | 搜索窗口 | 模糊搜索模式和正则模式切换                      |
-| \<Ctrl-F\>         | 搜索窗口 | 全路径匹配和名称匹配切换                        |
 | \<Tab\>            | 搜索窗口 | 浏览模式和输入模式切换                          |
-| \<C-V><br/>\<S-Insert\> | 搜索窗口 | paste from clipboard                            |
-| \<C-U>        | 搜索窗口[输入模式] | 清除输入                        |
 | \<C-J>         | 搜索窗口[输入模式] | 向下移动 |
 | \<C-K>          | 搜索窗口[输入模式] | 向上移动 |
+| \<C-U>        | 搜索窗口[输入模式] | 清除输入                        |
 | \<Up\><br/>\<Down\> | 搜索窗口 | 查看搜索历史 |
 | \<C-X> | 搜索窗口 | 水平打开 |
 | \<C-]> | 搜索窗口 | 垂直打开 |
-| \<F5\> | 搜索窗口 | 刷新缓存 |
 | \<BS\> | 搜索窗口[输入模式] | 删除字符 |
 | j | 搜索窗口[普通模式] | 向下移动 |
 | k | 搜索窗口[普通模式] | 向上移动 |
 | \<Ctrl-P\> | 搜索窗口 | 预览结果 |
+| \<Ctrl-R\>         | 搜索窗口 | 模糊搜索模式和正则模式切换                      |
+| \<C-V><br/>\<S-Insert\> | 搜索窗口 | paste from clipboard                            |
+| \<F5\> | 搜索窗口 | 刷新缓存 |
 | \<C-Up\> | 搜索窗口[预览] | 向上移动预览窗口 |
 | \<C-Down\> | 搜索窗口[预览] | 向下移动预览窗口 |
+| \<Ctrl-F\>         | 搜索窗口 | 全路径匹配和名称匹配切换                        |
 
 
 
@@ -214,6 +181,10 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<leader\>rn | 普通模式 | 重命名[go支持全部重命名，php该命令只支持local variable] |
 
 **php重构更多操作请按下\<leader\>r查看**
+
+
+
+### 代码调试
 
 
 
