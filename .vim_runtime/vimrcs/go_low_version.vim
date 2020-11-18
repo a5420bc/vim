@@ -1,8 +1,9 @@
 " GoTo code navigation.
 let g:go_fmt_command = "goimports"
 let g:go_def_mode = 'godef'
-let g:go_imports_autosave = 1
 " 对于低版本需要禁止gopls
+let g:go_referrers_mode = "guru"
+let g:go_imports_autosave = 1
 let g:go_gopls_enabled = 0
 
 " 高亮设置
