@@ -97,10 +97,10 @@ map <leader>nb :NERDTreeFromBookmark<Space>
 nmap <space>nf :CocCommand explorer --focus<CR>
 
 " 指定coc-setting目录
-let g:coc_config_home = $HOME .'/vim/.vim_runtime/config/' 
+let g:coc_config_home = $HOME . '/vim/.vim_runtime/config/' 
 
 " 指定安装插件
-let g:coc_global_extensions = ['coc-json', 'coc-floaterm', 'coc-explorer', 'coc-phpls', 'coc-json', 'coc-go']
+let g:coc_global_extensions = ['coc-json', 'coc-floaterm', 'coc-explorer', 'coc-phpls', 'coc-json']
 
 let g:coc_explorer_global_presets = {
 \   '.vim': {
