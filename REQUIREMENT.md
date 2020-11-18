@@ -5,8 +5,7 @@
 // 下载源码
 wget http://www.python.org/ftp/python/2.7.13/Python-2.7.13.tar.xz
 // 解压文件
-xz -d Python-2.7.13.tar.xz
-tar -xvf Python-2.7.13.tar
+tar -xvJf Python-2.7.13.xz
 
 // 进入解压后的文件夹
 cd Python-2.7.13
@@ -16,16 +15,30 @@ cd Python-2.7.13
 make
 make install
 ```
+如果报错,则需要先安装xz
+```
+yum install xz
+```
+
+### python3
+```
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz
+tar -xzvf Python-3.7.0.tgz
+yum install -y libffi-devel
+ cd Python-3.7.0
+./configure --prefix=/usr/local/python3
+make
+make install
+ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+```
 
 ### ctags
 
 yum install ctags
 
 #### universal-ctags\[ctags的git维护版本\]
-
-从镜像地址下载https://hub.fastgit.org/universal-ctags/ctags
-
 ```
+https://hub.fastgit.org/universal-ctags/ctags
 cd YOUR_PATH/ctags
 ./autogen.sh
 ./configure --prefix=YOUR_BIN_PATH
@@ -46,8 +59,9 @@ export PAHT="$PATH:/usr/local/ctags/bin"
 
 ````
 wget https://npm.taobao.org/mirrors/node/v10.13.0/node-v10.13.0-linux-x64.tar.gz
-tar -zxcv node-v10.13.0-linux-x64.tar.gz
+tar zxvf node-v10.13.0-linux-x64.tar.gz
 mv node-v10.13.0-linux-x64 nodejs
+#bashrc或者profile中加入
 export $PATH="$PATH:{YOUR-PAHT}/nodejs/bin"
 ````
 
@@ -82,7 +96,7 @@ sudo npm install yarn -g
 
 #### 下载 VIM 源码包
 
-    # git clone https://github.com/vim/vim.git
+    # git clone https://hub.fastgit.org/vim/vim.git
 
 #### 编译安装 VIM
 
@@ -96,7 +110,6 @@ sudo npm install yarn -g
      --enable-fail-if-missing \
      --enable-multibyte \
      --enable-cscope \
-     --enable-luainterp \
      --enable-pythoninterp \
      --disable-netbeans \
      --enable-gui=no
@@ -108,11 +121,23 @@ sudo npm install yarn -g
 
 * --prefix制定安装路径，--with-compileby添加编译信息
 
+* vim不能同时支持python2和python3请选择其一
+
+* 需要编译支持python3时需要导入环境变量
+```
+export LDFLAGS="-rdynamic
+```
+> [解释1](https://github.com/vim/vim/issues/3629) [解释2](https://www.cnblogs.com/taowang2016/p/11075620.html)
+
 * 如果需要制定python config路径追加以下内容
 
 ```
 --enable-python3interp=dynamic \
 --with-python3-config-dir=/usr/lib/python3.7/config \
+```
+* 如需lua支持加上
+```
+ --enable-luainterp \
 ```
 
 * 现在可以通过 `vim --version` 看到 `+lua` 和 `+python` 字样，表示成功。
