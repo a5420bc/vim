@@ -513,22 +513,31 @@ au FileType php nnoremap <Leader>rcg :call PhpCreateGetters()<CR>
 " 调用phpDoc生成注释
 au FileType php nnoremap <Leader>ra :call PhpDocAll()<CR>
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" vim-floaterm
-" """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-nnoremap   <silent>   <leader>tc    :FloatermNew<CR>
-tnoremap   <silent>   <leader>tc   <C-\><C-n>:FloatermNew<CR>
-nnoremap   <silent>   <leader>tp    :FloatermPrev<CR>
-tnoremap   <silent>   <leader>tp    <C-\><C-n>:FloatermPrev<CR>
-nnoremap   <silent>   <leader>tn    :FloatermNext<CR>
-tnoremap   <silent>   <leader>tn    <C-\><C-n>:FloatermNext<CR>
-nnoremap   <silent>   <leader>tt   :FloatermToggle<CR>
-nnoremap   <silent>   <leader>tk   :FloatermKill!<CR>
-nnoremap   <silent>   <leader>tl   :CocList floaterm<CR>
-" 如果以其他键开头会卡
-tnoremap   <silent>   <leader>tt   <C-\><C-n>:FloatermToggle<CR>
 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" vimspector
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:vimspector_enable_mappings = 'HUMAN'
+
+" 关闭vim时退出所有的term
+autocmd QuitPre * call <sid>TermForceCloseAll()
+function! s:TermForceCloseAll() abort
+    let term_bufs = filter(range(1, bufnr('$')), 'getbufvar(v:val, "&buftype") == "terminal"')
+    for t in term_bufs
+            execute "bd! " t
+    endfor
+endfunction
+
+nnoremap   <silent>  <M-o>   :FloatermToggle<CR>
+nmap <silent> <M-a> :FloatermNew<cr>
+nnoremap   <silent>  tl   :CocList floaterm<CR>
+nnoremap   <silent>  <M-k>   :FloatermKill!<CR>
+tnoremap <silent> <M-o> <c-\><c-n>:FloatermToggle<cr>
+tnoremap <silent> <M-a> <c-\><c-n>:FloatermNew<CR>
+autocmd QuitPre * :FloatermKill!<CR>
+" 终端回到普通模式
+tnoremap <Esc> <C-W>N
+
+
+augroup vime_floaterm_group
+    autocmd!
+    au FileType floaterm tnoremap <buffer> <silent> <M-h> <c-\><c-n>:FloatermPrev<CR>
+    au FIleType floaterm tnoremap <buffer> <silent> <M-l> <c-\><c-n>:FloatermNext<CR>
+augroup END
+
