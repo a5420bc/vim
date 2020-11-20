@@ -157,7 +157,6 @@ try
 catch
 endtry
 
-"colorscheme peeksea
 
 set background=dark
 
