@@ -347,13 +347,14 @@ let g:startify_lists = [
 let g:startify_session_persistence = 1
 "定义自定义标题
 let g:startify_custom_header = [
-				\ '█████╗ ██╗███╗   ██╗ ██████╗      ██╗██╗███████╗',
-				\ '██╔══██╗██║████╗  ██║██╔════╝      ██║██║██╔════╝',
-				\ '██████╔╝██║██╔██╗ ██║██║  ███╗     ██║██║█████╗ ', 
-				\ '██╔══██╗██║██║╚██╗██║██║   ██║██   ██║██║██╔══╝ ', 
-				\ '██████╔╝██║██║ ╚████║╚██████╔╝╚█████╔╝██║███████╗',
-				\ '╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝  ╚════╝ ╚═╝╚══════╝',
-            \]
+         \ '██╗   ██╗██╗███╗   ███╗██╗██████╗ ███████╗',
+         \ '██║   ██║██║████╗ ████║██║██╔══██╗██╔════╝',
+         \ '██║   ██║██║██╔████╔██║██║██║  ██║█████╗',
+         \ '╚██╗ ██╔╝██║██║╚██╔╝██║██║██║  ██║██╔══╝',
+         \  '╚████╔╝ ██║██║ ╚═╝ ██║██║██████╔╝███████╗',
+         \  ' ╚═══╝  ╚═╝╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝',
+         \]
+
 " 不展示empty buffer 和quit界面
 let g:startify_enable_special = 0
 " 自动加载session
@@ -512,32 +513,4 @@ au FileType php nnoremap <Leader>rs :call PhpCreateSettersAndGetters()<CR>
 au FileType php nnoremap <Leader>rcg :call PhpCreateGetters()<CR>
 " 调用phpDoc生成注释
 au FileType php nnoremap <Leader>ra :call PhpDocAll()<CR>
-
-
-
-" 关闭vim时退出所有的term
-autocmd QuitPre * call <sid>TermForceCloseAll()
-function! s:TermForceCloseAll() abort
-    let term_bufs = filter(range(1, bufnr('$')), 'getbufvar(v:val, "&buftype") == "terminal"')
-    for t in term_bufs
-            execute "bd! " t
-    endfor
-endfunction
-
-nnoremap   <silent>  <M-o>   :FloatermToggle<CR>
-nmap <silent> <M-a> :FloatermNew<cr>
-nnoremap   <silent>  tl   :CocList floaterm<CR>
-nnoremap   <silent>  <M-k>   :FloatermKill!<CR>
-tnoremap <silent> <M-o> <c-\><c-n>:FloatermToggle<cr>
-tnoremap <silent> <M-a> <c-\><c-n>:FloatermNew<CR>
-autocmd QuitPre * :FloatermKill!<CR>
-" 终端回到普通模式
-tnoremap <Esc> <C-W>N
-
-
-augroup vime_floaterm_group
-    autocmd!
-    au FileType floaterm tnoremap <buffer> <silent> <M-h> <c-\><c-n>:FloatermPrev<CR>
-    au FIleType floaterm tnoremap <buffer> <silent> <M-l> <c-\><c-n>:FloatermNext<CR>
-augroup END
 

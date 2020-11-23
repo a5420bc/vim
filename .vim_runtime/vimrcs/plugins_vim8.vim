@@ -1,4 +1,40 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-terminal-help && floaterm
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 关闭vim时退出所有的term
+autocmd QuitPre * call <sid>TermForceCloseAll()
+function! s:TermForceCloseAll() abort
+    let term_bufs = filter(range(1, bufnr('$')), 'getbufvar(v:val, "&buftype") == "terminal"')
+    for t in term_bufs
+            execute "bd! " t
+    endfor
+endfunction
+
+" 加强一下关闭退出行为
+autocmd QuitPre * :FloatermKill!<CR>
+
+" 设置快捷键
+nnoremap   <silent>  <M-o>   :FloatermToggle<CR>
+tnoremap <silent> <M-o> <c-\><c-n>:FloatermToggle<cr>
+nmap <silent> <M-a> :FloatermNew<cr>
+nnoremap   <silent>  tl   :CocList floaterm<CR>
+nnoremap   <silent>  <M-k>   :FloatermKill!<CR>
+tnoremap <silent> <M-a> <c-\><c-n>:FloatermNew<CR>
+
+augroup vime_floaterm_group
+    autocmd!
+    au FileType floaterm tnoremap <buffer> <silent> <M-h> <c-\><c-n>:FloatermPrev<CR>
+    au FIleType floaterm tnoremap <buffer> <silent> <M-l> <c-\><c-n>:FloatermNext<CR>
+augroup END
+
+" 默认terminal以preview的形式
+let g:floaterm_wintype = "normal"
+let g:floaterm_height = 0.25
+
+" 禁止vim-terminal-help默认快捷键
+let g:terminal_default_mapping=0
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vimspector
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:vimspector_enable_mappings = 'HUMAN'
@@ -190,17 +226,7 @@ autocmd BufAdd * if getfsize(expand('<afile>')) > 1024*1024 |
 let g:coc_enable_locationlist = 0 
 autocmd User CocLocationsChange	CocList --normal location
 
-let g:lightline = {
-            \ 'colorscheme': 'wombat',
-            \ 'active': {
-            \   'left': [ [ 'mode', 'paste' ],
-            \             [ 'cocstatus', 'readonly', 'filename', 'modified' ] ]
-            \ },
-            \ 'component_function': {
-            \   'cocstatus': 'coc#status'
-            \ },
-            \ }
-
+" 支持cocstatus
 autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -215,6 +241,8 @@ nnoremap <silent> g :<c-u>WhichKey 'g'<CR>
 
 " 匹配不到退回默认映射操作
 let g:which_key_fallback_to_native_key=1
+" 解决会默认多出一行的bug
+nnoremap gg 1G
 
 " Define prefix dictionary
 let g:which_key_map =  {}
