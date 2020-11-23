@@ -14,12 +14,18 @@ endfunction
 autocmd QuitPre * :FloatermKill!<CR>
 
 " 设置快捷键
+" terminal开关
 nnoremap   <silent>  <M-o>   :FloatermToggle<CR>
 tnoremap <silent> <M-o> <c-\><c-n>:FloatermToggle<cr>
+" 新建窗口
 nmap <silent> <M-a> :FloatermNew<cr>
-nnoremap   <silent>  tl   :CocList floaterm<CR>
-nnoremap   <silent>  <M-k>   :FloatermKill!<CR>
 tnoremap <silent> <M-a> <c-\><c-n>:FloatermNew<CR>
+" 列出当前所有term
+nnoremap   <silent>  tl   :CocList floaterm<CR>
+" 强制关闭所有term
+nnoremap   <silent>  <M-k>   :FloatermKill!<CR>
+" 退出term插入模式
+tnoremap <silent> <M-q> <c-\><c-n>
 
 augroup vime_floaterm_group
     autocmd!
