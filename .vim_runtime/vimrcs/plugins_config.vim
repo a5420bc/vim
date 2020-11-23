@@ -480,10 +480,8 @@ noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 let g:gitgutter_enabled = 1
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" vim-nerdtree-sync
+" vim-php-refactoring
 " """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:nerdtree_sync_cursorline = 1
-
 let g:vim_php_refactoring_use_default_mapping = 0
 
 " 取消coc占用的映射
