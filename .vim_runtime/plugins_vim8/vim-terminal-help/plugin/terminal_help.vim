@@ -386,7 +386,7 @@ if has('nvim') == 0 && has('gui_running') == 0
 	if $TMUX != ''
 		set ttimeoutlen=35
 	elseif &ttimeoutlen > 80 || &ttimeoutlen <= 0
-		set ttimeoutlen=85
+		set ttimeoutlen=50
 	endif
 	function! s:meta_code(key)
 		if get(g:, 'terminal_skip_key_init', 0) == 0
