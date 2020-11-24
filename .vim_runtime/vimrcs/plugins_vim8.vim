@@ -329,7 +329,7 @@ let g:which_key_map.t = {
 " 文件数配置
 let g:which_key_map.n = {
             \ "name":'+文件树导航',
-            \ "f": '定位当前文件所在位置'
+            \ "f": '定位当前文件所在位置',
             \ "n": '文件数开关',
             \ }
 
@@ -346,7 +346,7 @@ let g:prefix_g_map = {
             \ "i": '跳到implement',
             \ "r": '跳到引用',
             \ "tj": 'go文件添加json的tag',
-            \ "tx": '清除tag'
+            \ "tx": '清除tag',
             \ "ty": 'go文件添加yaml的tag',
             \ "y": '跳到类型定义',
             \ }
