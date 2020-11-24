@@ -171,7 +171,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<C-C>    | 普通模式 | 取消补全           |
 | \<CR\>    | 普通模式 | 确认补全           |
 
-[code_complete](5)
+![code_complete](5)
 
 
 
@@ -186,7 +186,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 **php重构更多操作请按下\<leader\>r查看**
 
-[rename](6)
+![rename](6)
 
 
 
