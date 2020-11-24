@@ -192,9 +192,19 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 ### 终端窗口
 
+| 命令      | 模式                  | 功能       |
+| --------- | --------------------- | ---------- |
+| \<Alt-o\> | 普通模式/terminal模式 | 打开终端   |
+| \<Alt-a\> | 普通模式/terminal模式 | 新增终端   |
+| \<Alt-h\> | 普通模式/terminal模式 | 前一个终端 |
+| \<Alt-a\> | 普通模式/terminal模式 | 后一个终端 |
+| tl        | 普通模式              | 列出终端   |
+
 
 
 ### 代码调试
+
+**TODO**
 
 
 
@@ -213,6 +223,6 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 [3]:https://github.com/a5420bc/images/blob/main/vim/explorer_op.gif
 [4]:https://github.com/a5420bc/images/blob/main/vim/bufexplorer.gif
 
-[ 5 ]: https://github.com/a5420bc/images/blob/main/vim/code_complete.gif
-[ 6 ]: https://github.com/a5420bc/images/blob/main/vim/rename.gif
+[5]: https://github.com/a5420bc/images/blob/main/vim/code_complete.gif
+[6]: https://github.com/a5420bc/images/blob/main/vim/rename.gif
 
