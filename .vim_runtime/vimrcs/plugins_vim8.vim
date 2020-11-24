@@ -241,9 +241,11 @@ autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 set timeoutlen=500
 call which_key#register('<space>', "g:which_key_map")
 call which_key#register('g', "g:prefix_g_map")
+call which_key#register('visual', "g:prefix_visual_space_map")
 
 nnoremap <silent> <leader> :<c-u>WhichKey '<space>'<CR>
 nnoremap <silent> g :<c-u>WhichKey 'g'<CR>
+vnoremap <silent> <leader> :<c-u>WhichKeyVisual 'visual'<CR>
 
 " 匹配不到退回默认映射操作
 let g:which_key_fallback_to_native_key=1
@@ -253,6 +255,7 @@ nnoremap gg 1G
 " Define prefix dictionary
 let g:which_key_map =  {}
 let g:prefix_g_map = {}
+let g:prefix_visual_space_map = {}
 
 let g:which_key_map = {
             \ "name":'+快捷键说明',
@@ -283,52 +286,51 @@ let g:which_key_map = {
 " 搜索功能
 let g:which_key_map.f = {
             \ "name":'+搜索功能',
-            \ "f": '搜索文件',
             \ "a": '搜索关键字',
-            \ "s": '正则搜索关键字',
-            \ "w": '正则搜索当前缓冲区关键字',
-            \ "c": '搜索方法',
             \ "b": '搜索buffer',
-            \ "m": '搜索mru',
-            \ "t": '搜索打开buf的tag',
-            \ "l": '搜索当前行',
-            \ "g": '重新打开搜索界面',
-            \ "r": '查找引用',
+            \ "c": '搜索方法',
             \ "d": '查找定义',
-            \ "o": '重新打开查找界面',
+            \ "f": '搜索文件',
+            \ "g": '重新打开搜索界面',
+            \ "l": '搜索当前行',
+            \ "m": '搜索mru',
             \ "n": '查看下一项',
+            \ "r": '查找引用',
+            \ "s": '正则搜索关键字',
+            \ "t": '搜索打开buf的tag',
+            \ "o": '重新打开查找界面',
+            \ "w": '正则搜索当前缓冲区关键字',
             \ "p": '查看上一项'
             \ } 
 
 let g:which_key_map.r = {
             \ "name":'+代码重构',
-            \ "n": '重命名',
+            \ "a": '生成php注释',
             \ "c": '重命名类属性',
             \ "cp": '创建属性',
             \ "m": '重命名方法',
+            \ "n": '重命名',
             \ "p": '提取类属性',
             \ "s": '生成setter和getter',
             \ "u": '提取类use前缀',
-            \ "a": '生成php注释',
             \ } 
 
 let g:which_key_map.t = {
             \ "name":'+tab操作',
             \ " ": '切换到下一个tab',
+            \ "e": '当前文件路径[你自己试一下吧~]',
+            \ "l": '移动到最后一个tab',
             \ "m": '移动到指定tab',
             \ "n": '新建tab',
             \ "o": '关闭除当前tab的所有tab',
             \ "t": 'tagbar开关',
-            \ "l": '移动到最后一个tab',
-            \ "e": '当前文件路径[你自己试一下吧~]',
             \ } 
 
 " 文件数配置
 let g:which_key_map.n = {
             \ "name":'+文件树导航',
-            \ "n": '文件数开关',
-            \ "b": '打开书签',
             \ "f": '定位当前文件所在位置'
+            \ "n": '文件数开关',
             \ }
 
 " 暂不定义
@@ -336,15 +338,22 @@ let g:which_key_map.h = {"name": "git差异[基本不用]"}
 
 let g:prefix_g_map = {
             \ "name":'+g前缀操作',
+            \ "a": '切换测试文件和代码文件',
             \ "c": '选择模式注释',
             \ "cc": '注释',
             \ "d": '跳到定义',
-            \ "a": '切换测试文件和代码文件',
             \ "f": '跳到文件',
             \ "i": '跳到implement',
             \ "r": '跳到引用',
-            \ "y": '跳到类型定义',
             \ "tj": 'go文件添加json的tag',
-            \ "ty": 'go文件添加yaml的tag',
             \ "tx": '清除tag'
+            \ "ty": 'go文件添加yaml的tag',
+            \ "y": '跳到类型定义',
             \ }
+
+let g:prefix_visual_space_map = {"name":"选择模式"}
+let g:prefix_visual_space_map.r = {
+            \"name":"代码重构",
+            \"c":["rc", '提取常量'],
+            \"m":["rm", '提取方法']
+            \}
