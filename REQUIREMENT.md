@@ -1,5 +1,5 @@
 ## 依赖安装
-### python2.7
+### python2.7[vim8不需要安装留着做记录]
 
 ```
 // 下载源码
@@ -19,17 +19,23 @@ make install
 ```
 yum install xz
 ```
+## libevent[python3需要libevent]
+
+```shell
+wget http://repo.okay.com.mx/centos/6/x86_64/release/libevent2-2.0.21-1.el6.x86_64.rpm
+rpm -Uvh libevent*rpm
+yum install libevent2
+```
 
 ### python3
-```
-wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz
-tar -xzvf Python-3.7.0.tgz
-yum install -y libffi-devel
- cd Python-3.7.0
-./configure --prefix=/usr/local/python3
-make
-make install
-ln -s /usr/local/python3/bin/python3 /usr/bin/python3
+```shell
+yum install epel-release
+
+curl 'https://setup.ius.io/' -o setup-ius.sh
+
+sh setup-ius.sh
+
+yum install python36-devel
 ```
 
 ### ctags
@@ -55,6 +61,8 @@ export PAHT="$PATH:/usr/local/ctags/bin"
 
 ### coc.nvim\[支持lsp的代码补全插件\]
 
+1. 安装node
+
 方法一:
 
 ````
@@ -74,6 +82,10 @@ curl -sL install-node.now.sh | sh
 ```
 
 需要注意，安装后可能二进制文件不在/usr/bin中，需要export path，查看一下安装信息确认到底安装哪, 确保直接输入nodejs能够运行
+
+-------
+
+2. 安装yarn
 
 yarn安装
 
@@ -103,16 +115,21 @@ sudo npm install yarn -g
 这里需要注意的是通过开启 `lua` 和 `python` 的支持, 来使用 lua 和 python 开发的插件。
 如：[gundo], [YouCompleteMe] 等需要 python 支持, [neocomplete] 需要 lua 的支持。
 
-    # cd vim/
-    # ./configure --prefix=/usr \
+     yum install perl-ExtUtils-Embed ncurses-devel libX11 libX11-devel \
+     libXtst-devel libXtst libXt-devel libXt libSM-devel libSM \
+     libXpm libXpm-devel
+     
+     cd vim/
+     
+     ./configure --prefix=/usr \
      --with-compiledby="bingjie" \
      --with-features=huge \
      --enable-fail-if-missing \
      --enable-multibyte \
      --enable-cscope \
-     --enable-pythoninterp \
+     --enable-python3interp \
      --disable-netbeans \
-     --enable-gui=no
+     --enable-gui=no \
     
     make -j4
     make install
@@ -125,7 +142,7 @@ sudo npm install yarn -g
 
 * 需要编译支持python3时需要导入环境变量
 ```
-export LDFLAGS="-rdynamic
+export LDFLAGS="-rdynamic"
 ```
 > [解释1](https://github.com/vim/vim/issues/3629) [解释2](https://www.cnblogs.com/taowang2016/p/11075620.html)
 
@@ -197,7 +214,7 @@ export GOPROXY="https://goproxy.io",direct
 export GO111MODULE=auto
 ```
 
-### coc-go\[支持go语言\]
+### coc-go\[支持go语言默认安装\]
 
 * 如果版本在go 1.11以下，那么只能使用vim-go
 
@@ -230,7 +247,7 @@ export GO111MODULE=auto
   }
   ```
 
-### coc-phpls\[支持php\]  
+### coc-phpls\[支持php默认安装\]  
 
    安装
 
@@ -284,3 +301,12 @@ export GO111MODULE=auto
    ```
 
    其他的lsp安装可以参考[coc-lsp](https://hub.fastgit.org/neoclide/coc.nvim/wiki/Language-servers)
+
+### tmux[低版本不支持真彩色]
+
+```shell
+wget https://packages.endpoint.com/rhel/6/os/x86_64/endpoint-repo-1.6-2.x86_64.rpm
+rpm -Uvh endpoint-*rpm
+yum install tmux 
+```
+

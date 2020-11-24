@@ -171,6 +171,8 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<C-C>    | 普通模式 | 取消补全           |
 | \<CR\>    | 普通模式 | 确认补全           |
 
+[code_complete](5)
+
 
 
 ### 代码重构
@@ -183,6 +185,12 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<leader\>rn | 普通模式 | 重命名[go支持全部重命名，php该命令只支持local variable] |
 
 **php重构更多操作请按下\<leader\>r查看**
+
+[rename](6)
+
+
+
+### 终端窗口
 
 
 
@@ -204,4 +212,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 [2]: https://github.com/a5420bc/images/blob/main/vim/open_explorer.gif
 [3]:https://github.com/a5420bc/images/blob/main/vim/explorer_op.gif
 [4]:https://github.com/a5420bc/images/blob/main/vim/bufexplorer.gif
+
+[ 5 ]: https://github.com/a5420bc/images/blob/main/vim/code_complete.gif
+[ 6 ]: https://github.com/a5420bc/images/blob/main/vim/rename.gif
 
