@@ -96,6 +96,8 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | V    | 普通模式\[打开bufferexplorer界面] | 水平分割当前窗口,且选中项目在当前文件左侧 |
 | q    | 普通模式\[打开bufferexplorer界面] | 退出缓冲区浏览列表                        |
 
+![bufexplorer][4]
+
 
 
 ### 文本搜索
@@ -136,7 +138,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<C-Down\> | 搜索窗口[预览] | 向下移动预览窗口 |
 | \<Ctrl-F\>         | 搜索窗口 | 全路径匹配和名称匹配切换                        |
 
-![bufexplorer][4]
+
 
 ### 代码注释
 
@@ -171,7 +173,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<C-C>    | 普通模式 | 取消补全           |
 | \<CR\>    | 普通模式 | 确认补全           |
 
-![code_complete](5)
+![code_complete][5]
 
 
 
@@ -186,7 +188,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 **php重构更多操作请按下\<leader\>r查看**
 
-![rename](6)
+![rename][6]
 
 
 
@@ -200,9 +202,23 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<Alt-a\> | 普通模式/terminal模式 | 后一个终端 |
 | tl        | 普通模式              | 列出终端   |
 
+**注意:由于ALT是通过转义ALT为\<ESC\>实现，当按\<ESC\>和其他按键很快时，会造成错误识别，目前设置为50ms**
+
+**注意:需要配置iterm2的ALT键转义，详细请看[设置ALT](https://garryge.github.io/2018/03/18/mac-iterm2-shortcut-key/index.html)**
+
 
 
 ### 代码调试
+
+代码调试使用[vimspector](https://github.com/puremourning/vimspector)
+
+**TODO**
+
+
+
+### git支持
+
+使用[vim-fugitive](https://github.com/tpope/vim-fugitive)、[vim-gitgutter](https://github.com/airblade/vim-gitgutter)
 
 **TODO**
 
