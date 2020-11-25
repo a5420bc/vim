@@ -410,6 +410,8 @@ au BufEnter * if bufname('#') == '__Tagbar__' && bufname('%') !~ '__Tagbar__' &&
 let g:Lf_HideHelp = 1
 let g:Lf_UseVersionControlTool = 0
 let g:Lf_IgnoreCurrentBufferName = 1
+" 不要使用相对路径，看了也看不明白
+let g:Lf_ShowRelativePath = 0
 " 禁止用缓存保证每次都能看到最新的内容
 let g:Lf_UseCache = 0
 let g:Lf_UseMemoryCache = 0
@@ -426,7 +428,7 @@ let g:Lf_RgConfig = [
 
 let g:Lf_ShortcutF = "<leader>ff"
 let g:Lf_ShortcutB = "<leader>fb"
-noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
+noremap <leader>fb :<C-U><C-R>=printf"Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
