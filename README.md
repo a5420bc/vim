@@ -77,7 +77,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | .      | 普通模式 | 切换隐藏文件              |
 | R      | 普通模式 | 强制刷新                  |
 
-![explorer-op][3]
+
 
 
 ### 缓冲区浏览
@@ -96,7 +96,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | V    | 普通模式\[打开bufferexplorer界面] | 水平分割当前窗口,且选中项目在当前文件左侧 |
 | q    | 普通模式\[打开bufferexplorer界面] | 退出缓冲区浏览列表                        |
 
-![bufexplorer][4]
+![explorer-op][3]
 
 
 
@@ -173,7 +173,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<C-C>    | 普通模式 | 取消补全           |
 | \<CR\>    | 普通模式 | 确认补全           |
 
-![code_complete][5]
+![code_complete][4]
 
 
 
@@ -188,7 +188,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 **php重构更多操作请按下\<leader\>r查看**
 
-![rename][6]
+![rename][5]
 
 
 
@@ -237,8 +237,6 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 [1]: https://github.com/a5420bc/images/blob/main/vim/split.gif
 [2]: https://github.com/a5420bc/images/blob/main/vim/open_explorer.gif
 [3]:https://github.com/a5420bc/images/blob/main/vim/explorer_op.gif
-[4]:https://github.com/a5420bc/images/blob/main/vim/bufexplorer.gif
-
-[5]: https://github.com/a5420bc/images/blob/main/vim/code_complete.gif
-[6]: https://github.com/a5420bc/images/blob/main/vim/rename.gif
+[4]: https://github.com/a5420bc/images/blob/main/vim/code_complete.gif
+[5]: https://github.com/a5420bc/images/blob/main/vim/rename.gif
 

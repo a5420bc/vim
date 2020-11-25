@@ -2,7 +2,7 @@
 " vim-terminal-help && floaterm
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 关闭vim时退出所有的term
-autocmd QuitPre * call <sid>TermForceCloseAll()
+autocmd VimLeave * call <sid>TermForceCloseAll()
 function! s:TermForceCloseAll() abort
     let term_bufs = filter(range(1, bufnr('$')), 'getbufvar(v:val, "&buftype") == "terminal"')
     for t in term_bufs
@@ -11,7 +11,7 @@ function! s:TermForceCloseAll() abort
 endfunction
 
 " 加强一下关闭退出行为
-autocmd QuitPre * :FloatermKill!<CR>
+autocmd VimLeave * :FloatermKill!<CR>
 
 " 设置快捷键
 " terminal开关
@@ -36,6 +36,10 @@ augroup END
 " 默认terminal以preview的形式
 let g:floaterm_wintype = "normal"
 let g:floaterm_height = 0.25
+
+" 默认进入到项目的root目录
+let g:floaterm_rootmarkers = ['.project', '.git', '.hg', '.svn', '.root', '.gitignore']
+
 
 " 禁止vim-terminal-help默认快捷键
 let g:terminal_default_mapping=0

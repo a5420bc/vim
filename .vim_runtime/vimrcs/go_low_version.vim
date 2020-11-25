@@ -5,6 +5,7 @@ let g:go_def_mode = 'godef'
 let g:go_referrers_mode = "guru"
 let g:go_imports_autosave = 1
 let g:go_gopls_enabled = 0
+let g:go_rename_command = "gorename"
 
 " 高亮设置
 let g:go_highlight_build_constraints = 1

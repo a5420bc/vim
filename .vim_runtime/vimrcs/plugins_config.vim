@@ -24,7 +24,10 @@ let g:bufExplorerDefaultHelp=0
 let g:bufExplorerShowRelativePath=1
 let g:bufExplorerFindActive=1
 let g:bufExplorerSortBy='name'
-nnoremap <silent> <leader>o :BufExplorer<cr>
+" nnoremap <silent> <leader>o :BufExplorer<cr>
+let g:bufExplorerDisableDefaultKeyMapping=1
+" 替换bufexplorer为leaderf
+noremap <leader>o :<C-U><C-R>=printf("Leaderf! buffer %s", "")<CR><CR>
 
 
 """"""""""""""""""""""""""""""
@@ -41,26 +44,6 @@ let g:yankstack_yank_keys = ['y', 'd']
 
 nmap <leader>, <Plug>yankstack_substitute_older_paste
 nmap <C-n> <Plug>yankstack_substitute_newer_paste
-
-
-""""""""""""""""""""""""""""""
-" => CTRL-P
-""""""""""""""""""""""""""""""
-" let g:ctrlp_working_path_mode = 0
-
-" Quickly find and open a file in the current working directory
-"let g:ctrlp_map = '<C-f>'
-" map <leader>cj :CtrlP<cr>
-
-" Quickly find and open a buffer
-" map <leader>b :CtrlPBuffer<cr>
-
-" Quickly find and open a recently opened file
-" map <leader>m :CtrlPMRU<CR>
-
-" let g:ctrlp_max_height = 20
-" let g:ctrlp_custom_ignore = 'node_modules\|^\.DS_Store\|^\.git\|^\.coffee'
-
 
 """"""""""""""""""""""""""""""
 " => ZenCoding
@@ -246,28 +229,6 @@ let g:ale_lint_on_enter = 0
 let g:gitgutter_enabled=0
 nnoremap <silent> <leader>d :GitGutterToggle<cr>
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" => xdebug 
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:vdebug_options= {
-    \    "port" : 9091,
-    \    "server" : '',
-    \    "timeout" : 20,
-    \    "on_close" : 'detach',
-    \    "break_on_open" : 0,
-    \    "ide_key" : '',
-    \    "path_maps" : {},
-    \    "debug_window_level" : 0,
-    \    "debug_file_level" : 0,
-    \    "debug_file" : "",
-    \    "watch_window_style" : 'expanded',
-    \    "marker_default" : '⬦',
-    \    "marker_closed_tree" : '▸',
-    \    "marker_open_tree" : '▾'
-    \}
-
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => neomake
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -278,7 +239,7 @@ call neomake#configure#automake('w')
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 取消bufexplorer的映射
 let g:bufExplorerDisableDefaultKeyMapping=1
-map <leader>bt :TagbarToggle<CR>
+map <leader>tt :TagbarToggle<CR>
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " ctags
@@ -390,7 +351,7 @@ let g:startify_session_before_save = [
             \ 'silent! NERDTreeClose'
             \ ]
 
-" 当只剩下taglist和nerdtree窗口时直接退出vim
+" 当只剩下taglist和nerdtree和coc-explorer窗口时直接退出vim
 function! CheckLeftBuffers()
   if tabpagenr('$') == 1
     let i = 1
@@ -399,7 +360,8 @@ function! CheckLeftBuffers()
           \ getbufvar(winbufnr(i), '&buftype') == 'quickfix' ||
           \ exists('t:NERDTreeBufName') &&
           \   bufname(winbufnr(i)) == t:NERDTreeBufName ||
-          \ bufname(winbufnr(i)) == '__Tag_List__'
+          \ bufname(winbufnr(i)) == '__Tag_List__' || 
+          \ bufname(winbufnr(i)) =~ 'coc-explorer'
         let i += 1
       else
         break
@@ -439,6 +401,11 @@ elseif has('python3')
     let g:Lf_PythonVersion = 3
 endif
 
+" 当在coc-explorer页面打开buffer时自动跳动右边的buffer
+au BufEnter * if bufname('#') =~ 'coc-explorer' && bufname('%') !~ 'coc-explorer' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-w>" | :blast | endif
+" 当tagbar页面打开时自动跳到左边的buffer
+au BufEnter * if bufname('#') == '__Tagbar__' && bufname('%') !~ '__Tagbar__' && winnr('$') > 1 | b# | exe "normal! \<c-w>\<c-h>" | :blast | endif
+
 " don't show the help in normal mode
 let g:Lf_HideHelp = 1
 let g:Lf_UseVersionControlTool = 0
@@ -467,7 +434,7 @@ noremap <leader>fc :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
 noremap <leader>fa :<C-U><C-R>=printf("Leaderf rg -F -S --match-path -e %s ", "")<CR>
 
 noremap <leader>fw :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
-noremap <leader>fs :<C-U><C-R>=printf("Leaderf! rg -S --match-path -e %s ", "")<CR>
+noremap <leader>fs :<C-U><C-R>=printf("Leaderf! rg -S --match-path -e %s ", expand("<cword>"))<CR>
 " search visually selected text literally
 xnoremap gf :<C-U><C-R>=printf("Leaderf! rg -F --match-path -e %s ", leaderf#Rg#visual())<CR>
 noremap <leader>fg :<C-U>Leaderf! rg --recall<CR>
