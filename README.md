@@ -1,7 +1,7 @@
 # vim8
-推荐安装vim8版本如果就是想用[vim7参考](README-vim7.md)
+推荐安装vim8版本如果就是想用[vim7参考-不保证可用](README-vim7.md)
 ## 要求
-* python2.7
+* python3.6
 * ctags
 * coc.nvim
 * vim8
@@ -208,6 +208,17 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 
 
+###  项目管理
+
+| 命令        | 模式     | 功能     |
+| ----------- | -------- | -------- |
+| \<leader>ss | 普通模式 | 保存会话 |
+| \<leader>sc | 普通模式 | 关闭会话 |
+| \<leader>sd | 普通模式 | 删除会话 |
+| \<leader>sl | 普通模式 | 加载会话 |
+
+
+
 ### 代码调试
 
 代码调试使用[vimspector](https://github.com/puremourning/vimspector)
@@ -221,6 +232,10 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 使用[vim-fugitive](https://github.com/tpope/vim-fugitive)、[vim-gitgutter](https://github.com/airblade/vim-gitgutter)
 
 **TODO**
+
+
+
+## FAQ
 
 
 
