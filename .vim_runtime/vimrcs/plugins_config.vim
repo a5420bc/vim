@@ -77,7 +77,7 @@ let g:NERDTreeWinSize=35
 nmap <space>nn :CocCommand explorer --toggle<CR>
 map <leader>nb :NERDTreeFromBookmark<Space>
 " map <leader>nf :NERDTreeFind<cr>
-nmap <space>nf :CocCommand explorer --focus<CR>
+nmap <space>nf :CocCommand explorer --no-toggle --no-focus<CR>
 
 " 指定coc-setting目录
 let g:coc_config_home = $HOME . '/vim/.vim_runtime/config/' 
