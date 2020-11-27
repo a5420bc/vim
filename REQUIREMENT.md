@@ -22,8 +22,6 @@ yum install xz
 ## libevent[python3需要libevent]
 
 ```shell
-wget http://repo.okay.com.mx/centos/6/x86_64/release/libevent2-2.0.21-1.el6.x86_64.rpm
-rpm -Uvh libevent*rpm
 yum install libevent2
 ```
 
@@ -36,6 +34,8 @@ curl 'https://setup.ius.io/' -o setup-ius.sh
 sh setup-ius.sh
 
 yum install python36-devel
+
+yum remove epel-release
 ```
 
 ### ctags
@@ -44,7 +44,7 @@ yum install ctags
 
 #### universal-ctags\[ctags的git维护版本\]
 ```
-https://hub.fastgit.org/universal-ctags/ctags
+git clone https://hub.fastgit.org/universal-ctags/ctags
 cd YOUR_PATH/ctags
 ./autogen.sh
 ./configure --prefix=YOUR_BIN_PATH
@@ -101,7 +101,7 @@ sudo npm install yarn -g
 
 #### 安装依赖
 
-    # yum install ncurses-devel lua-devel python-devel cscope ctags git gcc
+    # yum install ncurses-devel lua-devel 
 
 如果需要支持 ruby 或其他语言写的扩展，请安装相应语言的开发包，并在 VIM 编译中添加相应的参数，
 如: `--enable-rubyinterp`。
