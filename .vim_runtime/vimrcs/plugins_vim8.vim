@@ -202,7 +202,7 @@ command! -nargs=? Fold :call     CocAction('fold', <f-args>)
 " Show all diagnostics.
 nnoremap <silent><nowait> <space>a  :<C-u>CocList diagnostics<cr>
 " Manage extensions.
-nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
+" nnoremap <silent><nowait> <space>e  :<C-u>CocList extensions<cr>
 " Show commands.
 nnoremap <silent><nowait> <space>c  :<C-u>CocList commands<cr>
 " Find symbol of current document.
@@ -224,8 +224,8 @@ autocmd BufAdd * if getfsize(expand('<afile>')) > 1024*1024 |
 				\ let b:coc_enabled=0 |
 				\ endif
 
-" 默认不要预览界面
 let g:coc_enable_locationlist = 0 
+" 默认不要预览界面
 autocmd User CocLocationsChange	CocList --normal location
 
 " 支持cocstatus
@@ -263,14 +263,8 @@ let g:which_key_map = {
             \ "d":'git差异显示开关',
             \ "l":'localtion开关',
             \ "q":'quickfix开关',
-            \ "s":'coc symbols搜索',
-            \ "ss":'会话保存',
-            \ "sl":'会话加载',
-            \ "sc":'会话关闭',
-            \ "sd":'会话删除',
             \ "w":'保存',
             \ "z":'专注模式',
-            \ "p":'打开coc之前的窗口',
             \ "qf":'快速修复当前代码问题',
             \ "pp":'粘贴模式开关',
             \ "ac":'coc代码动作',
@@ -278,6 +272,27 @@ let g:which_key_map = {
             \ "j":'切换到下一个buffer',
             \ "k":'切换到下一个buffer',
             \ } 
+
+let g:which_key_map.p = {
+            \ "name":"+粘贴",
+            \ }
+
+let g:which_key_map.s = {
+            \ "name":"+会话操作",
+            \ "so":'打开startify',
+            \ "ss":'会话保存',
+            \ "sl":'会话加载',
+            \ "sc":'会话关闭',
+            \ "sd":'会话删除',
+            \ }
+
+" buffer操作
+let g:which_key_map.b = {
+            \ "name":"+buffer操作",
+            \ "o":'关闭除当前buffer的其他buffer',
+            \ "a":'关闭所有buffer',
+            \ "d":'关闭当前buffer',
+            \ }
 
 " 搜索功能
 let g:which_key_map.f = {
