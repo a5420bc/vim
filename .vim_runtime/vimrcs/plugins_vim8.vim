@@ -27,6 +27,7 @@ augroup END
 " 默认terminal以preview的形式
 let g:floaterm_wintype = "normal"
 let g:floaterm_height = 0.25
+let g:floaterm_autoclose=2
 
 " 默认进入到项目的root目录
 let g:floaterm_rootmarkers = ['.project', '.git', '.hg', '.svn', '.root', '.gitignore']
