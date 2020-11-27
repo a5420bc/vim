@@ -59,6 +59,16 @@ export PAHT="$PATH:/usr/local/ctags/bin"
 
 如果不想设置PATH也可以直接使用`./configure`安装
 
+### git
+
+通过官网下载git最新版本，如果使用旧版vim-fugitive无法使用部分功能
+
+使用如下设置使git默认使用VIM,保证vim-fugitive不会报错
+
+```
+git config --global core.editor "vim"
+```
+
 ### coc.nvim\[支持lsp的代码补全插件\]
 
 1. 安装node

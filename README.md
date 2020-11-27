@@ -6,6 +6,7 @@
 * coc.nvim
 * vim8
 * rg
+* git > 1.5 
 
 参考[依赖安装](REQUIREMENT.md)
 
@@ -14,8 +15,8 @@
 ```shell
 # github的镜像地址
 cd ~
-git clone https://hub.fastgit.org/a5420bc/vim
-./vim/.vim_runtime/install_awesome_vim8.sh
+git clone https://hub.fastgit.org/a5420bc/vim ~/vim
+~/vim/.vim_runtime/install_awesome_vim8.sh
 ```
 
 ## 说明
@@ -86,15 +87,16 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 使用 **\<leader\>o** 打开bufferexplorer界面
 
-| 命令 | 模式                              | 描述                                      |
-| ---- | --------------------------------- | ----------------------------------------- |
-| j,k  | 普通模式\[打开bufferexplorer界面] | 在缓冲区列表浏览                          |
-| d    | 普通模式\[打开bufferexplorer界面] | 删除缓冲区项目                            |
-| f    | 普通模式\[打开bufferexplorer界面] | 水平分割当前窗口,且选中项目在当前文件下   |
-| F    | 普通模式\[打开bufferexplorer界面] | 水平分割当前窗口,且选中项目在当前文件上   |
-| v    | 普通模式\[打开bufferexplorer界面] | 垂直分割当前窗口,且选中项目在当前文件右侧 |
-| V    | 普通模式\[打开bufferexplorer界面] | 水平分割当前窗口,且选中项目在当前文件左侧 |
-| q    | 普通模式\[打开bufferexplorer界面] | 退出缓冲区浏览列表                        |
+| 命令                | 模式     | 描述                   |
+| ------------------- | -------- | ---------------------- |
+| j,k                 | 普通模式 | 在缓冲区列表浏览       |
+| d                   | 普通模式 | 删除缓冲区项目         |
+| x                   | 普通模式 | 水平分割当前窗口       |
+| v                   | 普通模式 | 垂直分割当前窗口       |
+| q                   | 普通模式 | 退出缓冲区浏览列表     |
+| Tab                 | 普通模式 | 切换输入模式和普通模式 |
+| \<CR\> \| o \| 双击 | 普通模式 | 打开至buffer           |
+| t                   | 普通模式 | 打开新的tab页          |
 
 ![explorer-op][3]
 
@@ -138,7 +140,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 | \<C-Down\> | 搜索窗口[预览] | 向下移动预览窗口 |
 | \<Ctrl-F\>         | 搜索窗口 | 全路径匹配和名称匹配切换                        |
 
-
+![leaderf][9]
 
 ### 代码注释
 
@@ -206,16 +208,21 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 **注意:需要配置iterm2的ALT键转义，详细请看[设置ALT](https://garryge.github.io/2018/03/18/mac-iterm2-shortcut-key/index.html)**
 
+![terminal][8]
+
 
 
 ###  项目管理
 
-| 命令        | 模式     | 功能     |
-| ----------- | -------- | -------- |
-| \<leader>ss | 普通模式 | 保存会话 |
-| \<leader>sc | 普通模式 | 关闭会话 |
-| \<leader>sd | 普通模式 | 删除会话 |
-| \<leader>sl | 普通模式 | 加载会话 |
+| 命令        | 模式     | 功能            |
+| ----------- | -------- | --------------- |
+| \<leader>so | 普通模式 | 打开starity页面 |
+| \<leader>ss | 普通模式 | 保存会话        |
+| \<leader>sc | 普通模式 | 关闭会话        |
+| \<leader>sd | 普通模式 | 删除会话        |
+| \<leader>sl | 普通模式 | 加载会话        |
+
+![session][6]
 
 
 
@@ -237,6 +244,10 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 ## FAQ
 
+#### 字体出现了问号
+
+![fond-set][7]
+
 
 
 
@@ -254,4 +265,8 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 [3]:https://github.com/a5420bc/images/blob/main/vim/explorer_op.gif
 [4]: https://github.com/a5420bc/images/blob/main/vim/code_complete.gif
 [5]: https://github.com/a5420bc/images/blob/main/vim/rename.gif
+[6]:https://github.com/a5420bc/images/blob/main/vim/session.gif
+[7]:https://github.com/a5420bc/images/blob/main/vim/fond_set.gif
+[8]:https://github.com/a5420bc/images/blob/main/vim/term.gif
+[9]:https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_2.gif
 
