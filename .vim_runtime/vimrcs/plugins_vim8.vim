@@ -1,17 +1,8 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-terminal-help && floaterm
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" 关闭vim时退出所有的term
-autocmd VimLeave * call <sid>TermForceCloseAll()
-function! s:TermForceCloseAll() abort
-    let term_bufs = filter(range(1, bufnr('$')), 'getbufvar(v:val, "&buftype") == "terminal"')
-    for t in term_bufs
-            execute "bd! " t
-    endfor
-endfunction
-
 " 加强一下关闭退出行为
-autocmd VimLeave * :FloatermKill!<CR>
+autocmd ExitPre * :FloatermKill!<CR>
 
 " 设置快捷键
 " terminal开关
