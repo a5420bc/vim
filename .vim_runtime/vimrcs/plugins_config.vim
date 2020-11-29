@@ -120,11 +120,11 @@ let g:coc_explorer_global_presets = {
 \ }
 
 " Use preset argument to open it
-nmap <space>ed :CocCommand explorer --preset .vim<CR>
-nmap <space>ef :CocCommand explorer --preset floating<CR>
+" nmap <space>ed :CocCommand explorer --preset .vim<CR>
+" nmap <space>ef :CocCommand explorer --preset floating<CR>
 
 " List all presets
-nmap <space>el :CocList explPresets
+" nmap <space>el :CocList explPresets
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -221,6 +221,9 @@ let g:ale_set_highlights = 0
 let g:ale_lint_on_text_changed = 'never'
 let g:ale_lint_on_enter = 0
 
+" 禁止ale的lsp功能
+let g:ale_disable_lsp = 1
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => Git gutter (Git diff)
@@ -231,7 +234,7 @@ nnoremap <silent> <leader>d :GitGutterToggle<cr>
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " => neomake
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-call neomake#configure#automake('w')
+" call neomake#configure#automake('w')
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " TagBar
@@ -430,10 +433,10 @@ let g:Lf_RgConfig = [
 let g:Lf_ShortcutF = "<leader>ff"
 let g:Lf_ShortcutB = "<leader>fb"
 noremap <leader>fb :<C-U><C-R>=printf"Leaderf buffer %s", "")<CR><CR>
-noremap <leader>fm :<C-U><C-R>=printf("Leaderf mru %s", "")<CR><CR>
+noremap <leader>fm :<C-U><C-R>=printf("Leaderf! mru %s", "")<CR><CR>
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
-noremap <leader>fc :<C-U><C-R>=printf("Leaderf function %s", "")<CR><CR>
+noremap <leader>fc :<C-U><C-R>=printf("Leaderf! function %s", "")<CR><CR>
 noremap <leader>fa :<C-U><C-R>=printf("Leaderf rg -F -S --match-path -e %s ", "")<CR>
 
 noremap <leader>fw :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
