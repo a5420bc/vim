@@ -500,3 +500,8 @@ au FileType php nnoremap <Leader>rcg :call PhpCreateGetters()<CR>
 " 调用phpDoc生成注释
 au FileType php nnoremap <Leader>ra :call PhpDocAll()<CR>
 
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-php-refactoring
+" """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+vmap <leader>y y:Oscyank<cr>
