@@ -262,6 +262,7 @@ let g:which_key_map = {
             \ "cd":'设置当前目录为工作目录',
             \ "d":'git差异显示开关',
             \ "l":'localtion开关',
+            \ "o": '打开buffer界面',
             \ "q":'quickfix开关',
             \ "w":'保存',
             \ "z":'专注模式',
@@ -329,6 +330,7 @@ let g:which_key_map.r = {
 let g:which_key_map.t = {
             \ "name":'+tab操作',
             \ " ": '切换到下一个tab',
+            \ "c": '关闭tab',
             \ "e": '当前文件路径[你自己试一下吧~]',
             \ "l": '移动到最后一个tab',
             \ "m": '移动到指定tab',
