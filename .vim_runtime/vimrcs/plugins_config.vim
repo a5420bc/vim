@@ -27,7 +27,8 @@ let g:bufExplorerSortBy='name'
 " nnoremap <silent> <leader>o :BufExplorer<cr>
 let g:bufExplorerDisableDefaultKeyMapping=1
 " 替换bufexplorer为leaderf
-noremap <leader>o :<C-U><C-R>=printf("Leaderf! buffer %s", "")<CR><CR>
+" noremap <leader>o :<C-U><C-R>=printf("Leaderf! buffer %s", "")<CR><CR>
+noremap <leader>o :call BufExp()<CR>
 
 
 """"""""""""""""""""""""""""""
@@ -432,7 +433,7 @@ let g:Lf_RgConfig = [
 
 let g:Lf_ShortcutF = "<leader>ff"
 let g:Lf_ShortcutB = "<leader>fb"
-noremap <leader>fb :<C-U><C-R>=printf"Leaderf buffer %s", "")<CR><CR>
+noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf! mru %s", "")<CR><CR>
 noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
@@ -509,5 +510,21 @@ vmap <leader>y y:Oscyank<cr>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " far.vim
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:far#enable_undo = 1
 let g:far#source="rg"
+
+" far搜索会留下一个buffer页面需要删除
+function! FarClear()
+     let n = bufnr('$')
+     while n > 0
+         if getbufvar(n, '&ft') == 'far'
+             exe 'bd ' . n
+         endif
+         let n -= 1
+     endwhile
+endfun
+
+" 暂时先这么解决吧
+function! BufExp() 
+    call FarClear()
+    exe "Leaderf! buffer"
+endfunction
