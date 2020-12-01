@@ -257,8 +257,8 @@ export LANG=en_US.UTF-8
 
 #### 普通文本特殊字符搜索报错
 ```
-\<leader\>fa情况: ( 需要转义\(
-\<leader\>fs情况: ( 需要转义\\\(
+<leader>fa情况: ( 需要转义\(
+<leader>fs情况: ( 需要转义\\\(
 ```
 
 
