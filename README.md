@@ -248,7 +248,18 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 
 ![fond-set][7]
 
+#### 内置终端乱码
+.bashrc或者bash_profile中加入
+```
+export LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
+```
 
+#### 普通文本特殊字符搜索报错
+```
+\<leader\>fa情况: ( 需要转义\(
+\<leader\>fs情况: ( 需要转义\\\(
+```
 
 
 ## 其他
