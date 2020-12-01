@@ -350,10 +350,12 @@ nnoremap <leader>sc :SClose<CR>
 " 删除session
 nnoremap <leader>sd :SDelete<CR>
 
-" session保存时默认关闭nerdtree防止打开出错
+" session保存时默认关闭nerdtree防止打开出错 
+" 切换session时关闭所有的terminal
 let g:startify_session_before_save = [
             \ 'echo "Cleaning up before saving.."',
-            \ 'silent! NERDTreeClose'
+            \ 'silent! NERDTreeClose',
+            \ 'silent FloatermKill!'
             \ ]
 
 " 当只剩下taglist和nerdtree和coc-explorer窗口时直接退出vim

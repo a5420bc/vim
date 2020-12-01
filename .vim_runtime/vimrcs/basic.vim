@@ -63,7 +63,7 @@ nmap <leader>w :w!<cr>
 command! W execute 'w !sudo tee % > /dev/null' <bar> edit!
 
 " session不保存配置项
-set sessionoptions=curdir,folds,help,tabpages,winpos
+set sessionoptions=curdir,folds,help,tabpages,winpos,terminal
 
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
