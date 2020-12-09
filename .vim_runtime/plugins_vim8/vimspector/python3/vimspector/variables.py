@@ -84,6 +84,12 @@ class WatchResult( Expandable ):
     self.result = result
 
 
+class WatchFailure( WatchResult ):
+  def __init__( self, reason ):
+    super().__init__( { 'result': reason } )
+    self.changed = True
+
+
 class Variable( Expandable ):
   """Holds one level of an expanded value tree. Also itself expandable."""
   def __init__( self, variable: dict ):
@@ -159,12 +165,13 @@ class VariablesView( object ):
       vim.command(
         'nnoremap <buffer> <DEL> :call vimspector#DeleteWatch()<CR>' )
 
-      vim.command( 'nnoremenu 1.1 WinBar.New '
-                   ':call vimspector#AddWatch()<CR>' )
-      vim.command( 'nnoremenu 1.2 WinBar.Expand/Collapse '
-                   ':call vimspector#ExpandVariable()<CR>' )
-      vim.command( 'nnoremenu 1.3 WinBar.Delete '
-                   ':call vimspector#DeleteWatch()<CR>' )
+      if utils.UseWinBar():
+        vim.command( 'nnoremenu 1.1 WinBar.New '
+                     ':call vimspector#AddWatch()<CR>' )
+        vim.command( 'nnoremenu 1.2 WinBar.Expand/Collapse '
+                     ':call vimspector#ExpandVariable()<CR>' )
+        vim.command( 'nnoremenu 1.3 WinBar.Delete '
+                     ':call vimspector#DeleteWatch()<CR>' )
 
     # Set the (global!) balloon expr if supported
     has_balloon      = int( vim.eval( "has( 'balloon_eval' )" ) )
@@ -295,11 +302,14 @@ class VariablesView( object ):
 
   def EvaluateWatches( self ):
     for watch in self._watches:
-      self._connection.DoRequest( partial( self._UpdateWatchExpression,
-                                           watch ), {
-        'command': 'evaluate',
-        'arguments': watch.expression,
-      } )
+      self._connection.DoRequest(
+        partial( self._UpdateWatchExpression, watch ),
+        {
+          'command': 'evaluate',
+          'arguments': watch.expression,
+        },
+        failure_handler = lambda reason, msg, watch=watch:
+            self._WatchExpressionFailed( reason, watch ) )
 
   def _UpdateWatchExpression( self, watch: Watch, message: dict ):
     if watch.result is not None:
@@ -318,6 +328,14 @@ class VariablesView( object ):
         },
       } )
 
+    self._DrawWatches()
+
+  def _WatchExpressionFailed( self, reason: str, watch: Watch ):
+    if watch.result is not None:
+      # We already have a result for this watch. Wut ?
+      return
+
+    watch.result = WatchFailure( reason )
     self._DrawWatches()
 
   def ExpandVariable( self ):

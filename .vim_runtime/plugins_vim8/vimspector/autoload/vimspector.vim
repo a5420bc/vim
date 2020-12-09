@@ -171,6 +171,20 @@ function! vimspector#Pause() abort
   py3 _vimspector_session.Pause()
 endfunction
 
+function! vimspector#PauseContinueThread() abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.PauseContinueThread()
+endfunction
+
+function! vimspector#SetCurrentThread() abort
+  if !s:Enabled()
+    return
+  endif
+  py3 _vimspector_session.SetCurrentThread()
+endfunction
+
 function! vimspector#Stop() abort
   if !s:Enabled()
     return
@@ -282,8 +296,8 @@ function! vimspector#GetConfigurations() abort
     return
   endif
   let configurations = py3eval(
-              \ 'list( _vimspector_session.GetConfigurations()[ 1 ].keys() )'
-              \ . ' if _vimspector_session else []' )
+        \ 'list( _vimspector_session.GetConfigurations( {} )[ 1 ].keys() )'
+        \ . ' if _vimspector_session else []' )
   return configurations
 endfunction
 

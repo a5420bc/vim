@@ -79,7 +79,7 @@ class DebugSession( object ):
     self._server_capabilities = {}
     self.ClearTemporaryBreakpoints()
 
-  def GetConfigurations( self ):
+  def GetConfigurations( self, adapters ):
     current_file = utils.GetBufferFilepath( vim.current.buffer )
     filetypes = utils.GetBufferFiletypes( vim.current.buffer )
     configurations = {}
@@ -93,7 +93,8 @@ class DebugSession( object ):
 
       with open( launch_config_file, 'r' ) as f:
         database = json.loads( minify( f.read() ) )
-        configurations.update( database.get( 'configurations' or {} ) )
+        configurations.update( database.get( 'configurations' ) or {} )
+        adapters.update( database.get( 'adapters' ) or {} )
 
     return launch_config_file, configurations
 
@@ -109,8 +110,8 @@ class DebugSession( object ):
     self._adapter = None
 
     current_file = utils.GetBufferFilepath( vim.current.buffer )
-    launch_config_file, configurations = self.GetConfigurations()
     adapters = {}
+    launch_config_file, configurations = self.GetConfigurations( adapters )
 
     if not configurations:
       utils.UserMessage( 'Unable to find any debug configurations. '
@@ -429,39 +430,90 @@ class DebugSession( object ):
       },
     } )
 
+    self._stackTraceView.OnContinued()
+    self._codeView.SetCurrentFrame( None )
+
   @IfConnected()
   def StepInto( self ):
-    if self._stackTraceView.GetCurrentThreadId() is None:
+    threadId = self._stackTraceView.GetCurrentThreadId()
+    if threadId is None:
       return
 
-    self._connection.DoRequest( None, {
+    def handler( *_ ):
+      self._stackTraceView.OnContinued( { 'threadId': threadId } )
+      self._codeView.SetCurrentFrame( None )
+
+    self._connection.DoRequest( handler, {
       'command': 'stepIn',
       'arguments': {
-        'threadId': self._stackTraceView.GetCurrentThreadId()
+        'threadId': threadId
       },
     } )
 
   @IfConnected()
   def StepOut( self ):
-    if self._stackTraceView.GetCurrentThreadId() is None:
+    threadId = self._stackTraceView.GetCurrentThreadId()
+    if threadId is None:
       return
 
-    self._connection.DoRequest( None, {
+    def handler( *_ ):
+      self._stackTraceView.OnContinued( { 'threadId': threadId } )
+      self._codeView.SetCurrentFrame( None )
+
+    self._connection.DoRequest( handler, {
       'command': 'stepOut',
       'arguments': {
-        'threadId': self._stackTraceView.GetCurrentThreadId()
+        'threadId': threadId
       },
     } )
 
+
   def Continue( self ):
-    if self._connection:
-      self._stackTraceView.Continue()
-    else:
+    if not self._connection:
       self.Start()
+      return
+
+    threadId = self._stackTraceView.GetCurrentThreadId()
+    if threadId is None:
+      utils.UserMessage( 'No current thread', persist = True )
+      return
+
+    def handler( msg ):
+      self._stackTraceView.OnContinued( {
+          'threadId': threadId,
+          'allThreadsContinued': ( msg.get( 'body' ) or {} ).get(
+            'allThreadsContinued',
+            True )
+        } )
+      self._codeView.SetCurrentFrame( None )
+
+    self._connection.DoRequest( handler, {
+      'command': 'continue',
+      'arguments': {
+        'threadId': threadId,
+      },
+    } )
 
   @IfConnected()
   def Pause( self ):
-    self._stackTraceView.Pause()
+    if self._stackTraceView.GetCurrentThreadId() is None:
+      utils.UserMessage( 'No current thread', persist = True )
+      return
+
+    self._connection.DoRequest( None, {
+      'command': 'pause',
+      'arguments': {
+        'threadId': self._stackTraceView.GetCurrentThreadId(),
+      },
+    } )
+
+  @IfConnected()
+  def PauseContinueThread( self ):
+    self._stackTraceView.PauseContinueThread()
+
+  @IfConnected()
+  def SetCurrentThread( self ):
+    self._stackTraceView.SetCurrentThread()
 
   @IfConnected()
   def ExpandVariable( self ):
@@ -688,11 +740,7 @@ class DebugSession( object ):
 
     self._connection_type = self._api_prefix + self._connection_type
 
-    # TODO: Do we actually need to copy and update or does Vim do that?
-    env = os.environ.copy()
-    if 'env' in self._adapter:
-      env.update( self._adapter[ 'env' ] )
-    self._adapter[ 'env' ] = env
+    self._adapter[ 'env' ] = self._adapter.get( 'env', {} )
 
     if 'cwd' not in self._adapter:
       self._adapter[ 'cwd' ] = os.getcwd()
@@ -1098,6 +1146,7 @@ class DebugSession( object ):
   def OnEvent_exited( self, message ):
     utils.UserMessage( 'The debugee exited with status code: {}'.format(
       message[ 'body' ][ 'exitCode' ] ) )
+    self.SetCurrentFrame( None )
 
   def OnEvent_process( self, message ):
     utils.UserMessage( 'The debugee was started: {}'.format(
@@ -1107,7 +1156,8 @@ class DebugSession( object ):
     pass
 
   def OnEvent_continued( self, message ):
-    pass
+    self._stackTraceView.OnContinued( message[ 'body' ] )
+    self._codeView.SetCurrentFrame( None )
 
   def Clear( self ):
     self._codeView.Clear()
@@ -1142,6 +1192,7 @@ class DebugSession( object ):
   def OnEvent_terminated( self, message ):
     # We will handle this when the server actually exists
     utils.UserMessage( "Debugging was terminated by the server." )
+    self.SetCurrentFrame( None )
 
   def OnEvent_output( self, message ):
     if self._outputView:
