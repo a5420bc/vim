@@ -8,6 +8,8 @@ autocmd ExitPre * :FloatermKill!<CR>
 " terminal开关
 nnoremap   <silent>  <M-o>   :FloatermToggle<CR>
 tnoremap <silent> <M-o> <c-\><c-n>:FloatermToggle<cr>
+" 跳到其他窗口时直接Hidden
+nnoremap <silent> <M-i> :FloatermHide!<CR>
 " 新建窗口
 nmap <silent> <M-a> :FloatermNew<cr>
 tnoremap <silent> <M-a> <c-\><c-n>:FloatermNew<CR>
@@ -15,6 +17,10 @@ tnoremap <silent> <M-a> <c-\><c-n>:FloatermNew<CR>
 nnoremap   <silent>  tl   :CocList floaterm<CR>
 " 强制关闭所有term
 nnoremap   <silent>  <M-k>   :FloatermKill!<CR>
+" 方便跳到其他的窗口
+tnoremap <silent><M-k>    <C-\><C-n>:<C-u>wincmd k<CR>
+tnoremap <silent><M-j>  <C-\><C-n>:<C-u>wincmd j<CR>
+
 " 退出term插入模式
 tnoremap <silent> <M-q> <c-\><c-n>
 
