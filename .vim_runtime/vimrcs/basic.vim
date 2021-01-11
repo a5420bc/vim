@@ -102,6 +102,9 @@ set hid
 set backspace=eol,start,indent
 set whichwrap+=<,>
 
+" 使用*时，不要自动跳转，此时多用于高亮当前关键字
+nnoremap * :keepjumps normal! mi*`i<CR>
+
 " Ignore case when searching
 set ignorecase
 
