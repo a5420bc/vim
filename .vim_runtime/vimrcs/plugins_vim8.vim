@@ -220,7 +220,7 @@ nnoremap <silent><nowait> <space>co  :<C-u>CocList outline<cr>
 " Do default action for previous item.
 " nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
-" nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
+nnoremap <silent><nowait> <space>cr  :<C-u>CocListResume<CR>
 
 " 显示光标，防止误按导致光标消失
 let g:coc_disable_transparent_cursor = 1
@@ -267,6 +267,7 @@ let g:which_key_map = {
             \ "ac":'coc代码动作',
             \ "c":'coc命令[coc command]',
             \ "cd":'设置当前目录为工作目录',
+            \ "cr":'恢复coclist界面',
             \ "d":'git差异显示开关',
             \ "j":'切换到下一个buffer',
             \ "k":'切换到下一个buffer',
