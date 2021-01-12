@@ -220,7 +220,7 @@ nnoremap <silent><nowait> <space>co  :<C-u>CocList outline<cr>
 " Do default action for previous item.
 " nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
-nnoremap <silent><nowait> <space>cr  :<C-u>CocListResume<CR>
+nnoremap <silent><nowait> <space>cr  :<C-u>CocListResume location<CR>
 
 " 显示光标，防止误按导致光标消失
 let g:coc_disable_transparent_cursor = 1
