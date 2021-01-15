@@ -34,6 +34,12 @@ List						|coc-list|
     Links						|coc-list-links|
     Sources						|coc-list-completion-sources|
     Lists						|coc-list-lists|
+Dialog 						|coc-dialog|
+  Dialog basic 						|coc-dialog-basic|
+  Dialog confirm  					|coc-dialog-confirm|
+  Dialog input 						|coc-dialog-input|
+  Dialog menu 						|coc-dialog-menu|
+  Dialog picker                                 	|coc-dialog-picker|
 Statusline support				|coc-status|
   Manual						|coc-status-manual|
   Airline						|coc-status-airline|
@@ -76,7 +82,7 @@ INSTALLATION						*coc-installation*
 If you're using [vim-plug](https://github.com/junegunn/vim-plug), add this to
 your `init.vim` or `.vimrc`: >
 
-  Plug 'neoclide/coc.nvim', {'branch': 'release'}
+  Plug 'neoclide/coc.nvim'
 
 And run: >
 
@@ -155,7 +161,7 @@ Built-in configurations:~
 "suggest.detailField":~
 
 	Where to add the detail in complete item when it's less than max
-	length, default: `"menu"`
+	length, default: `"preview"` when floating documentation is enabled.
 
 	Valid options: ["abbr", "menu", "preview"]
 
@@ -294,6 +300,7 @@ Built-in configurations:~
 		"variable": "\ue79b",
 		"value": "\uf89f",
 		"operator": "\u03a8",
+		"constructor": "\uf0ad",
 		"function": "\u0192",
 		"reference": "\ufa46",
 		"constant": "\uf8fe",
@@ -382,10 +389,6 @@ Built-in configurations:~
 
 	Refresh diagnostics when in insert mode, default: `false`
 
-"diagnostic.refreshAfterSave":~
-
-	Refresh diagnostics after file save only, default: `false`
-
 "diagnostic.displayByAle":~
 
 	Use ALE for displaying diagnostics. This will disable coc.nvim for
@@ -418,9 +421,9 @@ Built-in configurations:~
 
 	Offset number of buffer.addHighlight, Neovim only, default: `1000`
 
-"diagnostic.signOffset":~
+"diagnostic.signPriority":~
 
-	Offset number of sign, default: `1000`
+	Priority of diagnostic sign, default to `10`, check |sign-priority|.
 
 "diagnostic.errorSign":~
 
@@ -470,7 +473,7 @@ Built-in configurations:~
 
 "signature.triggerSignatureWait":~
 
-	Delay for signature request trigger (milliseconds), default: `50`.
+	Timeout for signature request trigger (milliseconds), default: `500`.
 	Change to higher value for slow Language Servers.
 
 "signature.target":~
@@ -494,6 +497,11 @@ Built-in configurations:~
 	Maximum height of floating window with the signature help, default: `8`
 
 							*coc-config-refactor*
+"refactor.saveToFile":~
+
+	Save to file when write refactor buffer with ':noa wa' command, set to
+	false if you want save buffer by yourself.
+
 "refactor.openCommand":~
 
 	Open command for refactor window, default: `vsplit`
@@ -506,15 +514,72 @@ Built-in configurations:~
 
 	Print num lines of trailing context after each match, default: `3`
 
+							*coc-config-dialog*
+"dialog.maxWidth": ~
+
+	Maximum width of dialog window.
+
+"dialog.maxHeight": ~
+
+	Maximum height of dialog window.
+
+"dialog.confirmKey":~
+
+	Confirm key for confirm selection used by menu and picker, you can
+	always use <esc> to cancel, default to `<cr>`.
+
+"dialog.pickerButtons":~
+
+	Show buttons for picker dialog window/popup, default `true`.
+
+"dialog.pickerButtonShortcut":~
+
+	Show shortcut in buttons of picker dialog window/popup, used when
+	dialog.pickerButtons is true, default `true`.
+
+"dialog.floatHighlight":~
+
+	Highlight group for dialog window/popup, default to 'CocFloating'.
+
+"dialog.floatBorderHighlight":~
+
+	Highlight group for border of dialog window/popup, default to
+	'CocFloating'.
+
+							*coc-config-notification*
+"notification.marginTop": ~
+
+	Margin top for notification dialog, default to `1`.
+
+"notification.marginRight": ~
+
+	Margin right for notification dialog, default to `1`.
+
+"notification.maxWidth": ~
+
+	Maximum content width of notification dialog, default to `60`.
+
+"notification.maxHeight": ~
+
+	Maximum content height of notification dialog, default to `10`.
+
+"notification.highlightGroup": ~
+
+	Highlight group of notification dialog, default to `CocFloating`.
+
+"notification.minProgressWidth": ~
+
+	Minimum width of progress notification, default to `30`.
+
 							*coc-config-codelens*
 "codeLens.enable":~
 
 	Enable `codeLens` feature. Requires Neovim with virtual text feature,
-	default: `false`
+	default: `false`.
 
 "codeLens.separator":~
 
-	Separator text for `codeLens` in virtual text, default: `"‣"`
+	Separator text for `codeLens` in virtual text, default: `"‣"`.
 
 "codeLens.subseparator":~
 
@@ -527,10 +592,24 @@ Built-in configurations:~
 
 	Note: This is the filetype after mapping by `g:coc_filetype_map`.
 
+"workspace.bottomUpFiletypes":~
+
+	Filetypes that should have workspace folder should resolved from
+	base directory of file.
+
+"workspace.workspaceFolderCheckCwd":~
+
+	Whether the cwd directory should be checked first when resolving
+	workspace folder of current buffer.
+
 							*coc-config-list*
 "list.indicator":~
 
 	The character used as first character in prompt line, default: `">"`
+
+"list.alignColumns":~
+
+	Whether to align lists in columns, default: `false`
 
 "list.height":~
 
@@ -551,6 +630,11 @@ Built-in configurations:~
 "list.maxPreviewHeight":~
 
 	Max height for preview window of list, default: `12`
+
+"list.matchHighlightGroup":~
+
+	Highlight group used for matched texts in list window.
+	default: `"Search"`
 
 "list.previewHighlightGroup":~
 
@@ -588,7 +672,7 @@ Built-in configurations:~
 
 "list.source.symbols.excludes":~
 
-	Patterns of mimimatch for filepath to execlude from symbols list,
+	Patterns of minimatch for filepath to execlude from symbols list,
 	default: `[]`
 
 "list.source.outline.ctagsFilestypes":~
@@ -596,7 +680,26 @@ Built-in configurations:~
 	Filetypes that should use `ctags` for outline instead of language server,
 	default: `[]`
 
+
+"list.source.diagnostics.pathFormat":~
+
+	Decide how the filepath is shown in the list.
+
+	Valid options: ["full", "short", "filename", "hidden"].
+
+	default: `"full"`
+
+"list.source.diagnostics.includeCode":~
+
+	Whether to show the diagnostic code in the list.
+
+	default: `true`
+
 							*coc-config-preferences*
+"coc.preferences.enableMessageDialog"~
+
+	Enable messages shown in notification dialog, default: `false`
+
 "coc.preferences.maxFileSize":~
 
 	Maximum file size in bytes that coc.nvim should handle, default: `'10MB'`
@@ -646,11 +749,6 @@ Built-in configurations:~
 
 	Automatically update the value of `b:coc_current_function` on `CursorHold`
 	event, default: `false`
-
-"coc.preferences.formatOnInsertLeave":~
-
-	Trigger format on type when insert leave by send \n to the server.
-	Default: `false`
 
 "coc.preferences.formatOnSaveFiletypes":~
 
@@ -724,8 +822,7 @@ Built-in configurations:~
 
 "coc.preferences.promptInput":~
 
-	Use prompt buffer in float window for user input, works on latest
-	neovim >= 0.4.3 only.
+	Use prompt buffer in float window for user input.
 	Default: `true`
 
 "coc.preferences.enableMarkdown":~
@@ -1179,6 +1276,11 @@ b:coc_current_function					*b:coc_current_function*
 	Set `"coc.preferences.currentFunctionSymbolAutoUpdate": true`
 	in coc-settings.json to update it on CursorHold.
 
+b:coc_cursors_activated					*b:coc_cursors_activated*
+
+	Use expression `get(b:, 'coc_cursors_activated',0)` to check if
+	cursors session is activated for current buffer.
+
 g:coc_disable_startup_warning 				*g:coc_disable_startup_warning*
 
 	Disable possible warning on startup for old vim/node version.
@@ -1219,7 +1321,6 @@ g:coc_start_at_startup					*g:coc_start_at_startup*
 	Default: 1
 
 g:coc_user_config					*g:coc_user_config*
-
 
 	User configuration object, define this variable when you can't use
 	|coc#config()|
@@ -1309,14 +1410,6 @@ g:coc_node_path						*g:coc_node_path*
 
 	Note: you can use `~` as home directory.
 
-g:coc_force_bundle					*g:coc_force_bundle*
-
-	When lib folder with javascript code exists, coc.nvim would use
-	compiled javascript from lib folder, set this variable to `1` if you
-	want it use `build/index.js` created by webpack.
-
-	Default: 0
-
 g:coc_node_args						*g:coc_node_args*
 
 	Arguments passed to node when starting coc service from source code.
@@ -1382,11 +1475,6 @@ g:node_client_debug					*g:node_client_debug*
 
 	Default: `0`
 
-g:coc_cursors_activated					*g:coc_cursors_activated*
-
-	Use expression `get(g:, 'coc_cursors_activated',0)` to check if
-	cursors session is activated.
-
 g:coc_config_home					*g:coc_config_home*
 
 	Configure the directory which will be used to look for
@@ -1434,6 +1522,17 @@ g:coc_prompt_win_width 					*g:coc_prompt_win_width*
 
 	Width of input prompt window on neovim >= 0.5.0.  Prompt buffer can't
 	work with vim8's popup yet.
+
+g:coc_markdown_disabled_languages  			*g:coc_markdown_disabled_languages*
+
+	Filetype list that should be disabled for highlight in markdown block, ex: >
+
+	let g:coc_markdown_disabled_languages = ['html']
+>
+
+g:coc_install_yarn_cmd 					*g:coc_install_yarn_cmd*
+
+	Yarn command used for |coc#util#install()| function.
 
 ------------------------------------------------------------------------------
 
@@ -1603,10 +1702,6 @@ coc#util#rebuild()					*coc#util#rebuild()*
 
 	Rebuild coc extensions.
 
-coc#util#float_scroll({forward})			*coc#util#float_scroll()*
-
-	Deprecated, please use |coc#float#scroll|.
-
 coc#util#root_patterns()				*coc#util#root_patterns()*
 
 	Get root patterns used for current document.
@@ -1620,6 +1715,11 @@ coc#util#get_config({key})				*coc#util#get_config()*
 	Get configuration (mostly defined in coc-settings.json)	by {key}, ex: >
 
 	:echo coc#util#get_config('coc.preferences')
+
+coc#util#install()  					*coc#util#install()*
+
+	Install dependencies and compile source code, not needed unless
+	you need compile typescript code.
 
 coc#float#close_all() 					*coc#float#close_all()*
 
@@ -1637,11 +1737,13 @@ coc#float#has_scroll() 					*coc#float#has_scroll()*
 	Return `1` when there is scrollable float window or popup.
 	Example key-mappings:
 >
-	if has('nvim-0.4.3') || has('patch-8.2.0750')
-	  nnoremap <nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-	  nnoremap <nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-	  inoremap <nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
-	  inoremap <nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+	if has('nvim-0.4.0') || has('patch-8.2.0750')
+	  nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+	  nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+	  inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+	  inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+	  vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+	  vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
 	endif
 <
 coc#float#scroll({forward}, [{amount}])                 *coc#float#scroll()*
@@ -1650,24 +1752,8 @@ coc#float#scroll({forward}, [{amount}])                 *coc#float#scroll()*
 	{forward} is not `1`. {amount} could be number or full page when
 	omitted.
 
-	Note: this function requires nvim >= 0.4.3 or vim >= 8.2.750 to work.
+	Note: this function requires nvim >= 0.4.0 or vim >= 8.2.750 to work.
 
-coc#float#nvim_scroll({forward}, [{amount}]) 		*coc#float#nvim_scroll()*
-
-	NeoVim-only function to scroll float window on current tab, scroll
-	backward when {forward} is not `1`. {amount} could be number, or
-	approximately half page when omitted.
-	Example key-mappings:
->
-	if has('nvim')
-	  vnoremap <nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#nvim_scroll(1, 1) : "\<C-f>"
-	  vnoremap <nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#nvim_scroll(0, 1) : "\<C-b>"
-	endif
-<
-	Note: This function is only relevant for visual mode mapping, to be
-	able to scroll on jump placeholder of signature help expansion, where
-	|coc#float#scroll| is not implemented. Use |coc#float#scroll|
-	otherwise.
 
 CocRequest({id}, {method}, [{params}])			*CocRequest()*
 
@@ -1756,8 +1842,13 @@ CocHasProvider({feature})				*CocHasProvider()*
 CocTagFunc({pattern}, {flags}, {info})			*CocTagFunc()*
 
 	Used for vim's 'tagfunc' option, to make tag search by |CTRL-]| use
-	coc.nvim as provider.
+	coc.nvim as provider, tag search would be performed when no result
+	from coc.nvim.
 
+	Make sure your vim support 'tagfunc' by
+>
+	:echo exists('&tagfunc')
+<
 ------------------------------------------------------------------------------
 							*coc-action*
 Available Actions ~
@@ -1845,9 +1936,6 @@ Acceptable {action} names for |CocAction()| and |CocActionAsync|.
 	defaults to `coc.preferences.hoverTarget` in `coc-settings.json`.
 	Valid options: ["preview", "echo", "float"]
 
-	Note: the behavior would change in Neovim, where floating windows are
-	available.
-
 "getHover"						*coc-action-getHover*
 
 	Get documentation text array on current position, returns array of
@@ -1865,9 +1953,9 @@ Acceptable {action} names for |CocAction()| and |CocActionAsync|.
 
 	Return the function string that current cursor in.
 
-"documentSymbols"					*coc-action-documentSymbols*
+"documentSymbols" [{bufnr}]				*coc-action-documentSymbols*
 
-	Get a list of symbols in the current document.
+	Get a list of symbols of current buffer or specific {bufnr}.
 
 "rename"						*coc-action-rename*
 
@@ -2164,7 +2252,9 @@ COMMANDS						*coc-commands*
 	Note: the log would be cleared when coc.nvim started.
 
 	Use environment variable `NVIM_COC_LOG_LEVEL` to change log level
-	(default 'info').  Use shell command: >
+	(default 'info', could be 'all', 'trace', 'debug', 'info',
+	'warn', 'error', 'off').
+	Use shell command: >
 
 	export NVIM_COC_LOG_LEVEL=debug
 <
@@ -2317,6 +2407,42 @@ Note: don't use `:hi default` for overwriting the highlights.
 Note: highlight commands should appear after the |:colorscheme| command or use
 |ColorScheme| autocmd to make sure customized highlight works after color
 scheme change.
+
+CocUnderline						*CocUnderline*
+
+  Default: `hi default CocUnderline cterm=underline gui=underline`
+
+  The highlight for undefined text.
+
+CocBold							*CocBold*
+
+  Default: `hi default CocBold term=bold cterm=bold gui=bold`
+
+  The highlight for bold text.
+
+CocItalic						*CocItalic*
+
+  Default: `hi default CocItalic term=italic cterm=italic gui=italic`
+
+  The highlight for italic text.
+
+CocMarkdownCode						*CocMarkdownCode*
+
+  Default: `hi default link CocMarkdownCode     markdownCode`
+
+  The highlight for markdown code in floating window/popup.
+
+CocMarkdownHeader					*CocMarkdownHeader*
+
+  Default: `hi default link CocMarkdownHeader   markdownH1`
+
+  The highlight for markdown header in floating window/popup.
+
+CocMarkdownLink						*CocMarkdownLink*
+
+  Default: `hi default CocMarkdownLink ctermfg=Blue guifg=#15aabf guibg=NONE`
+
+  The highlight for markdown link text in floating window/popup.
 
 CocErrorSign						*CocErrorSign*
 
@@ -2547,6 +2673,10 @@ LIST COMMAND						*coc-list-command*
 
 	Reopen last opened list, input and cursor position will be preserved.
 
+:CocListCancel						*:CocListCancel*
+
+	Close list, useful when the list is not the current window.
+
 :CocPrev [{name}]					*:CocPrev*
 
 	Invoke default action for the previous item in the last {name} list.
@@ -2680,6 +2810,7 @@ LIST MAPPINGS						*coc-list-mappings*
 Default mappings on insert mode:
 
 <Esc>       - cancel list session.
+<CR>        - do default action with selected items or current item.
 <C-c>       - stop loading task.
 <C-v>       - paste text from system clipboard.
 <C-l>       - reload list.
@@ -2707,6 +2838,7 @@ Default mappings on insert mode:
 Default mappings on normal mode:
 
 <Esc>       - cancel list session.
+<CR>        - do default action with selected items or current item.
 <C-c>       - stop source from fetching more items.
 <C-l>       - reload list.
 <C-a>       - mark all visible items selected.
@@ -2764,8 +2896,9 @@ The mapping expression should be `command:arguments`, available commands:
 	'togglemode'    - toggle between insert and normal mode.
 	'previous'      - move cursor to previous item.
 	'next'          - move cursor to next item.
-	'defaultaction' - execute default action.
+	'defaultaction' - do default action for selected items or current item.
 	'jumpback'      - stop prompt and jump back to original window.
+	'previewtoggle' - toggle preview window, requires preview action exists.
 	'previewup'     - scroll preview window up.
 	'previewdown'   - scroll preview window down.
 	'help'          - show help.
@@ -2916,6 +3049,105 @@ lists							*coc-list-lists*
 
 ==============================================================================
 
+DIALOG SUPPORT						*coc-dialog*
+
+Dialog is special float window/popup that could response to user actions,
+dialog have close button, border, title (optional), bottom buttons(optional).
+
+Note bottom buttons work different on neovim and vim, on neovim you can
+click the button since neovim allows focus of window, on vim you have to type
+highlighted character to trigger button callback.
+
+Note dialog feature requires neovim >= 0.4.0 or vim >= 8.2.0750 to work.
+
+See |coc-config-dialog| for available configurations.
+
+------------------------------------------------------------------------------
+
+							*coc-dialog-basic*
+
+A basic dialog is create by 'window.showDialog' api, which is just some texts
+with optional buttons.
+
+------------------------------------------------------------------------------
+
+							*coc-dialog-confirm*
+
+A confirm dialog is used for user to confirm an action, normally created by
+`window.showPrompt()` Confirm dialog uses filter feature on vim8 and
+|getchar()| on neoivm.
+
+The difference is you can operate vim on vim8, but not on neovim.
+
+Supported key-mappings:
+
+<C-c>         - force cancel, return -1 for callback.
+<esc>, n, N   - reject the action, return 0 for callback.
+y,Y           - accept the action, return 1 for callback.
+
+------------------------------------------------------------------------------
+
+							*coc-dialog-input*
+
+A input dialog request user input with optional default value, normally
+created by `window.requestInput`, when `"coc.preferences.promptInput"` is
+false, vim's commandline input prompt is used instead.
+
+Supported key-mappings:
+
+<C-a>         - move cursor to first col.
+<C-e>         - move cursor to last col.
+<esc>         - cancel input, an empty string is received by callback.
+<cr>          - confirm current input.
+
+And other insert mode key-mappings that your neovim provided.
+
+------------------------------------------------------------------------------
+
+							*coc-dialog-menu*
+
+A menu dialog is shown aside current cursor position for pick a single item
+from list of items, |coc-codeaction| uses menu dialog by default when it's
+supported, extensions could use `window.showMenuPicker` to create menu
+dialog.
+
+Supported key-mappings:
+
+<Esc> <C-c>          - cancel selection.
+<cr>                 - confirm selection of current item.
+1-9                  - select item with 1 based index.
+g                    - move to first item.
+G                    - move to last item.
+j <tab> <down> <C-n> - move to next item.
+k <s-tab> <up> <C-p> - move to previous item.
+<C-f>                - scroll forward.
+<C-b>                - scroll backward.
+
+------------------------------------------------------------------------------
+
+							*coc-dialog-picker*
+
+A picker dialog is used for multiple selection. On neovim, it's possible to
+toggle selection by mouse click inside the bracket. Extensions could use
+`window.showPickerDialog` to create picker dialog.
+
+Supported key-mappings:
+
+<Esc> <C-c>          - cancel selection.
+<cr>                 - confirm selection of selected items.
+<space>              - toggle selection of current item.
+g                    - move to first item.
+G                    - move to last item.
+j <tab> <down> <C-n> - move to next item.
+k <s-tab> <up> <C-p> - move to previous item.
+<C-f>                - scroll forward.
+<C-b>                - scroll backward.
+
+Note when close button is clicked, the selection is canceled with undefined
+result (same as <esc>).
+
+==============================================================================
+
 STATUSLINE SUPPORT					*coc-status*
 
 Diagnostics info and other status info contributed by extensions could be
@@ -2992,7 +3224,7 @@ Use configuration like: >
 	\ },
 	\ }
 
-  " Use auocmd to force lightline update.
+  " Use autocmd to force lightline update.
   autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 <
 ==============================================================================
@@ -3023,7 +3255,7 @@ A:	On neovim, coc.nvim uses background neovim instance which load syntax
 Q: 	I don't have float/popup window shown up.
 
 A: 	For vim8,  make sure `echo has('textprop') && has('patch-8.1.1719')`
-	echo 1. For neovim, you need neovim >= 0.4.3.
+	echo 1. For neovim, you need neovim >= 0.4.0.
 
 
 ==============================================================================

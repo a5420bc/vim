@@ -22,18 +22,9 @@ function! s:checkVersion() abort
       echohl None
       sleep 2
     else
-      if has('nvim') && !has('nvim-0.4.3')
+      if !has('nvim-0.4.0') && !has('patch-8.1.1719')
         echohl WarningMsg
-        echom "coc.nvim works best on neovim >= 0.4.3, consider upgrade your neovim."
-        echom "You can add this to your vimrc to avoid this message:"
-        echom "    let g:coc_disable_startup_warning = 1"
-        echom "Note that some features may behave incorrectly."
-        echohl None
-        sleep 2
-      elseif !has('nvim') && !has('patch-8.1.1719')
-        echohl WarningMsg
-        echom "coc.nvim need vim >= 8.1.1719 to support features like popup and text property."
-        echom "Consider upgrade your vim for better experience."
+        echom "coc.nvim works best on vim >= 8.1.1719 and neovim >= 0.4.0, consider upgrade your vim."
         echom "You can add this to your vimrc to avoid this message:"
         echom "    let g:coc_disable_startup_warning = 1"
         echom "Note that some features may behave incorrectly."
@@ -66,7 +57,21 @@ function! CocTagFunc(pattern, flags, info) abort
   return coc#rpc#request('getTagList', [])
 endfunction
 
+function! CocPopupCallback(bufnr, arglist) abort
+  if len(a:arglist) == 2
+    if a:arglist[0] == 'confirm'
+      call coc#rpc#notify('PromptInsert', [a:arglist[1]])
+    elseif a:arglist[0] == 'exit'
+      execute 'silent! bd! '.a:bufnr
+      "call coc#rpc#notify('PromptUpdate', [a:arglist[1]])
+    endif
+  endif
+endfunction
+
 function! CocAction(name, ...) abort
+  if !get(g:, 'coc_service_initialized', 0)
+    throw 'coc.nvim not ready when invoke CocAction "'.a:name.'"'
+  endif
   return coc#rpc#request(a:name, a:000)
 endfunction
 
@@ -151,7 +156,16 @@ endfunction
 function! s:OpenConfig()
   let home = coc#util#get_config_home()
   if !isdirectory(home)
-    call mkdir(home, 'p')
+    echohl MoreMsg
+    echom 'Config directory "'.home.'" not exists, create? (y/n)'
+    echohl None
+    let confirm = nr2char(getchar())
+    redraw!
+    if !(confirm ==? "y" || confirm ==? "\r")
+      return
+    else
+      call mkdir(home, 'p')
+    end
   endif
   execute 'edit '.home.'/coc-settings.json'
 endfunction
@@ -270,10 +284,9 @@ function! s:Enable(initialize)
         autocmd WinClosed       * call coc#float#close_related(+expand('<afile>'))
       endif
     endif
-    if has('nvim-0.4.3') || has('patch-8.1.1719')
+    if has('nvim-0.4.0') || has('patch-8.1.1719')
       autocmd CursorHold        * call coc#float#check_related()
     endif
-    autocmd WinLeave            * call coc#util#clear_highlights()
     autocmd WinLeave            * call s:Autocmd('WinLeave', win_getid())
     autocmd WinEnter            * call s:Autocmd('WinEnter', win_getid())
     autocmd BufWinLeave         * call s:Autocmd('BufWinLeave', +expand('<abuf>'), bufwinid(+expand('<abuf>')))
@@ -296,7 +309,7 @@ function! s:Enable(initialize)
     autocmd CursorHold          * call s:Autocmd('CursorHold', +expand('<abuf>'))
     autocmd CursorHoldI         * call s:Autocmd('CursorHoldI', +expand('<abuf>'))
     autocmd BufNewFile,BufReadPost * call s:Autocmd('BufCreate', +expand('<abuf>'))
-    autocmd BufUnload           * call s:SyncAutocmd('BufUnload', +expand('<abuf>'))
+    autocmd BufUnload           * call s:Autocmd('BufUnload', +expand('<abuf>'))
     autocmd BufWritePre         * call s:SyncAutocmd('BufWritePre', +expand('<abuf>'))
     autocmd FocusGained         * if mode() !~# '^c' | call s:Autocmd('FocusGained') | endif
     autocmd VimResized          * call s:Autocmd('VimResized', &columns, &lines)
@@ -314,14 +327,18 @@ function! s:Enable(initialize)
 endfunction
 
 function! s:Hi() abort
-  hi default CocUnderline    cterm=underline gui=underline
-  hi default CocBold         term=bold cterm=bold gui=bold
   hi default CocErrorSign    ctermfg=Red     guifg=#ff0000 guibg=NONE
   hi default CocWarningSign  ctermfg=Brown   guifg=#ff922b guibg=NONE
   hi default CocInfoSign     ctermfg=Yellow  guifg=#fab005 guibg=NONE
   hi default CocHintSign     ctermfg=Blue    guifg=#15aabf guibg=NONE
   hi default CocSelectedText ctermfg=Red     guifg=#fb4934 guibg=NONE
   hi default CocCodeLens     ctermfg=Gray    guifg=#999999 guibg=NONE
+  hi default CocUnderline    cterm=underline gui=underline
+  hi default CocBold         term=bold cterm=bold gui=bold
+  hi default CocItalic       term=italic cterm=italic gui=italic
+  hi default CocMarkdownLink ctermfg=Blue    guifg=#15aabf guibg=NONE
+  hi default link CocMarkdownCode     markdownCode
+  hi default link CocMarkdownHeader   markdownH1
   hi default link CocMenuSel          PmenuSel
   hi default link CocErrorFloat       CocErrorSign
   hi default link CocWarningFloat     CocWarningSign
@@ -342,6 +359,9 @@ function! s:Hi() abort
     hi default link CocFloating NormalFloat
   else
     hi default link CocFloating Pmenu
+  endif
+  if !exists('*sign_getdefined') || empty(sign_getdefined('CocCurrentLine'))
+    sign define CocCurrentLine linehl=CocMenuSel
   endif
   if has('nvim-0.5.0')
     hi default CocCursorTransparent gui=strikethrough blend=100
@@ -383,17 +403,9 @@ function! s:ShowInfo()
       endif
     endif
     " check bundle
-    let file = s:root.'/bin/server.js'
-    if filereadable(file)
-      let file = s:root.'/lib/attach.js'
-      if !filereadable(file)
-        call add(lines, 'Error: javascript bundle not found, please compile the code of coc.nvim.')
-      endif
-    else
-      let file = s:root.'/build/index.js'
-      if !filereadable(file)
-        call add(lines, 'Error: javascript bundle not found, please remove coc.nvim folder and reinstall it.')
-      endif
+    let file = s:root.'/build/index.js'
+    if !filereadable(file)
+      call add(lines, 'Error: javascript bundle not found, please compile code of coc.nvim by esbuild.')
     endif
     if !empty(lines)
       belowright vnew
@@ -425,6 +437,7 @@ command! -nargs=+ -complete=custom,s:ExtensionList  CocUninstall :call CocAction
 command! -nargs=* -complete=custom,s:CommandList -range CocCommand :call coc#rpc#notify('runCommand', [<f-args>])
 command! -nargs=* -complete=custom,coc#list#options CocList      :call coc#rpc#notify('openList',  [<f-args>])
 command! -nargs=? -complete=custom,coc#list#names CocListResume   :call coc#rpc#notify('listResume', [<f-args>])
+command! -nargs=0 -complete=custom,coc#list#names CocListCancel   :call coc#rpc#notify('listCancel', [])
 command! -nargs=? -complete=custom,coc#list#names CocPrev         :call coc#rpc#notify('listPrev', [<f-args>])
 command! -nargs=? -complete=custom,coc#list#names CocNext         :call coc#rpc#notify('listNext', [<f-args>])
 command! -nargs=? -complete=custom,coc#list#names CocFirst        :call coc#rpc#notify('listFirst', [<f-args>])

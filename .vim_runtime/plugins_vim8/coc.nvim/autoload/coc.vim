@@ -1,7 +1,6 @@
 let g:coc#_context = {'start': 0, 'preselect': -1,'candidates': []}
 let g:coc_user_config = get(g:, 'coc_user_config', {})
 let g:coc_global_extensions = get(g:, 'coc_global_extensions', [])
-let g:coc_cygqwin_path_prefixes = get(g:, 'coc_cygqwin_path_prefixes', {})
 let g:coc_selected_text = ''
 let g:coc_vim_commands = []
 let s:watched_keys = []
@@ -102,9 +101,10 @@ endfunction
 
 function! coc#_cancel()
   " hack for close pum
-  if pumvisible() && &paste != 1
+  if pumvisible()
     let g:coc#_context = {'start': 0, 'preselect': -1,'candidates': []}
     call feedkeys("\<Plug>CocRefresh", 'i')
+    call coc#rpc#notify('stopCompletion', [])
   endif
 endfunction
 
