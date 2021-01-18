@@ -46,7 +46,6 @@ let g:terminal_default_mapping=0
 " vimspector
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:vimspector_enable_mappings = 'HUMAN'
-packadd! vimspector
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " coc.nvim
