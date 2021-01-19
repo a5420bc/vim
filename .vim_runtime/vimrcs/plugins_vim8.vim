@@ -18,7 +18,10 @@ nnoremap   <silent>  tl   :CocList floaterm<CR>
 " 强制关闭所有term
 nnoremap   <silent>  <M-k>   :FloatermKill!<CR>
 " 方便跳到其他的窗口
+noremap <silent><M-k>  <C-w>k
 tnoremap <silent><M-k>    <C-\><C-n>:<C-u>wincmd k<CR>
+
+noremap <silent><M-j>  <C-w>j
 tnoremap <silent><M-j>  <C-\><C-n>:<C-u>wincmd j<CR>
 
 " 退出term插入模式
@@ -38,6 +41,40 @@ let g:floaterm_autoclose=2
 " 默认进入到项目的root目录
 let g:floaterm_rootmarkers = ['.project', '.git', '.hg', '.svn', '.root', '.gitignore']
 
+function! s:run_in_floaterm(opts)
+  execute 'FloatermNew --position=bottomright' .
+                   \ ' --wintype=float' .
+                   \ ' --height=0.4' .
+                   \ ' --width=0.4' .
+                   \ ' --title=floaterm_runner' .
+                   \ ' --autoclose=0' .
+                   \ ' --silent=' . get(a:opts, 'silent', 0)
+                   \ ' --cwd=' . a:opts.cwd
+                   \ ' ' . a:opts.cmd
+  " Do not focus on floaterm window, and close it once cursor moves
+  " If you want to jump to the floaterm window, use <C-w>p
+  " You can choose whether to use the following code or not
+  stopinsert | noa wincmd p
+  augroup close-floaterm-runner
+    autocmd!
+    autocmd CursorMoved,InsertEnter * ++nested
+          \ call timer_start(100, { -> s:close_floaterm_runner() })
+  augroup END
+endfunction
+function! s:close_floaterm_runner() abort
+  if &ft == 'floaterm' | return | endif
+  for b in tabpagebuflist()
+    if getbufvar(b, '&ft') == 'floaterm' &&
+          \ getbufvar(b, 'floaterm_jobexists') == v:false
+      execute b 'bwipeout!'
+      break
+    endif
+  endfor
+  autocmd! close-floaterm-runner
+endfunction
+let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
+let g:asyncrun_runner.floaterm = function('s:run_in_floaterm')
+let g:asynctasks_term_pos = 'floaterm'
 
 " 禁止vim-terminal-help默认快捷键
 let g:terminal_default_mapping=0
