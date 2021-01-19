@@ -32,4 +32,10 @@ else
     sed -i  '/plugins_vim7/s/^/\"/' ~/vim/.vim_runtime/vimrcs/plugins_config.vim
 fi
 
+if [[ ! -d "~/.vim" ]]; then
+    mkdir -p ~/.vim
+fi
+
+cp ~/vim/.vim_runtime/config/tasks.ini ~/.vim/tasks.ini
+
 echo "Installed the Ultimate Vim configuration successfully! Enjoy :-)"
