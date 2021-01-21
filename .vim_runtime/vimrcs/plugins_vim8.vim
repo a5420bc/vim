@@ -6,17 +6,21 @@ autocmd ExitPre * :FloatermKill!<CR>
 
 " 设置快捷键
 " terminal开关
-nnoremap   <silent>  <M-o>   :FloatermToggle<CR>
-tnoremap <silent> <M-o> <c-\><c-n>:FloatermToggle<cr>
-" 跳到其他窗口时直接Hidden
+let g:floaterm_keymap_toggle='<M-o>'
+
+" Hidden窗口
 nnoremap <silent> <M-i> :FloatermHide!<CR>
+
 " 新建窗口
-nmap <silent> <M-a> :FloatermNew<cr>
-tnoremap <silent> <M-a> <c-\><c-n>:FloatermNew<CR>
+let g:floaterm_keymap_new = "<M-a>"
+
 " 列出当前所有term
-nnoremap   <silent>  tl   :CocList floaterm<CR>
+nnoremap   <silent>  <M-s>   :CocList floaterm<CR>
+
 " 强制关闭所有term
-nnoremap   <silent>  <M-k>   :FloatermKill!<CR>
+nnoremap   <silent>  <M-t>   :FloatermKill!<CR>
+tnoremap <silent> <M-t> <C-\><C-n>:FloatermKill!<CR>
+
 " 方便跳到其他的窗口
 noremap <silent><M-k>  <C-w>k
 tnoremap <silent><M-k>    <C-\><C-n>:<C-u>wincmd k<CR>
@@ -42,10 +46,9 @@ let g:floaterm_autoclose=2
 let g:floaterm_rootmarkers = ['.project', '.git', '.hg', '.svn', '.root', '.gitignore']
 
 function! s:run_in_floaterm(opts)
-  execute 'FloatermNew --position=bottomright' .
-                   \ ' --wintype=float' .
-                   \ ' --height=0.4' .
-                   \ ' --width=0.4' .
+  execute 'FloatermNew! --position=bottomright' .
+                   \ ' --wintype=normal' .
+                   \ ' --height=0.25' .
                    \ ' --title=floaterm_runner' .
                    \ ' --autoclose=0' .
                    \ ' --silent=' . get(a:opts, 'silent', 0)
@@ -82,7 +85,34 @@ let g:terminal_default_mapping=0
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vimspector
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:vimspector_enable_mappings = 'HUMAN'
+nmap <F2>        <Plug>VimspectorStepOver
+nmap <F3>        <Plug>VimspectorStepInto
+nmap <F4>        <Plug>VimspectorStepOut
+
+nmap <F5> :call <sid>debug_start()<CR>
+function! s:debug_start() abort
+    exe "AsyncTask debug-start"
+    call vimspector#Continue()
+endfunction
+
+nmap <F6> :call <sid>debug_stop()<CR>
+function! s:debug_stop() abort
+    exe "AsyncTask debug-stop"
+    call vimspector#Stop()
+endfunction
+
+nmap <F9>         <Plug>VimspectorToggleBreakpoint
+nmap <leader><F9> <Plug>VimspectorToggleConditionalBreakpoint
+nmap <F8>         <Plug>VimspectorAddFunctionBreakpoint
+nmap <leader><F8> <Plug>VimspectorRunToCursor
+
+nmap<F10> :call <sid>debug_restart()<CR>
+function! s:debug_restart() abort
+    exe "AsynTask debug-stop"
+    exe "AsyncTask debug-start"
+    call vimspector#Restart()
+endfunction
+nmap <F11>         <Plug>VimspectorPause
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " coc.nvim
