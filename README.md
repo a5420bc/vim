@@ -8,7 +8,7 @@
 * rg
 * git > 1.5 
 
-参考[依赖安装](REQUIREMENT.md)
+可通过[install_dependence_awesome_vim8.sh](install_dependence_awesome_vim8.sh)安装或者参考[依赖安装](REQUIREMENT.md)
 
 ## 安装
 
