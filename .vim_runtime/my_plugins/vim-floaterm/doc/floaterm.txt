@@ -25,11 +25,12 @@ Use (neo)vim terminal in the floating/popup window.
 
 - NeoVim |api-floatwin| and Vim8 |popup-window| support
 - Open and toggle terminal window quickly
-- Multiple terminal instances
-- Customizable floating terminal style
+- Manage multiple terminal instances
+- Customizable terminal window style
 - Switch/Preview floating terminal buffers using fuzzy finder plugins such as
   |vim-clap|, |denite.nvim|, |coc.nvim|, |fzf.vim| and |LeaderF|.
 - Integrate with other external command-line tools(ranger, lf, fzf, etc.)
+- Autocompletion from within floaterms(require |coc.nvim|)
 - Use as a custom task runner for |asynctasks.vim|
 ==============================================================================
 OPTIONS                                          *floaterm-options*
@@ -47,8 +48,8 @@ g:floaterm_title                                 *g:floaterm_title*
 
 g:floaterm_wintype                               *g:floaterm_wintype*
     Type |String|.
-	'floating'(neovim) or 'popup'(vim) by default. Set it to 'normal' if your
-	vim/nvim doesn't support |api-floatwin| or |popup-window|.
+    'float'(nvim's floatwin or vim's popupwin) by default. Set it to 'normal'
+    if your vim/nvim doesn't support |api-floatwin| or |popup-window|.
 
 g:floaterm_width                                 *g:floaterm_width*
     Type: |Number| (number of columns) or |Float| (between 0 and 1).
@@ -60,32 +61,28 @@ g:floaterm_height                                *g:floaterm_height*
     If |Float|, the height is relative to 'lines'.
     Default value is 0.6.
 
-g:floaterm_winblend                              *g:floaterm_winblend*
-	Type |Number|(0-100).
-	The transparency of the floating terminal. Only works in neovim.
-    Default value is 0.
-
 g:floaterm_position                              *g:floaterm_position*
 	Type |String|.
 	The position of the floaterm window.
 	If |g:floaterm_wintype| is 'normal', the value can be 'top', 'right',
 	'bottom', 'left'. Default value is 'bottom'.
-	If |g:floaterm_wintype| is 'floating' or 'popup', the value can be 'top',
-	'right', 'bottom', 'left', 'center', 'topleft', 'topright', 'bottomleft',
-	'bottomright', 'auto'(at the cursor place). Default value is 'center'.
+    If |g:floaterm_wintype| is 'popup', the value can be 'top', 'right', 'bottom',
+    'left', 'center', 'topleft', 'topright', 'bottomleft', 'bottomright',
+    'auto'(at the cursor place). Default value is 'center'.
 
 g:floaterm_borderchars                           *g:floaterm_borderchars*
-	Type |List| of |String|.
-	Characters of the floating window border.
-    Default value is ['─', '│', '─', '│', '┌', '┐', '┘', '└'].
+	Type |String|.
+    8 characters of the floating window border(top, right, bottom, left, topleft,
+    topright, botright, botleft).
+    Default value is '─│─│┌┐┘└'.
 
 g:floaterm_rootmarkers                           *g:floaterm_rootmarkers*
-	Type |List| of |String|.
-	Markers used to detect the project root directory. If not empty, floaterm
-	will be opened in the project root directory. For example, ['.project',
-	'.git', '.hg', '.svn', '.root', '.gitignore'].
-	Default value is [], which means the floaterm will be opened just at the
-	current directory.
+    Type |List| of |String|.
+    Markers used to detect the project root directory when running 
+    >
+        :FloatermNew --cwd=<root>
+<
+    Default: `['.project', '.git', '.hg', '.svn', '.root']`
 
 g:floaterm_open_command                          *g:floaterm_open_command*
 	Type |String|.
@@ -120,6 +117,20 @@ g:floaterm_autohide                              *g:floaterm_autohide*
 	Decide whether to hide previous floaterms before switching to or opening
 	another one.
 	Default value is |v:true|.
+
+g:floaterm_complete_options                      *g:floaterm_complete_options*
+    Type |Dict|.
+    Autocompletion options used for coc.nvim.
+    Available options:
+        - `shortcut`: a string
+        - `priority`: number between 0-99
+        - `filetypes`: array of filetype names this source should be triggered
+            by.  Available for all filetypes when ommited and for no filetypes
+            when empty
+        - `firstMatch`: if not falsy, only the completion item that has the
+            first letter matching the user input will be shown
+        - `triggerCharacters`: trigger characters for this source.
+    Default value: `{'shortcut': 'floaterm', 'priority': 5}`
 
 ==============================================================================
 MAPPINGS                                         *floaterm-mappings*
@@ -206,21 +217,17 @@ https://github.com/voldikss/vim-floaterm#commands
 HIGHLIGHT                                        *floaterm-highlight*
 
 This plugin provides two |highlight-groups| to specify the bg/fg color of
-floaterm(also the border color if |g:floaterm_wintype| is 'floating' or
-'popup')window.
+floaterm (also the border color if |g:floaterm_wintype| is 'float')window.
 
-By default, they are both linked to |hl-Normal|. To customize, use |hi|
-command together with the colors you prefer.  For example,
+To customize, use |hi| command together with the colors you prefer.  For example,
  >
-
 	" Set floaterm window's background to black
 	hi Floaterm guibg=black
 	" Set floating window border line color to cyan, and background to orange
 	hi FloatermBorder guibg=orange guifg=cyan
 <
 Besides, there is a neovim only |hi-group| which can be used to configure
-no-current-focused window(:help |hl-NormalNC|). It's also linked to
-|hi-Normal| by default.
+no-current-focused window(:help |hl-NormalNC|).
 
 ==============================================================================
 EXTENSIONS                                       *floaterm-extensions*
@@ -312,23 +319,41 @@ This plugin can be a runner for |asynctasks.vim|. To use it, copy the
 following code to your `vimrc` set |g:asynctasks_term_pos| to `'floaterm'` or
 add a `pos=floaterm` filed in your asynctasks configuration files.
  >
-	function! s:runner_proc(opts)
-	let curr_bufnr = floaterm#curr()
-	if has_key(a:opts, 'silent') && a:opts.silent == 1
-		FloatermHide!
-	endif
-	let cmd = 'cd ' . shellescape(getcwd())
-	call floaterm#terminal#send(curr_bufnr, [cmd])
-	call floaterm#terminal#send(curr_bufnr, [a:opts.cmd])
-	stopinsert
-	if &filetype == 'floaterm' && g:floaterm_autoinsert
-		call floaterm#util#startinsert()
-	endif
-	endfunction
-
-	let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
-	let g:asyncrun_runner.floaterm = function('s:runner_proc')
-<
+    function! s:run_in_floaterm(opts)
+        execute 'FloatermNew --position=bottomright' .
+                        \ ' --wintype=float' .
+                        \ ' --height=0.4' .
+                        \ ' --width=0.4' .
+                        \ ' --title=floaterm_runner' .
+                        \ ' --autoclose=0' .
+                        \ ' --silent=' . get(a:opts, 'silent', 0)
+                        \ ' --cwd=' . a:opts.cwd
+                        \ ' ' . a:opts.cmd
+        " Do not focus on floaterm window, and close it once cursor moves
+        " If you want to jump to the floaterm window, use <C-w>p
+        " You can choose whether to use the following code or not
+        stopinsert | noa wincmd p
+        augroup close-floaterm-runner
+            autocmd!
+            autocmd CursorMoved,InsertEnter * ++nested
+                \ call timer_start(100, { -> s:close_floaterm_runner() })
+        augroup END
+    endfunction
+    function! s:close_floaterm_runner() abort
+        if &ft == 'floaterm' | return | endif
+        for b in tabpagebuflist()
+            if getbufvar(b, '&ft') == 'floaterm' &&
+                \ getbufvar(b, 'floaterm_jobexists') == v:false
+            execute b 'bwipeout!'
+            break
+            endif
+        endfor
+        autocmd! close-floaterm-runner
+    endfunction
+    let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
+    let g:asyncrun_runner.floaterm = function('s:run_in_floaterm')
+    let g:asynctasks_term_pos = 'floaterm'
+    <
 Then your task will be ran in the floaterm instance. See
 https://github.com/skywind3000/asynctasks.vim/wiki/Customize-Runner for more
 information.

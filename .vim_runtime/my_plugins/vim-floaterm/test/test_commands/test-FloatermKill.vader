@@ -1,0 +1,52 @@
+" vim:ft=vim
+
+Execute(test-FloatermKill):
+  function! IsBufValid(bufnr) abort
+    return bufexists(a:bufnr) && floaterm#terminal#jobexists(a:bufnr)
+  endfunction
+
+  Log '# FloatermKill'
+    FloatermNew
+    AssertEqual 'floaterm', &filetype
+    FloatermKill
+    AssertEqual '', &filetype
+
+  Log '# FloatermKill!'
+    FloatermNew
+    let bufnr1 = bufnr('%')
+    FloatermNew
+    let bufnr2 = bufnr('%')
+
+    FloatermKill!
+    AssertEqual 0, IsBufValid(bufnr1)
+    AssertEqual 0, IsBufValid(bufnr2)
+
+  Log '# [N]FloatermKill'
+    FloatermNew
+    let bufnr1 = bufnr('%')
+    FloatermNew
+    let bufnr2 = bufnr('%')
+
+    FloatermHide " otherwise vim8 testing fails
+    execute bufnr1 . 'FloatermKill'
+    AssertEqual 0, IsBufValid(bufnr1)
+    AssertEqual 1, IsBufValid(bufnr2)
+    execute bufnr2 . 'FloatermKill'
+    AssertEqual 0, IsBufValid(bufnr1)
+    AssertEqual 0, IsBufValid(bufnr2)
+
+  Log '# FloatermKill --name'
+    FloatermNew --name=ft1
+    let bufnr1 = bufnr('%')
+    FloatermNew --name=ft2
+    let bufnr2 = bufnr('%')
+
+    FloatermKill ft1
+    AssertEqual 0, IsBufValid(bufnr1)
+    AssertEqual 1, IsBufValid(bufnr2)
+    FloatermKill ft2
+    AssertEqual 0, IsBufValid(bufnr1)
+    AssertEqual 0, IsBufValid(bufnr2)
+
+  FloatermKill!
+  stopinsert

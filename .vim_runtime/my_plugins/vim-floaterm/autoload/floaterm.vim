@@ -37,22 +37,20 @@ endif
 
 " ----------------------------------------------------------------------------
 " wrapper function for `floaterm#new()` and `floaterm#update()` since they
-" share the same argument: `opts`
+" share the same argument: `config`
 " ----------------------------------------------------------------------------
 function! floaterm#run(action, bang, ...) abort
-  let [cmd, opts] = floaterm#cmdline#parse(a:000)
+  let [cmd, config] = floaterm#cmdline#parse(a:000)
   if a:action == 'new'
-    call floaterm#new(a:bang, cmd, {}, opts)
+    call floaterm#new(a:bang, cmd, {}, config)
   elseif a:action == 'update'
-    call floaterm#update(opts)
+    call floaterm#update(config)
   endif
 endfunction
 
-" ----------------------------------------------------------------------------
-" create a floaterm. `jobopts` is not used inside this pugin actually, it's
-" reserved for outer invoke
-" ----------------------------------------------------------------------------
-function! floaterm#new(bang, cmd, jobopts, opts) abort
+" create a floaterm. return bufnr of the terminal
+" argument `jobopts` is passed by user in the case using this function as API
+function! floaterm#new(bang, cmd, jobopts, config) abort
   call floaterm#util#autohide()
   if a:cmd != ''
     let wrappers_path = globpath(&runtimepath, 'autoload/floaterm/wrapper/*vim', 0, 1)
@@ -62,19 +60,19 @@ function! floaterm#new(bang, cmd, jobopts, opts) abort
       let WrapFunc = function(printf('floaterm#wrapper#%s#', maybe_wrapper))
       let [name, jobopts, send2shell] = WrapFunc(a:cmd)
       if send2shell
-        let bufnr = floaterm#terminal#open(-1, g:floaterm_shell, {}, a:opts)
+        let bufnr = floaterm#terminal#open(-1, g:floaterm_shell, {}, a:config)
         call floaterm#terminal#send(bufnr, [name])
       else
-        let bufnr = floaterm#terminal#open(-1, name, jobopts, a:opts)
+        let bufnr = floaterm#terminal#open(-1, name, jobopts, a:config)
       endif
     elseif a:bang
-      let bufnr = floaterm#terminal#open(-1, g:floaterm_shell, a:jobopts, a:opts)
+      let bufnr = floaterm#terminal#open(-1, g:floaterm_shell, a:jobopts, a:config)
       call floaterm#terminal#send(bufnr, [a:cmd])
     else
-      let bufnr = floaterm#terminal#open(-1, a:cmd, a:jobopts, a:opts)
+      let bufnr = floaterm#terminal#open(-1, a:cmd, a:jobopts, a:config)
     endif
   else
-    let bufnr = floaterm#terminal#open(-1, g:floaterm_shell, a:jobopts, a:opts)
+    let bufnr = floaterm#terminal#open(-1, g:floaterm_shell, a:jobopts, a:config)
   endif
   return bufnr
 endfunction
@@ -84,10 +82,10 @@ endfunction
 " ----------------------------------------------------------------------------
 function! floaterm#toggle(bang, bufnr, name)  abort
   if a:bang
-    let found_winnr = floaterm#window#find_floaterm_window()
+    let found_winnr = floaterm#window#find()
     if found_winnr > 0
       for bufnr in floaterm#buflist#gather()
-        call floaterm#window#hide_floaterm(bufnr)
+        call floaterm#window#hide(bufnr)
       endfor
     else
       for bufnr in floaterm#buflist#gather()
@@ -106,9 +104,9 @@ function! floaterm#toggle(bang, bufnr, name)  abort
     call floaterm#new(a:bang, '', {}, {'name': a:name})
   elseif bufnr == 0
     if &filetype == 'floaterm'
-      call floaterm#window#hide_floaterm(bufnr('%'))
+      call floaterm#window#hide(bufnr('%'))
     else
-      let found_winnr = floaterm#window#find_floaterm_window()
+      let found_winnr = floaterm#window#find()
       if found_winnr > 0
         noautocmd execute found_winnr . 'wincmd w'
       else
@@ -117,7 +115,7 @@ function! floaterm#toggle(bang, bufnr, name)  abort
     endif
   elseif getbufvar(bufnr, 'floaterm_winid', -1) != -1
     if bufnr == bufnr('%')
-      call floaterm#window#hide_floaterm(bufnr)
+      call floaterm#window#hide(bufnr)
     elseif bufwinnr(bufnr) > -1
       noautocmd execute bufwinnr(bufnr) . 'wincmd w'
     else
@@ -131,15 +129,15 @@ endfunction
 " ----------------------------------------------------------------------------
 " update the attributes of a floaterm
 " ----------------------------------------------------------------------------
-function! floaterm#update(opts) abort
+function! floaterm#update(config) abort
   if &filetype !=# 'floaterm'
-    call floaterm#util#show_msg('You have to be in a floaterm window to change window opts.', 'error')
+    call floaterm#util#show_msg('You have to be in a floaterm window to change window config.', 'error')
     return
   endif
 
   let bufnr = bufnr('%')
-  call floaterm#window#hide_floaterm(bufnr)
-  call floaterm#util#update_opts(bufnr, a:opts)
+  call floaterm#window#hide(bufnr)
+  call floaterm#buffer#set_config_dict(bufnr, a:config)
   call floaterm#terminal#open_existing(bufnr)
 endfunction
 
@@ -245,7 +243,7 @@ endfunction
 function! floaterm#hide(bang, bufnr, name) abort
   if a:bang
     for bufnr in floaterm#buflist#gather()
-      call floaterm#window#hide_floaterm(bufnr)
+      call floaterm#window#hide(bufnr)
     endfor
     return
   endif
@@ -259,21 +257,21 @@ function! floaterm#hide(bang, bufnr, name) abort
   endif
 
   if bufnr > 0
-    call floaterm#window#hide_floaterm(bufnr)
+    call floaterm#window#hide(bufnr)
   else
     call floaterm#util#show_msg('No floaterms with the bufnr or name', 'error')
   endif
 endfunction
 
-function! floaterm#send(bang, mode, range, line1, line2, argstr) abort
+function! floaterm#send(bang, visualmode, range, line1, line2, argstr) abort
   if &filetype ==# 'floaterm'
     let msg = "FloatermSend can't be used in the floaterm window"
     call floaterm#util#show_msg(msg, 'warning')
     return
   endif
 
-  let [cmd, opts] = floaterm#cmdline#parse(split(a:argstr))
-  let termname = get(opts, 'termname', '')
+  let [cmd, config] = floaterm#cmdline#parse(split(a:argstr))
+  let termname = get(config, 'termname', '')
   if !empty(termname)
     let bufnr = floaterm#terminal#get_bufnr(termname)
     if bufnr == -1
@@ -292,45 +290,14 @@ function! floaterm#send(bang, mode, range, line1, line2, argstr) abort
     return
   endif
 
-  if a:range == 0
-    let lines = [getline('.')]
-  elseif a:range == 1
-    let lines = [getline(a:line1)]
-  else
-    " https://stackoverflow.com/a/61486601/8554147
-    let [lnum1, col1] = getpos("'<")[1:2]
-    let [lnum2, col2] = getpos("'>")[1:2]
-    let lines = getline(lnum1, lnum2)
-    if empty(lines)
-      call floaterm#util#show_msg('No lines were selected', 'error')
-      return
-    endif
-    if a:mode ==# 'v'
-      let lines[-1] = lines[-1][: col2 - (&selection == 'inclusive' ? 1 : 2)]
-      let lines[0] = lines[0][col1 - 1:]
-    elseif a:mode ==# 'V'
-    elseif a:mode == "\<c-v>"
-      let i = 0
-      for line in lines
-        let lines[i] = line[col1 - 1: col2 - (&selection == 'inclusive' ? 1 : 2)]
-        let i = i + 1
-      endfor
-    endif
+  let lines = floaterm#util#get_selected_text(a:visualmode, a:range, a:line1, a:line2)
+  if empty(lines)
+    call floaterm#util#show_msg('No lines were selected', 'error')
+    return
   endif
 
-  let linelist = []
   if a:bang
-    let line1 = lines[0]
-    let trim_line = substitute(line1, '\v^\s+', '', '')
-    let indent = len(line1) - len(trim_line)
-    for line in lines
-      if line[:indent] =~# '\s\+'
-        let line = line[indent:]
-      endif
-      call add(linelist, line)
-    endfor
-  else
-    let linelist = lines
+    let lines = floaterm#util#leftalign_lines(lines)
   endif
-  call floaterm#terminal#send(bufnr, linelist)
+  call floaterm#terminal#send(bufnr, lines)
 endfunction

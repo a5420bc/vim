@@ -1,0 +1,35 @@
+" vim:ft=vim
+
+Execute(test-wintype):
+  function! IsFloatOrPopup(winid) abort
+    if has('nvim')
+      return has_key(nvim_win_get_config(a:winid), 'anchor')
+    else
+      return win_gettype(a:winid) == 'popup'
+    endif
+  endfunction
+
+  Log '# Set wintype to normal'
+    let g:floaterm_wintype = 'normal'
+    FloatermNew
+    AssertEqual 0,IsFloatOrPopup(win_getid())
+    FloatermNew --wintype=float
+    AssertEqual 1,IsFloatOrPopup(win_getid())
+
+  Log '# Set wintype to float'
+    let g:floaterm_wintype = 'float'
+    FloatermNew
+    AssertEqual 1,IsFloatOrPopup(win_getid())
+    FloatermNew --wintype=normal
+    AssertEqual 0,IsFloatOrPopup(win_getid())
+
+  Log '# Independent wintype value for each floaterm'
+    FloatermNew --wintype=normal
+    FloatermNew --wintype=float
+    FloatermPrev
+    AssertEqual 0,IsFloatOrPopup(win_getid())
+    FloatermNext
+    AssertEqual 1,IsFloatOrPopup(win_getid())
+
+  FloatermKill!
+  stopinsert

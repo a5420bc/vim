@@ -29,7 +29,6 @@ endfunction
 
 function! s:node.is_valid() dict abort
   return bufexists(self.bufnr)
-  " return bufexists(self.bufnr) && floaterm#terminal#jobexists(self.bufnr)
 endfunction
 
 

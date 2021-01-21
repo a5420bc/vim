@@ -13,7 +13,7 @@ call pathogen#infect(s:vim_runtime.'/sources_forked/{}')
 call pathogen#infect(s:vim_runtime.'/sources_non_forked/{}')
 call pathogen#infect(s:vim_runtime.'/my_plugins/{}')
 call pathogen#infect(s:vim_runtime.'/plugins_vim8/{}')
-"""""""""""""call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
+"""""""""""""""""""call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
 call pathogen#helptags()
 
 
@@ -37,14 +37,10 @@ noremap <leader>o :call BufExp()<CR>
 " let MRU_Max_Entries = 400
 " map <leader>m :MRU<CR>
 
-
 """"""""""""""""""""""""""""""
-" => YankStack
+" => coc-yank
 """"""""""""""""""""""""""""""
-let g:yankstack_yank_keys = ['y', 'd']
-
-nmap <leader>, <Plug>yankstack_substitute_older_paste
-nmap <C-n> <Plug>yankstack_substitute_newer_paste
+nnoremap <silent> <m-y> :<C-u>CocList -A --normal yank<CR>
 
 """"""""""""""""""""""""""""""
 " => ZenCoding

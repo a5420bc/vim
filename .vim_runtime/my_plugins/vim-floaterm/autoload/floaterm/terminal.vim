@@ -8,78 +8,139 @@
 let s:channel_map = {}
 let s:is_win = has('win32') || has('win64')
 
-function! s:on_floaterm_close(callback, job, data, ...) abort
-  let bufnr = bufnr('%')
-  if getbufvar(bufnr, '&filetype') != 'floaterm'
-    return
+function! s:on_floaterm_open(bufnr) abort
+  call setbufvar(a:bufnr, '&buflisted', 0)
+  call setbufvar(a:bufnr, '&filetype', 'floaterm')
+  if has('nvim')
+    " TODO: need to be reworked
+    execute printf(
+          \ 'autocmd BufHidden,BufWipeout <buffer=%s> ++once call floaterm#window#hide(%s)',
+          \ a:bufnr,
+          \ a:bufnr
+          \ )
   endif
-  let opts = getbufvar(bufnr, 'floaterm_opts', {})
-  let autoclose = get(opts, 'autoclose', 0)
+endfunction
+
+function! s:on_floaterm_close(bufnr, callback, job, data, ...) abort
+  if a:bufnr == -1
+    " In vim, buffnr is not known before starting a job, therefore, it's
+    " impossible to pass the bufnr to a job's callback function. Also change
+    " callback after a job was spawned seem not feasible. Therefore, iterate s:
+    " channel_map and get the bufnr whose channel matches the channel of a:job
+    for [buf, chan] in items(s:channel_map)
+      if chan == job_getchannel(a:job)
+        let bufnr = str2nr(buf)
+        break
+      endif
+    endfor
+  else
+    let bufnr = a:bufnr
+  endif
+  call setbufvar(bufnr, '&bufhidden', 'wipe')
+  call floaterm#buffer#set_config(bufnr, 'jobexists', v:false)
+  let autoclose = floaterm#buffer#get_config(bufnr, 'autoclose', 0)
   if (autoclose == 1 && a:data == 0) || (autoclose == 2) || (a:callback isnot v:null)
-    call floaterm#window#hide_floaterm(bufnr)
-    try
-      execute bufnr . 'bdelete!'
-    catch
-    endtry
-    doautocmd BufDelete   "call lightline#update()
+    call floaterm#window#hide(bufnr)
+    " if the floaterm is created with --silent, delete the buffer explicitly
+    silent! execute bufnr . 'bdelete!'
+    " update lightline
+    doautocmd BufDelete
   endif
   if a:callback isnot v:null
     call a:callback(a:job, a:data, 'exit')
   endif
 endfunction
 
-function! floaterm#terminal#open(bufnr, cmd, jobopts, opts) abort
-  " for vim's popup, must close popup can we open and jump to a new window
-  if !has('nvim')
-    call floaterm#window#hide_floaterm(bufnr('%'))
+" config: local configuration of a specific floaterm, including:
+" cwd, name, width, height, title, silent, wintype, position, autoclose, etc.
+function! floaterm#terminal#open(bufnr, cmd, jobopts, config) abort
+  " vim8: must close popup can we open and jump to a new window
+  if !has('nvim') && &filetype == 'floaterm'
+    call floaterm#window#hide(bufnr('%'))
   endif
 
-  " change to root directory
-  if !empty(g:floaterm_rootmarkers)
-    let dest = floaterm#path#get_root()
-    if dest !=# ''
-      call floaterm#path#chdir(dest)
-    endif
-  endif
-
+  " just open if floaterm exists
   if a:bufnr > 0
-    call floaterm#window#open(a:bufnr, a:opts)
-    let bufnr_res = a:bufnr
-  else
-    if has('nvim')
-      let bufnr_res = nvim_create_buf(v:false, v:true)
-      call floaterm#buflist#add(bufnr_res)
-      let a:jobopts.on_exit = function('s:on_floaterm_close', [get(a:jobopts, 'on_exit', v:null)])
-      let winid = floaterm#window#open(bufnr_res, a:opts)
-      let ch = termopen(a:cmd, a:jobopts)
-      let s:channel_map[bufnr_res] = ch
-    else
-      let a:jobopts.exit_cb = function('s:on_floaterm_close', [get(a:jobopts, 'on_exit', v:null)])
-      if has_key(a:jobopts, 'on_exit')
-        unlet a:jobopts.on_exit
-      endif
-      if has('patch-8.1.2080')
-        let a:jobopts.term_api = 'floaterm#util#edit'
-      endif
-      let a:jobopts.hidden = 1
-      let bufnr_res = term_start(a:cmd, a:jobopts)
-      call floaterm#buflist#add(bufnr_res)
-      let job = term_getjob(bufnr_res)
-      let s:channel_map[bufnr_res] = job_getchannel(job)
-      let winid = floaterm#window#open(bufnr_res, a:opts)
-    endif
+    call floaterm#window#open(a:bufnr, a:config)
+    call s:on_floaterm_open(a:bufnr)
+    return a:bufnr
   endif
 
-  return bufnr_res
+  " change cwd
+  let savedcwd = getcwd()
+  let dest = get(a:config, 'cwd', '')
+  if dest == '<root>'
+    let dest = floaterm#path#get_root()
+  endif
+  if !empty(dest)
+    call floaterm#path#chdir(dest)
+  endif
+
+  " spawn terminal
+  let bufnr = s:spawn_terminal(a:cmd, a:jobopts, a:config)
+
+  " hide floaterm immediately if silent
+  if floaterm#buffer#get_config(bufnr, 'silent', 0)
+    call floaterm#window#hide(bufnr)
+    stopinsert
+  endif
+
+  " restore cwd
+  call floaterm#path#chdir(savedcwd)
+
+  return bufnr
 endfunction
 
 function! floaterm#terminal#open_existing(bufnr) abort
+  if !bufexists(a:bufnr)
+    call floaterm#util#show_msg(printf("Buffer %s doesn't exists", a:bufnr), 'error')
+    return
+  endif
   let winnr = bufwinnr(a:bufnr)
   if winnr > -1
     execute winnr . 'hide'
   endif
-  let opts = getbufvar(a:bufnr, 'floaterm_opts', {})
-  call floaterm#terminal#open(a:bufnr, '', {}, opts)
+  let config = floaterm#buffer#get_config_dict(a:bufnr)
+  call floaterm#terminal#open(a:bufnr, '', {}, config)
+endfunction
+
+function! s:spawn_terminal(cmd, jobopts, config) abort
+  if has('nvim')
+    let bufnr = nvim_create_buf(v:false, v:true)
+    call floaterm#buflist#add(bufnr)
+    let a:jobopts.on_exit = function(
+          \ 's:on_floaterm_close',
+          \ [bufnr, get(a:jobopts, 'on_exit', v:null)]
+          \ )
+    call floaterm#window#open(bufnr, a:config)
+    let ch = termopen(a:cmd, a:jobopts)
+    let s:channel_map[bufnr] = ch
+  else
+    let a:jobopts.exit_cb = function(
+          \ 's:on_floaterm_close',
+          \ [-1, get(a:jobopts, 'on_exit', v:null)]
+          \ )
+    if has_key(a:jobopts, 'on_exit')
+      unlet a:jobopts.on_exit
+    endif
+    if has('patch-8.1.2080')
+      let a:jobopts.term_api = 'floaterm#util#edit'
+    endif
+    let a:jobopts.hidden = 1
+    try
+      let bufnr = term_start(a:cmd, a:jobopts)
+    catch
+      call floaterm#util#show_msg('Failed to execute: ' . a:cmd, 'error')
+      return
+    endtry
+    call floaterm#buflist#add(bufnr)
+    let job = term_getjob(bufnr)
+    let s:channel_map[bufnr] = job_getchannel(job)
+    call floaterm#window#open(bufnr, a:config)
+  endif
+  call floaterm#buffer#set_config(bufnr, 'jobexists', v:true)
+  call s:on_floaterm_open(bufnr)
+  return bufnr
 endfunction
 
 function! floaterm#terminal#send(bufnr, cmds) abort
@@ -106,8 +167,7 @@ endfunction
 function! floaterm#terminal#get_bufnr(termname) abort
   let buflist = floaterm#buflist#gather()
   for bufnr in buflist
-    let opts = getbufvar(bufnr, 'floaterm_opts', {})
-    let name = get(opts, 'name', '')
+    let name = floaterm#buffer#get_config(bufnr, 'name')
     if name ==# a:termname
       return bufnr
     endif
@@ -116,19 +176,33 @@ function! floaterm#terminal#get_bufnr(termname) abort
 endfunction
 
 function! floaterm#terminal#kill(bufnr) abort
-  call floaterm#window#hide_floaterm(a:bufnr)
+  call floaterm#window#hide(a:bufnr)
   if has('nvim')
-    let jobid = getbufvar(a:bufnr, '&channel')
-    if jobwait([jobid], 0)[0] == -1
-      call jobstop(jobid)
+    let job = getbufvar(a:bufnr, '&channel')
+    if jobwait([job], 0)[0] == -1
+      call jobstop(job)
     endif
   else
     let job = term_getjob(a:bufnr)
-    if job_status(job) !=# 'dead'
-      call job_stop(job)
+    if job != v:null && job_status(job) !=# 'dead'
+      call job_stop(job, 'kill')
     endif
   endif
-  if bufexists(a:bufnr)
-    execute a:bufnr . 'bwipeout!'
+  try
+    if bufexists(a:bufnr)
+      execute a:bufnr . 'bwipeout!'
+    endif
+  catch
+    call popup_close(win_getid())
+  endtry
+endfunction
+
+function! floaterm#terminal#jobexists(bufnr) abort
+  if has('nvim')
+    let job = getbufvar(a:bufnr, '&channel')
+    return jobwait([job], 0)[0] == -1
+  else
+    let job = term_getjob(a:bufnr)
+    return job != v:null && job_status(job) != 'dead'
   endif
 endfunction
