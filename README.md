@@ -8,12 +8,15 @@
 * rg
 * git > 1.5 
 
-参考[依赖安装](REQUIREMENT.md)
+可通过[install_dependence_awesome_vim8.sh](install_dependence_awesome_vim8.sh)安装(仅支持centos)或者参考[依赖安装](REQUIREMENT.md)
 
 ## 安装
 
 ```shell
-# github的镜像地址
+#安装方法1.  通过install_dependence_awesome_vim8.sh
+下载install_dependence_awesome_vim8.sh
+./install_dependence_awesome_vim8.sh temp_dir(临时目录地址)
+#安装方法2.  
 cd ~
 git clone https://hub.fastgit.org/a5420bc/vim ~/vim
 ~/vim/.vim_runtime/install_awesome_vim8.sh
