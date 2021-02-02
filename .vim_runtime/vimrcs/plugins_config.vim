@@ -508,7 +508,9 @@ vmap <leader>y y:Oscyank<cr>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " far.vim
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:far#source="rg"
+set lazyredraw            
+set regexpengine=1        
+set ignorecase smartcase
 
 " far搜索会留下一个buffer页面需要删除
 function! FarClear()
