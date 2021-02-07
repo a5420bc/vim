@@ -484,9 +484,9 @@ au FileType php nnoremap <Leader>rn :call PhpRenameLocalVariable()<CR>
 au FileType php nnoremap <Leader>rc :call PhpRenameClassVariable()<CR>
 au FileType php nnoremap <Leader>rm :call PhpRenameMethod()<CR>
 au FileType php nnoremap <Leader>ru :call PhpExtractUse()<CR>
-au FileType php vnoremap <Leader>rc :call PhpExtractConst()<CR>
-au FileType php nnoremap <Leader>rp :call PhpExtractClassProperty()<CR>
-au FileType php vnoremap <Leader>rm :call PhpExtractMethod()<CR>
+au FileType php vnoremap <Leader>rec :call PhpExtractConst()<CR>
+au FileType php nnoremap <Leader>rep :call PhpExtractClassProperty()<CR>
+au FileType php vnoremap <Leader>rem :call PhpExtractMethod()<CR>
 au FileType php nnoremap <Leader>rcp :call PhpCreateProperty()<CR>
 " 感觉neomake和coc-phpls都有这个功能
 " au FileType php nnoremap <Leader>du :call PhpDetectUnusedUseStatements()<CR>
@@ -511,6 +511,7 @@ vmap <leader>y y:Oscyank<cr>
 set lazyredraw            
 set regexpengine=1        
 set ignorecase smartcase
+let g:far#source='rg'
 
 " far搜索会留下一个buffer页面需要删除
 function! FarClear()
