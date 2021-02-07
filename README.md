@@ -41,10 +41,10 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 ### 窗口跳转
 | 按键    | 模式     | 说明             |
 | ------- | -------- | ---------------- |
-| \<C-j\> | 普通模式 | 跳到上边窗口     |
-| \<C-k\> | 普通模式 | 跳到左边窗口     |
-| \<C-h\> | 普通模式 | 跳到右边窗口     |
-| \<C-l\> | 普通模式 | 使用跳到下面窗口 |
+| \<ALT-j\> | 普通模式 | 跳到上边窗口     |
+| \<ALT-k\> | 普通模式 | 跳到左边窗口     |
+| \<ALT-h\> | 普通模式 | 跳到右边窗口     |
+| \<ALT-l\> | 普通模式 | 使用跳到下面窗口 |
 
 ![windows][1]
 
@@ -264,6 +264,21 @@ export LANG=en_US.UTF-8
 <leader>fs情况: ( 需要转义\\\(
 ```
 
+#### git pull命令不生效
+当在vim的终端内使用git pull，需要输入账号密码时，pull命令会不生效，建议让git记住账号密码(临时解决方案)
+
+#### vim terminal与外部shell history不同步
+terminal中输入的命令，在外面的shell history看不到，解决方案
+```
+# Avoid duplicates
+export HISTCONTROL=ignoredups:erasedups  
+# When the shell exits, append to the history file instead of overwriting it
+shopt -s histappend
+
+# After each command, append to the history file and reread it
+export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
+```
+
 
 ## 其他
 [vim插件推荐](https://zhuanlan.zhihu.com/p/58816186)
@@ -280,7 +295,7 @@ export LANG=en_US.UTF-8
 [4]: https://github.com/a5420bc/images/blob/main/vim/code_complete.gif
 [5]: https://github.com/a5420bc/images/blob/main/vim/rename.gif
 [6]:https://github.com/a5420bc/images/blob/main/vim/session.gif
-[7]:https://github.com/a5420bc/images/blob/main/vim/fond_set.gif
+[7]:https://github.com/a5420bc/images/blob/main/vim/fond_set.png
 [8]:https://github.com/a5420bc/images/blob/main/vim/term.gif
 [9]:https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_2.gif
 
