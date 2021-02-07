@@ -295,7 +295,7 @@ export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; histor
 [4]: https://github.com/a5420bc/images/blob/main/vim/code_complete.gif
 [5]: https://github.com/a5420bc/images/blob/main/vim/rename.gif
 [6]:https://github.com/a5420bc/images/blob/main/vim/session.gif
-[7]:https://github.com/a5420bc/images/blob/main/vim/fond_set.gif
+[7]:https://github.com/a5420bc/images/blob/main/vim/fond_set.png
 [8]:https://github.com/a5420bc/images/blob/main/vim/term.gif
 [9]:https://github.com/Yggdroot/Images/blob/master/leaderf/leaderf_2.gif
 
