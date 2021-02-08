@@ -512,6 +512,8 @@ set lazyredraw
 set regexpengine=1        
 set ignorecase smartcase
 let g:far#source='rg'
+noremap <leader>sf :<C-U><C-R>=printf("F %s %%", expand("<cword>"))<CR>
+noremap <leader>sr :<C-U><C-R>=printf("Far %s %s %%", expand("<cword>"), expand("<cword>"))<CR>
 
 " far搜索会留下一个buffer页面需要删除
 function! FarClear()
