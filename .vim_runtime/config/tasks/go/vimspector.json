@@ -1,0 +1,14 @@
+{
+  "configurations": {
+    "run": {
+      "adapter": "vscode-go",
+      "configuration": {
+        "request": "attach",
+        "program": "main",
+        "mode": "remote",
+        "dlvToolPath": "dlv",
+        "port":2345
+      }
+    }
+  }
+}
