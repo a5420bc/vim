@@ -279,6 +279,10 @@ shopt -s histappend
 export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r"
 ```
 
+#### go mod新加入的包无法跳转
+在go mod开启的模式下，新加入一个包，不能跳转
+import包后，需要删除import并保存由goimports自动导入，之后就可以跳转啦(原因不明)
+
 
 ## 其他
 [vim插件推荐](https://zhuanlan.zhihu.com/p/58816186)
