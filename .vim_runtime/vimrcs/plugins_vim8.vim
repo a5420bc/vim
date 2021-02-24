@@ -97,7 +97,7 @@ endfunction
 
 nmap <F6> :call <sid>debug_stop()<CR>
 function! s:debug_stop() abort
-    exe "AsyncTask debug-stop"
+    exe "AsyncTask debug-kill"
     call vimspector#Stop()
 endfunction
 
@@ -108,11 +108,47 @@ nmap <leader><F8> <Plug>VimspectorRunToCursor
 
 nmap<F10> :call <sid>debug_restart()<CR>
 function! s:debug_restart() abort
-    exe "AsynTask debug-stop"
+    exe "AsynTask debug-kill"
     exe "AsyncTask debug-start"
     call vimspector#Restart()
 endfunction
 nmap <F11>         <Plug>VimspectorPause
+
+" for normal mode - the word under the cursor
+nmap <Leader>di <Plug>VimspectorBalloonEval
+" for visual mode, the visually selected text
+xmap <Leader>di <Plug>VimspectorBalloonEval
+
+func! s:CustomiseUI()
+  call win_gotoid( g:vimspector_session_windows.code )
+  " Clear the existing WinBar created by Vimspector
+  nunmenu WinBar
+  " Cretae our own WinBar
+  nnoremenu WinBar.■\ Stop :call <sid>debug_stop()<CR>
+  nnoremenu WinBar.▶\ Cont :call <sid>debug_start()<CR>
+  nnoremenu WinBar.▷\ Pause :call vimspector#Pause()<CR>
+  nnoremenu WinBar.↷\ Next :call vimspector#StepOver()<CR>
+  nnoremenu WinBar.→\ Step :call vimspector#StepInto()<CR>
+  nnoremenu WinBar.←\ Out :call vimspector#StepOut()<CR>
+  nnoremenu WinBar.⟲: :call <sid>debug_restart()<CR>
+  nnoremenu WinBar.✕ :call vimspector#Reset()<CR>
+  call win_gotoid( g:vimspector_session_windows.output )
+  q
+endfunction
+
+augroup MyVimspectorUICustomistaion
+  autocmd!
+  autocmd User VimspectorUICreated call s:CustomiseUI()
+  autocmd User VimspectorUICreated :FloatermShow
+augroup END
+
+" 当有多个sign时断点标志优先
+let g:vimspector_sign_priority = {
+  \    'vimspectorBP':         88,
+  \    'vimspectorBPCond':     88,
+  \    'vimspectorBPDisabled': 88,
+  \    'vimspectorPC':         99,
+  \ }
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " coc.nvim
