@@ -46,39 +46,57 @@ endfunction
 
 function! gitgutter#hunk#next_hunk(count) abort
   let bufnr = bufnr('')
-  if gitgutter#utility#is_active(bufnr)
-    let current_line = line('.')
-    let hunk_count = 0
-    for hunk in gitgutter#hunk#hunks(bufnr)
-      if hunk[2] > current_line
-        let hunk_count += 1
-        if hunk_count == a:count
-          execute 'normal!' hunk[2] . 'Gzv'
-          return
-        endif
-      endif
-    endfor
-    call gitgutter#utility#warn('No more hunks')
+  if !gitgutter#utility#is_active(bufnr) | return | endif
+
+  let hunks = gitgutter#hunk#hunks(bufnr)
+  if empty(hunks)
+    call gitgutter#utility#warn('No hunks in file')
+    return
   endif
+
+  let current_line = line('.')
+  let hunk_count = 0
+  for hunk in hunks
+    if hunk[2] > current_line
+      let hunk_count += 1
+      if hunk_count == a:count
+        execute 'normal!' hunk[2] . 'Gzv'
+        if g:gitgutter_show_msg_on_hunk_jumping
+          redraw | echo printf('Hunk %d of %d', index(hunks, hunk) + 1, len(hunks))
+        endif
+        return
+      endif
+    endif
+  endfor
+  call gitgutter#utility#warn('No more hunks')
 endfunction
 
 function! gitgutter#hunk#prev_hunk(count) abort
   let bufnr = bufnr('')
-  if gitgutter#utility#is_active(bufnr)
-    let current_line = line('.')
-    let hunk_count = 0
-    for hunk in reverse(copy(gitgutter#hunk#hunks(bufnr)))
-      if hunk[2] < current_line
-        let hunk_count += 1
-        if hunk_count == a:count
-          let target = hunk[2] == 0 ? 1 : hunk[2]
-          execute 'normal!' target . 'Gzv'
-          return
-        endif
-      endif
-    endfor
-    call gitgutter#utility#warn('No previous hunks')
+  if !gitgutter#utility#is_active(bufnr) | return | endif
+
+  let hunks = gitgutter#hunk#hunks(bufnr)
+  if empty(hunks)
+    call gitgutter#utility#warn('No hunks in file')
+    return
   endif
+
+  let current_line = line('.')
+  let hunk_count = 0
+  for hunk in reverse(copy(hunks))
+    if hunk[2] < current_line
+      let hunk_count += 1
+      if hunk_count == a:count
+        let target = hunk[2] == 0 ? 1 : hunk[2]
+        execute 'normal!' target . 'Gzv'
+        if g:gitgutter_show_msg_on_hunk_jumping
+          redraw | echo printf('Hunk %d of %d', index(hunks, hunk) + 1, len(hunks))
+        endif
+        return
+      endif
+    endif
+  endfor
+  call gitgutter#utility#warn('No previous hunks')
 endfunction
 
 " Returns the hunk the cursor is currently in or an empty list if the cursor
@@ -239,6 +257,7 @@ function! s:hunk_op(op, ...)
     let g:gitgutter_async = async
 
     call gitgutter#hunk#set_hunks(bufnr, gitgutter#diff#parse_diff(diff))
+    call gitgutter#diff#process_hunks(bufnr, gitgutter#hunk#hunks(bufnr))  " so the hunk summary is updated
 
     if empty(s:current_hunk())
       call gitgutter#utility#warn('cursor is not in a hunk')
@@ -422,16 +441,24 @@ function! s:open_hunk_preview_window()
 
       " Assumes cursor is in original window.
       autocmd CursorMoved <buffer> ++once call s:close_hunk_preview_window()
+      if g:gitgutter_close_preview_on_escape
+        nnoremap <buffer> <silent> <Esc> :call <SID>close_hunk_preview_window()<CR>
+      endif
 
       return
     endif
 
     if exists('*popup_create')
-      let s:winid = popup_create('', {
+      let opts = {
             \ 'line': 'cursor+1',
             \ 'col': 'cursor',
             \ 'moved': 'any',
-            \ })
+            \ }
+      if g:gitgutter_close_preview_on_escape
+        let opts.filter = function('s:close_popup_on_escape')
+      endif
+
+      let s:winid = popup_create('', opts)
 
       call setbufvar(winbufnr(s:winid), '&filetype', 'diff')
 
@@ -440,19 +467,34 @@ function! s:open_hunk_preview_window()
   endif
 
   silent! wincmd P
-  if !&previewwindow
-    noautocmd execute g:gitgutter_preview_win_location &previewheight 'new gitgutter://hunk-preview'
+  if &previewwindow
+    file gitgutter://hunk-preview
+  else
+    noautocmd execute g:gitgutter_preview_win_location &previewheight 'new'
+    file gitgutter://hunk-preview
     doautocmd WinEnter
-    if exists('*win_getid')
-      let s:winid = win_getid()
-    else
-      let s:preview_bufnr = bufnr('')
-    endif
     set previewwindow
-    setlocal filetype=diff buftype=acwrite bufhidden=delete
-    " Reset some defaults in case someone else has changed them.
-    setlocal noreadonly modifiable noswapfile
   endif
+  if exists('*win_getid')
+    let s:winid = win_getid()
+  else
+    let s:preview_bufnr = bufnr('')
+  endif
+  setlocal filetype=diff buftype=acwrite bufhidden=delete
+  " Reset some defaults in case someone else has changed them.
+  setlocal noreadonly modifiable noswapfile
+  if g:gitgutter_close_preview_on_escape
+    nnoremap <buffer> <silent> <Esc> :pclose<CR>
+  endif
+endfunction
+
+
+function! s:close_popup_on_escape(winid, key)
+  if a:key == "\<Esc>"
+    call popup_close(a:winid)
+    return 1
+  endif
+  return 0
 endfunction
 
 
