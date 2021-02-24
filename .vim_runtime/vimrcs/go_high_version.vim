@@ -2,7 +2,7 @@
 " vim-go
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:go_autodetect_gopath = 1
-let g:go_fmt_command = "goimports"
+let g:go_fmt_command = "gopls"
 let g:go_def_mode = 'gopls'
 
 " 高亮设置
