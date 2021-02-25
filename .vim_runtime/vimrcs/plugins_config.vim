@@ -13,7 +13,7 @@ call pathogen#infect(s:vim_runtime.'/sources_forked/{}')
 call pathogen#infect(s:vim_runtime.'/sources_non_forked/{}')
 call pathogen#infect(s:vim_runtime.'/my_plugins/{}')
 call pathogen#infect(s:vim_runtime.'/plugins_vim8/{}')
-"""""""""""""""""""call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
+""""""""""""""""""""call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
 call pathogen#helptags()
 
 
@@ -71,10 +71,10 @@ let NERDTreeShowHidden=0
 let NERDTreeIgnore = ['\.pyc$', '__pycache__']
 let g:NERDTreeWinSize=35
 " map <leader>nn :NERDTreeToggle<cr>
-nmap <space>nn :CocCommand explorer --toggle<CR>
+nmap <space>nn :CocCommand explorer --toggle --quit-on-open<CR>
 map <leader>nb :NERDTreeFromBookmark<Space>
 " map <leader>nf :NERDTreeFind<cr>
-nmap <space>nf :CocCommand explorer --no-toggle --no-focus<CR>
+nmap <space>nf :CocCommand explorer --no-toggle --no-focus --quit-on-open<CR>
 
 " 指定coc-setting目录
 let g:coc_config_home = $HOME . '/vim/.vim_runtime/config/' 
@@ -377,6 +377,12 @@ function! CheckLeftBuffers()
   endif
 endfunction
 autocmd BufEnter * call CheckLeftBuffers()
+
+autocmd BufEnter *
+       \ if !exists('t:startify_new_tab') && empty(expand('%')) && !exists('t:goyo_master') |
+       \   let t:startify_new_tab = 1 |
+       \   Startify |
+       \ endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " leaderf
