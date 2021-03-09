@@ -91,13 +91,11 @@ nmap <F4>        <Plug>VimspectorStepOut
 
 nmap <F5> :call <sid>debug_start()<CR>
 function! s:debug_start() abort
-    exe "AsyncTask debug-start"
     call vimspector#Continue()
 endfunction
 
 nmap <F6> :call <sid>debug_stop()<CR>
 function! s:debug_stop() abort
-    exe "AsyncTask debug-kill"
     call vimspector#Stop()
 endfunction
 
@@ -108,8 +106,6 @@ nmap <leader><F8> <Plug>VimspectorRunToCursor
 
 nmap<F10> :call <sid>debug_restart()<CR>
 function! s:debug_restart() abort
-    exe "AsynTask debug-kill"
-    exe "AsyncTask debug-start"
     call vimspector#Restart()
 endfunction
 nmap <F11>         <Plug>VimspectorPause
@@ -139,7 +135,6 @@ endfunction
 augroup MyVimspectorUICustomistaion
   autocmd!
   autocmd User VimspectorUICreated call s:CustomiseUI()
-  autocmd User VimspectorUICreated :FloatermShow
 augroup END
 
 " 当有多个sign时断点标志优先
