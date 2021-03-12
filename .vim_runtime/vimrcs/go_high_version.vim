@@ -2,8 +2,9 @@
 " vim-go
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:go_autodetect_gopath = 1
-let g:go_fmt_command = "gopls"
-let g:go_def_mode = 'gopls'
+let g:go_fmt_command = "goimports"
+let g:go_def_mode = 'godef'
+let g:go_doc_popup_window=1
 
 " 高亮设置
 let g:go_highlight_build_constraints = 1
