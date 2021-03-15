@@ -1,4 +1,26 @@
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-translator
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+nmap <silent> <Leader>tw <Plug>TranslateW
+vmap <silent> <Leader>tw <Plug>TranslateWV
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-delve
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+augroup go_ftplugin
+    autocmd!
+    autocmd Filetype go nmap <leader>da :DlvToggleBreakpoint<cr>
+    autocmd Filetype go nmap <leader>db :DlvToggleTracepoint<cr>
+    autocmd Filetype go nmap <leader>dc :DlvClearAll<cr>
+    autocmd Filetype go nmap <leader>dd :call <sid>dlvDebugStart()<cr>
+augroup END
+
+function! s:dlvDebugStart() abort 
+    exe "AsyncTask debug-start"
+    exe "DlvConnect :2345"
+endfunction  
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-terminal-help && floaterm
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 加强一下关闭退出行为
@@ -150,12 +172,14 @@ let g:vimspector_sign_priority = {
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Symbol renaming.
 nmap <leader>rn <Plug>(coc-rename)
+" 打开一个文件重命名
+nmap <leader>rf <Plug>(coc-refactor)
 
 " GoTo code navigation.
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+nmap <silent> gr <Plug>(coc-references-used)
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K :call <SID>show_documentation()<CR>
