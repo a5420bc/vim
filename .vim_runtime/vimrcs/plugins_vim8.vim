@@ -1,3 +1,18 @@
+autocmd VimEnter * let g:far#cwd = FindRootDirectory()
+let g:rooter_patterns=['.git', 'Makefile', '*.sln', 'build/env.sh', '.root']
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-ctrlsf
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:ctrlsf_default_root = "project"
+let g:ctrlsf_extra_root_markers = ['.root']
+let g:ctrlsf_search_mode = 'async'
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-visual-multi
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 只使用最基本的功能, multi-cursor交互感觉差些
+
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-translator
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
