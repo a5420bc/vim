@@ -1,4 +1,3 @@
-autocmd VimEnter * let g:far#cwd = FindRootDirectory()
 let g:rooter_patterns=['.git', 'Makefile', '*.sln', 'build/env.sh', '.root']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
