@@ -266,7 +266,8 @@ export LANG=en_US.UTF-8
 ```
 
 #### git pull命令不生效
-当在vim的终端内使用git pull，需要输入账号密码时，pull命令会不生效，建议让git记住账号密码(临时解决方案)
+参考https://github.com/tpope/vim-fugitive/tree/v3.2的FAQ
+当在vim的终端内使用git pull，需要输入账号密码时，pull命令会不生效，建议让git记住账号密码或者使用命令行!git pull
 
 #### vim terminal与外部shell history不同步
 terminal中输入的命令，在外面的shell history看不到，解决方案
