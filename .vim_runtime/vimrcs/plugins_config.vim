@@ -52,9 +52,8 @@ let g:user_zen_mode='a'
 """"""""""""""""""""""""""""""
 " => snipMate (beside <TAB> support <CTRL-j>)
 """"""""""""""""""""""""""""""
-ino <C-j> <C-r>=snipMate#TriggerSnippet()<cr>
-snor <C-j> <esc>i<right><C-r>=snipMate#TriggerSnippet()<cr>
-
+let g:coc_snippet_prev = '<s-tab>'
+let g:coc_snippet_next = '<tab>'
 
 """"""""""""""""""""""""""""""
 " => Vim grep
@@ -384,6 +383,8 @@ let g:Lf_WildIgnore = {
             \}
 
 let g:Lf_CacheDirectory = expand('~/.cache')
+
+" let g:Lf_CursorBlink = 0
  
 " 依据python版本使用特定的python
 if has('python')
