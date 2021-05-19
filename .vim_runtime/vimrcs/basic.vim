@@ -33,6 +33,8 @@
 " Sets how many lines of history VIM has to remember
 set history=500
 
+set updatetime=20
+
 " Enable filetype plugins
 filetype plugin on
 filetype indent on
@@ -255,8 +257,8 @@ map <leader>bd :Bclose<cr>:tabclose<cr>gT
 map <leader>ba :bufdo bd<cr>
 map <leader>bo :BufOnly<cr>
 
-map <leader>j :bnext<cr>
-map <leader>k :bprevious<cr>
+" map <leader>j :bnext<cr>
+" map <leader>k :bprevious<cr>
 
 " Useful mappings for managing tabs
 map <leader>tn :tabnew<cr>
