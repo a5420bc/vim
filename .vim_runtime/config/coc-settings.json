@@ -11,6 +11,15 @@
                "initializationOptions": {
                   "storagePath": "/tmp/intelephense"
                }
-         }
+         },
+         "golang": {
+            "command": "gopls",
+            "rootPatterns": ["go.mod", ".vim/", ".git/", ".hg/", ".root"],
+            "disableWorkspaceFolders": true,
+            "filetypes": ["go"],
+            "initializationOptions": {
+               "allowModfileModifications":true
+            }
+        }
    }
 }

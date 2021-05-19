@@ -233,8 +233,13 @@ set shortmess+=c
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
       \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#jumpable() ? "\<C-r>=coc#rpc#request('snippetNext',[])\<CR>" :
       \ coc#refresh()
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+inoremap <silent><expr> <S-TAB>
+    \ pumvisible() ? "\<C-p>" :
+    \ coc#jumpable() ? "\<C-r>=coc#rpc#request('snippetPrev',[])\<CR>" :
+    \ "\<C-h>"
 
 function! s:check_back_space() abort
   let col = col('.') - 1
