@@ -3,6 +3,7 @@
     "explorer.previewAction.onHover":false,
     "explorer.file.showHiddenFiles":true,
     "diagnostic.displayByAle":true,
+    "coc.preferences.jumpCommand":"vsplit",
     "languageserver": {
         "intelephense": {
                "command": "intelephense",
