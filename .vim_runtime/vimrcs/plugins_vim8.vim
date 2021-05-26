@@ -23,10 +23,11 @@ vmap <silent> <Leader>tw <Plug>TranslateWV
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup go_ftplugin
     autocmd!
-    autocmd Filetype go nmap <leader>da :DlvToggleBreakpoint<cr>
-    autocmd Filetype go nmap <leader>db :DlvToggleTracepoint<cr>
+    autocmd Filetype go nmap <leader>db :DlvToggleBreakpoint<cr>
+    autocmd Filetype go nmap <leader>dt :DlvToggleTracepoint<cr>
     autocmd Filetype go nmap <leader>dc :DlvClearAll<cr>
     autocmd Filetype go nmap <leader>dd :call <sid>dlvDebugStart()<cr>
+    autocmd Filetype go nmap <leader>de :call DlvDebug<cr>
 augroup END
 
 function! s:dlvDebugStart() abort 
