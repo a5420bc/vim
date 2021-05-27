@@ -284,6 +284,10 @@ export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; histor
 在go mod开启的模式下，新加入一个包，不能跳转
 import包后，需要删除import并保存由goimports自动导入，之后就可以跳转啦(原因不明)
 
+#### php项目切换后索引文件有问题
+当通过\<leader>sl操作切换php项目后文件跳转和引用查询不能正常更换还是跳转之前的项目
+这个问题应该是有php的lsp插件造成的，目前没法先更好的插件，所以php项目切换只能退出vim再重新进行了
+
 
 ## 其他
 [vim插件推荐](https://zhuanlan.zhihu.com/p/58816186)
