@@ -240,8 +240,7 @@ VIM中使用前缀键，来增加快捷键，当前使用vim的前缀键\<leader
 ### git支持
 
 使用[vim-fugitive](https://github.com/tpope/vim-fugitive)、[vim-gitgutter](https://github.com/airblade/vim-gitgutter)
-
-**TODO**
+请查看文档[vim-fugitive](vim-fugitive.md)
 
 
 

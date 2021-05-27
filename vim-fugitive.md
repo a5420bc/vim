@@ -58,6 +58,8 @@
 
 使用:G push origin master
 
+或者:G界面下在Unpush区域使用**a**按键
+
 # checkout
 
 使用:G checkout
