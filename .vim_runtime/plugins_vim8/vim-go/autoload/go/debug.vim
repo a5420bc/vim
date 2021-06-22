@@ -227,7 +227,7 @@ function! s:show_variables() abort
     let v += ['# Local Variables']
     if type(get(s:state, 'localVars', [])) is type([])
       for c in s:state['localVars']
-        let v += split(s:eval_tree(c, 0), "\n")
+        let v += split(s:eval_tree(c, 0, 0), "\n")
       endfor
     endif
 
@@ -235,7 +235,7 @@ function! s:show_variables() abort
     let v += ['# Function Arguments']
     if type(get(s:state, 'functionArgs', [])) is type([])
       for c in s:state['functionArgs']
-        let v += split(s:eval_tree(c, 0), "\n")
+        let v += split(s:eval_tree(c, 0, 0), "\n")
       endfor
     endif
 
@@ -285,6 +285,7 @@ function! go#debug#Stop() abort
   endfor
   command! -nargs=* -complete=customlist,go#package#Complete GoDebugStart call go#debug#Start('debug', <f-args>)
   command! -nargs=* -complete=customlist,go#package#Complete GoDebugTest  call go#debug#Start('test', <f-args>)
+  command! -nargs=? GoDebugConnect call go#debug#Start('connect', <f-args>)
   command! -nargs=* GoDebugTestFunc  call go#debug#TestFunc(<f-args>)
   command! -nargs=1 GoDebugAttach call go#debug#Start('attach', <f-args>)
   command! -nargs=? GoDebugBreakpoint call go#debug#Breakpoint(<f-args>)
@@ -305,10 +306,26 @@ function! go#debug#Stop() abort
   else
     wincmd p
   endif
-  silent! exe bufwinnr(bufnr('__GODEBUG_STACKTRACE__')) 'wincmd c'
-  silent! exe bufwinnr(bufnr('__GODEBUG_VARIABLES__')) 'wincmd c'
-  silent! exe bufwinnr(bufnr('__GODEBUG_OUTPUT__')) 'wincmd c'
-  silent! exe bufwinnr(bufnr('__GODEBUG_GOROUTINES__')) 'wincmd c'
+
+  let stackbufnr = bufnr('__GODEBUG_STACKTRACE__')
+  if stackbufnr != -1
+    silent! exe bufwinnr(stackbufnr) 'wincmd c'
+  endif
+
+  let varbufnr = bufnr('__GODEBUG_VARIABLES__')
+  if varbufnr != -1
+    silent! exe bufwinnr(varbufnr) 'wincmd c'
+  endif
+
+  let outbufnr = bufnr('__GODEBUG_OUTPUT__')
+  if outbufnr != -1
+    silent! exe bufwinnr(outbufnr) 'wincmd c'
+  endif
+
+  let gorobufnr = bufnr('__GODEBUG_GOROUTINES__')
+  if gorobufnr != -1
+    silent! exe bufwinnr(gorobufnr) 'wincmd c'
+  endif
 
   if has('balloon_eval')
     let &ballooneval=s:ballooneval
@@ -440,16 +457,20 @@ endfunction
 
 function! s:start_cb() abort
   let l:winid = win_getid()
-  silent! only!
+  let l:debugwindows = go#config#DebugWindows()
+  let l:debugpreservelayout = go#config#DebugPreserveLayout()
+
+  if !(empty(l:debugwindows) || l:debugpreservelayout)
+    silent! only!
+  endif
 
   let winnum = bufwinnr(bufnr('__GODEBUG_STACKTRACE__'))
   if winnum != -1
     return
   endif
 
-  let debugwindows = go#config#DebugWindows()
-  if has_key(debugwindows, "vars") && debugwindows['vars'] != ''
-    exe 'silent ' . debugwindows['vars']
+  if has_key(l:debugwindows, "vars") && l:debugwindows['vars'] != ''
+    exe 'silent ' . l:debugwindows['vars']
     silent file `='__GODEBUG_VARIABLES__'`
     setlocal buftype=nofile bufhidden=wipe nomodified nobuflisted noswapfile nowrap nonumber nocursorline
     setlocal filetype=godebugvariables
@@ -458,8 +479,8 @@ function! s:start_cb() abort
     nmap <buffer> q <Plug>(go-debug-stop)
   endif
 
-  if has_key(debugwindows, "stack") && debugwindows['stack'] != ''
-    exe 'silent ' . debugwindows['stack']
+  if has_key(l:debugwindows, "stack") && l:debugwindows['stack'] != ''
+    exe 'silent ' . l:debugwindows['stack']
     silent file `='__GODEBUG_STACKTRACE__'`
     setlocal buftype=nofile bufhidden=wipe nomodified nobuflisted noswapfile nowrap nonumber nocursorline
     setlocal filetype=godebugstacktrace
@@ -467,8 +488,8 @@ function! s:start_cb() abort
     nmap <buffer> q <Plug>(go-debug-stop)
   endif
 
-  if has_key(debugwindows, "goroutines") && debugwindows['goroutines'] != ''
-    exe 'silent ' . debugwindows['goroutines']
+  if has_key(l:debugwindows, "goroutines") && l:debugwindows['goroutines'] != ''
+    exe 'silent ' . l:debugwindows['goroutines']
     silent file `='__GODEBUG_GOROUTINES__'`
     setlocal buftype=nofile bufhidden=wipe nomodified nobuflisted noswapfile nowrap nonumber nocursorline
     setlocal filetype=godebugvariables
@@ -476,8 +497,8 @@ function! s:start_cb() abort
     nmap <buffer> <silent> <cr> :<c-u>call go#debug#Goroutine()<cr>
   endif
 
-  if has_key(debugwindows, "out") && debugwindows['out'] != ''
-    exe 'silent ' . debugwindows['out']
+  if has_key(l:debugwindows, "out") && l:debugwindows['out'] != ''
+    exe 'silent ' . l:debugwindows['out']
     silent file `='__GODEBUG_OUTPUT__'`
     setlocal buftype=nofile bufhidden=wipe nomodified nobuflisted noswapfile nowrap nonumber nocursorline
     setlocal filetype=godebugoutput
@@ -487,7 +508,9 @@ function! s:start_cb() abort
 
   silent! delcommand GoDebugStart
   silent! delcommand GoDebugTest
+  silent! delcommand GoDebugTestFunc
   silent! delcommand GoDebugAttach
+  silent! delcommand GoDebugConnect
 
   command! -nargs=0 GoDebugContinue   call go#debug#Stack('continue')
   command! -nargs=0 GoDebugStop       call go#debug#Stop()
@@ -500,7 +523,7 @@ function! s:start_cb() abort
     autocmd! *
     call s:configureMappings('(go-debug-breakpoint)', '(go-debug-continue)')
   augroup END
-  doautocmd vim-go-debug FileType go
+  doautocmd vim-go-debug BufWinEnter *.go
 endfunction
 
 function! s:continue()
@@ -532,9 +555,9 @@ function! s:continue()
   call s:restoreMappings()
   augroup vim-go-debug
     autocmd! *
-    call s:configureMappings('(go-debug-breakpoint)', '(go-debug-continue)', '(go-debug-halt)', '(go-debug-next)', '(go-debug-print)', '(go-debug-step)')
+    call s:configureMappings('(go-debug-breakpoint)', '(go-debug-continue)', '(go-debug-halt)', '(go-debug-next)', '(go-debug-print)', '(go-debug-step)', '(go-debug-stepout)')
   augroup END
-  doautocmd vim-go-debug FileType go
+  doautocmd vim-go-debug BufWinEnter *.go
 endfunction
 
 function! s:err_cb(ch, msg) abort
@@ -555,44 +578,52 @@ function! s:out_cb(ch, msg) abort
   let s:state['message'] += [a:msg]
 
   if stridx(a:msg, go#config#DebugAddress()) != -1
-    let s:state['data'] = []
-    let l:state = {'databuf': ''}
-
-    " explicitly bind callback to state so that within it, self will
-    " always refer to state. See :help Partial for more information.
-    let l:state.on_data = function('s:on_data', [], l:state)
-
-    if has('nvim')
-      let l:ch = sockconnect('tcp', go#config#DebugAddress(), {'on_data': l:state.on_data, 'state': l:state})
-      if l:ch == 0
-        call go#util#EchoError("could not connect to debugger")
-        call go#job#Stop(s:state['job'])
-        return
-      endif
-    else
-      let l:ch = ch_open(go#config#DebugAddress(), {'mode': 'raw', 'timeout': 20000, 'callback': l:state.on_data})
-      if ch_status(l:ch) !=# 'open'
-        call go#util#EchoError("could not connect to debugger")
-        call go#job#Stop(s:state['job'])
-        return
-      endif
-    endif
-
-    let s:state['ch'] = l:ch
-
-    " After this block executes, Delve will be running with all the
-    " breakpoints setup, so this callback doesn't have to run again; just log
-    " future messages.
-    let s:state['ready'] = 1
-
-    " replace all the breakpoints set before delve started so that the ids won't overlap.
-    for l:bt in s:list_breakpoints()
-      call s:sign_unplace(l:bt.id, l:bt.file)
-      call go#debug#Breakpoint(l:bt.line, l:bt.file)
-    endfor
-
-    call s:start_cb()
+    call s:connect(go#config#DebugAddress())
   endif
+endfunction
+
+function! s:connect(addr) abort
+  let s:state['data'] = []
+  let l:state = {'databuf': ''}
+
+  " explicitly bind callback to state so that within it, self will
+  " always refer to state. See :help Partial for more information.
+  let l:state.on_data = function('s:on_data', [], l:state)
+
+  if has('nvim')
+    let l:ch = sockconnect('tcp', a:addr, {'on_data': l:state.on_data, 'state': l:state})
+    if l:ch == 0
+      call go#util#EchoError("could not connect to debugger")
+      if has_key(s:state, 'job')
+        call go#job#Stop(s:state['job'])
+      endif
+      return
+    endif
+  else
+    let l:ch = ch_open(a:addr, {'mode': 'raw', 'timeout': 20000, 'callback': l:state.on_data})
+    if ch_status(l:ch) !=# 'open'
+      call go#util#EchoError("could not connect to debugger")
+      if has_key(s:state, 'job')
+        call go#job#Stop(s:state['job'])
+      endif
+      return
+    endif
+  endif
+
+  let s:state['ch'] = l:ch
+
+  " After this block executes, Delve will be running with all the
+  " breakpoints setup, so this callback doesn't have to run again; just log
+  " future messages.
+  let s:state['ready'] = 1
+
+  " replace all the breakpoints set before delve started so that the ids won't overlap.
+  for l:bt in s:list_breakpoints()
+    call s:sign_unplace(l:bt.id, l:bt.file)
+    call go#debug#Breakpoint(l:bt.line, l:bt.file)
+  endfor
+
+  call s:start_cb()
 endfunction
 
 " s:on_data's third optional argument is provided, but not used, so that the
@@ -703,8 +734,8 @@ function! go#debug#TestFunc(...) abort
   call call('go#debug#Start', extend(['test', '.', '-test.run', printf('%s$', l:test)], a:000))
 endfunction
 
-" Start the debug mode. The first argument is the package name to compile and
-" debug, anything else will be passed to the running program.
+" Start the debug mode. The first variadic argument is the package name to
+" compile and debug, anything else will be passed to the running program.
 function! go#debug#Start(mode, ...) abort
   call go#cmd#autowrite()
 
@@ -730,56 +761,64 @@ function! go#debug#Start(mode, ...) abort
   endif
 
   try
-
-    let l:cmd = [dlv, a:mode]
-
-    let s:state['kill_on_detach'] = v:true
-    if a:mode is 'debug' || a:mode is 'test'
-      let l:cmd = extend(l:cmd, s:package(a:000))
-      let l:cmd = extend(l:cmd, ['--output', tempname()])
-    elseif a:mode is 'attach'
-      let l:cmd = add(l:cmd, a:1)
+    if a:mode is 'connect'
+      let l:addr = go#config#DebugAddress()
+      if len(a:0) > 0
+        let l:addr = a:1
+      endif
       let s:state['kill_on_detach'] = v:false
+
+      call s:connect(l:addr)
     else
-      call go#util#EchoError('Unknown dlv command')
+      let l:cmd = [dlv, a:mode]
+
+      let s:state['kill_on_detach'] = v:true
+      if a:mode is 'debug' || a:mode is 'test'
+        let l:cmd = extend(l:cmd, s:package(a:000))
+        let l:cmd = extend(l:cmd, ['--output', tempname()])
+      elseif a:mode is 'attach'
+        let l:cmd = add(l:cmd, a:1)
+        let s:state['kill_on_detach'] = v:false
+      else
+        call go#util#EchoError('Unknown dlv command')
+      endif
+
+      let l:cmd += [
+            \ '--headless',
+            \ '--api-version', '2',
+            \ '--listen', go#config#DebugAddress(),
+      \]
+      let l:debugLogOutput = go#config#DebugLogOutput()
+      if l:debugLogOutput != ''
+        let cmd += ['--log', '--log-output', l:debugLogOutput]
+      endif
+
+      let l:buildtags = go#config#BuildTags()
+      if buildtags isnot ''
+        let l:cmd += ['--build-flags', '--tags=' . buildtags]
+      endif
+
+      if len(a:000) > 1
+        let l:cmd += ['--'] + a:000[1:]
+      endif
+
+      let s:state['message'] = []
+      let l:opts = {
+            \ 'for': 'GoDebug',
+            \ 'statustype': 'debug',
+            \ 'complete': function('s:complete'),
+            \ }
+      let l:opts = go#job#Options(l:opts)
+      let l:opts.out_cb = function('s:out_cb')
+      let l:opts.err_cb = function('s:err_cb')
+      let l:opts.stoponexit = 'kill'
+
+      let s:state['job'] = go#job#Start(l:cmd, l:opts)
+      return s:state['job']
     endif
-
-    let l:cmd += [
-          \ '--headless',
-          \ '--api-version', '2',
-          \ '--listen', go#config#DebugAddress(),
-    \]
-    let l:debugLogOutput = go#config#DebugLogOutput()
-    if l:debugLogOutput != ''
-      let cmd += ['--log', '--log-output', l:debugLogOutput]
-    endif
-
-    let l:buildtags = go#config#BuildTags()
-    if buildtags isnot ''
-      let l:cmd += ['--build-flags', '--tags=' . buildtags]
-    endif
-
-    if len(a:000) > 1
-      let l:cmd += ['--'] + a:000[1:]
-    endif
-
-    let s:state['message'] = []
-    let l:opts = {
-          \ 'for': 'GoDebug',
-          \ 'statustype': 'debug',
-          \ 'complete': function('s:complete'),
-          \ }
-    let l:opts = go#job#Options(l:opts)
-    let l:opts.out_cb = function('s:out_cb')
-    let l:opts.err_cb = function('s:err_cb')
-    let l:opts.stoponexit = 'kill'
-
-    let s:state['job'] = go#job#Start(l:cmd, l:opts)
   catch
     call go#util#EchoError(printf('could not start debugger: %s', v:exception))
   endtry
-
-  return s:state['job']
 endfunction
 
 " s:package returns the import path of package name of a :GoDebug(Start|Test)
@@ -847,55 +886,76 @@ function! s:reflect_kind(k)
   \ ][a:k]
 endfunction
 
-function! s:eval_tree(var, nest) abort
+function! s:eval_tree(var, nest, isMapOrSliceChild) abort
   if a:var.name =~ '^\~'
     return ''
   endif
   let nest = a:nest
   let v = ''
   let kind = s:reflect_kind(a:var.kind)
-  if !empty(a:var.name)
-    let v .= repeat(' ', nest) . a:var.name . ': '
+
+  if !empty(a:var.name) || a:isMapOrSliceChild is 1
+    if a:isMapOrSliceChild == 0
+      let v .= repeat(' ', nest) . a:var.name . ': '
+    endif
 
     if kind == 'Bool'
-      let v .= printf("%s\n", a:var.value)
+      let v .= printf("%s", a:var.value)
 
     elseif kind == 'Struct'
       " Anonymous struct
       if a:var.type[:8] == 'struct { '
-        let v .= printf("%s\n", a:var.type)
+        let v .= printf("%s", a:var.type)
       else
-        let v .= printf("%s{...}\n", a:var.type)
+        let v .= printf("%s{...}", a:var.type)
       endif
 
     elseif kind == 'String'
-      let v .= printf("%s[%d]%s\n", a:var.type, a:var.len,
+      let v .= printf("%s[%d]%s", a:var.type, a:var.len,
             \ len(a:var.value) > 0 ? ': ' . a:var.value : '')
 
     elseif kind == 'Slice' || kind == 'String' || kind == 'Map' || kind == 'Array'
-      let v .= printf("%s[%d]\n", a:var.type, a:var.len)
+      let v .= printf("%s[%d]", a:var.type, a:var.len)
 
     elseif kind == 'Chan' || kind == 'Func' || kind == 'Interface'
-      let v .= printf("%s\n", a:var.type)
+      let v .= printf("%s", a:var.type)
 
     elseif kind == 'Ptr'
       " TODO: We can do something more useful here.
-      let v .= printf("%s\n", a:var.type)
+      let v .= printf("%s", a:var.type)
 
     elseif kind == 'Complex64' || kind == 'Complex128'
-      let v .= printf("%s%s\n", a:var.type, a:var.value)
+      let v .= printf("%s%s", a:var.type, a:var.value)
 
     " Int, Float
     else
-      let v .= printf("%s(%s)\n", a:var.type, a:var.value)
+      let v .= printf("%s(%s)", a:var.type, a:var.value)
+    endif
+    if a:isMapOrSliceChild == 0
+      let v = printf("%s\n", v)
     endif
   else
     let nest -= 1
   endif
 
   if index(['Chan', 'Complex64', 'Complex128'], kind) == -1 && a:var.type != 'error'
+    let l:idx = 0
     for c in a:var.children
-      let v .= s:eval_tree(c, nest+1)
+      if kind == 'Map'
+        " Maps alternate children between keys and values. Keys will be even
+        " number indexes.
+        let l:isMapKey = (l:idx % 2) is 0
+        if l:isMapKey == 1
+          let v .= printf("%s%s:\n", repeat(' ', nest + 1), s:eval_tree(c, 0, 1))
+        else
+          let v .= printf("%s%s\n", repeat(' ', nest + 2), s:eval_tree(c, 0, 1))
+        endif
+      elseif kind == 'Slice'
+        let v .= printf("%d: %s\n", l:idx, s:eval_tree(c, nest + 1, 1))
+      else
+        let v .= s:eval_tree(c, nest + 1, 0)
+      endif
+      let l:idx += 1
     endfor
   endif
   return v
@@ -914,7 +974,7 @@ function! s:eval(arg) abort
 
     let l:res = l:promise.await()
 
-    return s:eval_tree(l:res.result.Variable, 0)
+    return s:eval_tree(l:res.result.Variable, 0, 0)
   catch
     call go#util#EchoError(printf('evaluation failed: %s', v:exception))
     return ''
@@ -1251,9 +1311,9 @@ function! go#debug#Restart() abort
   endtry
 endfunction
 
-" Report if debugger mode is active.
-function! s:isActive()
-  return len(s:state['message']) > 0
+" Report if debugger mode is ready.
+function! s:isReady()
+  return get(s:state, 'ready', 0) != 0
 endfunction
 
 " Change Goroutine
@@ -1305,13 +1365,13 @@ function! go#debug#Breakpoint(...) abort
     " Remove breakpoint.
     if type(l:found) == v:t_dict && !empty(l:found)
       call s:sign_unplace(l:found.id, l:found.file)
-      if s:isActive()
+      if s:isReady()
         let l:promise = go#promise#New(function('s:rpc_response'), 20000, {})
         call s:call_jsonrpc(l:promise.wrapper, 'RPCServer.ClearBreakpoint', {'id': l:found.id})
         let res = l:promise.await()
       endif
     else " Add breakpoint
-      if s:isActive()
+      if s:isReady()
         let l:promise = go#promise#New(function('s:rpc_response'), 20000, {})
         call s:call_jsonrpc(l:promise.wrapper, 'RPCServer.CreateBreakpoint', {'Breakpoint': {'file': l:filename, 'line': l:linenr}})
         let l:res = l:promise.await()
@@ -1501,9 +1561,10 @@ function! s:configureMappings(...) abort
 
     let l:lhs = l:config.key
     try
-      call execute(printf('autocmd FileType go call s:save_maparg_for(expand(''%%''), ''%s'')', l:lhs))
+      call execute(printf('autocmd BufWinEnter *.go call s:save_maparg_for(expand(''%%''), ''%s'')', l:lhs))
+      call execute('autocmd BufWinLeave  *.go call s:restoreMappings()')
 
-      let l:mapping = 'autocmd FileType go nmap <buffer>'
+      let l:mapping = 'autocmd BufWinEnter *.go nmap <buffer>'
       if has_key(l:config, 'arguments')
         let l:mapping = printf('%s %s', l:mapping, l:config.arguments)
       endif
