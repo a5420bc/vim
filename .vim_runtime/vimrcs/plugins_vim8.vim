@@ -23,17 +23,33 @@ vmap <silent> <Leader>tw <Plug>TranslateWV
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup go_ftplugin
     autocmd!
-    autocmd Filetype go nmap <leader>db :DlvToggleBreakpoint<cr>
-    autocmd Filetype go nmap <leader>dt :DlvToggleTracepoint<cr>
-    autocmd Filetype go nmap <leader>dc :DlvClearAll<cr>
-    autocmd Filetype go nmap <leader>dd :call <sid>dlvDebugStart()<cr>
-    autocmd Filetype go nmap <leader>de :call DlvDebug<cr>
+    autocmd Filetype go nmap <leader>db :GoDebugBreakpoint<cr>
+    autocmd Filetype go nmap <leader>dd :call MyDebugStart()<cr>
+    autocmd Filetype go nmap <leader>dc :call MyGoConnect()<cr>
+    autocmd Filetype go nmap <leader>de :GoDebugStop<cr>
 augroup END
 
-function! s:dlvDebugStart() abort 
+function! MyGoConnect() abort
     exe "AsyncTask debug-start"
-    exe "DlvConnect :2345"
+endfunction
+
+let g:debug_port = "127.0.0.1:2345"
+function! MyDebugStart() abort 
+    let port = g:debug_port
+    exe "GoDebugConnect " port
 endfunction  
+
+let g:go_debug_mappings = {
+            \ '(go-debug-continue)': {'key': 'c', 'arguments': '<nowait>'},
+            \ '(go-debug-stop)': {'key': '<leader>q'},
+            \ '(go-debug-next)': {'key': 'n', 'arguments': '<nowait>'},
+            \ '(go-debug-step)': {'key': 's'},
+            \ '(go-debug-halt)': {'key': '<leader>h'},
+            \ '(go-debug-stepout)':{'key':'so'},
+            \ '(go-debug-print)':      {'key': 'p'},
+            \ '(go-debug-breakpoint)': {'key': '<leader>b'},
+            \ }
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-terminal-help && floaterm
@@ -82,6 +98,10 @@ let g:floaterm_autoclose=2
 " 默认进入到项目的root目录
 let g:floaterm_rootmarkers = ['.project', '.git', '.hg', '.svn', '.root', '.gitignore']
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" asynctasks
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" 和vim_floaterm结合
 function! s:run_in_floaterm(opts)
   execute 'FloatermNew! --position=bottomright' .
                    \ ' --wintype=normal' .
@@ -115,6 +135,57 @@ endfunction
 let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
 let g:asyncrun_runner.floaterm = function('s:run_in_floaterm')
 let g:asynctasks_term_pos = 'floaterm'
+
+" 和leaderf结合
+function! s:lf_task_source(...)
+	let rows = asynctasks#source(&columns * 48 / 100)
+	let source = []
+	for row in rows
+		let name = row[0]
+		let source += [name . '  ' . row[1] . '  : ' . row[2]]
+	endfor
+	return source
+endfunction
+
+function! s:lf_task_accept(line, arg)
+	let pos = stridx(a:line, '<')
+	if pos < 0
+		return
+	endif
+	let name = strpart(a:line, 0, pos)
+	let name = substitute(name, '^\s*\(.\{-}\)\s*$', '\1', '')
+	if name != ''
+		exec "AsyncTask " . name
+	endif
+endfunction
+
+function! s:lf_task_digest(line, mode)
+	let pos = stridx(a:line, '<')
+	if pos < 0
+		return [a:line, 0]
+	endif
+	let name = strpart(a:line, 0, pos)
+	return [name, 0]
+endfunction
+
+function! s:lf_win_init(...)
+	setlocal nonumber
+	setlocal nowrap
+endfunction
+
+let g:Lf_Extensions = get(g:, 'Lf_Extensions', {})
+let g:Lf_Extensions.task = {
+            \ 'source': string(function('s:lf_task_source'))[10:-3],
+            \ 'accept': string(function('s:lf_task_accept'))[10:-3],
+            \ 'get_digest': string(function('s:lf_task_digest'))[10:-3],
+            \ 'highlights_def': {
+                \     'Lf_hl_funcScope': '^\S\+',
+                \     'Lf_hl_funcDirname': '^\S\+\s*\zs<.*>\ze\s*:',
+                \ },
+                \ 'help' : 'navigate available tasks from asynctasks.vim',
+                \ }
+
+noremap <leader>ft :<C-U><C-R>=printf("Leaderf --nowrap task")<CR><CR>
 
 " 禁止vim-terminal-help默认快捷键
 let g:terminal_default_mapping=0
