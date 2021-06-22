@@ -360,11 +360,12 @@ function! CheckLeftBuffers()
 endfunction
 autocmd BufEnter * call CheckLeftBuffers()
 
-autocmd BufEnter *
-       \ if !exists('t:startify_new_tab') && empty(expand('%')) && !exists('t:goyo_master') |
-       \   let t:startify_new_tab = 1 |
-       \   Startify |
-       \ endif
+" 忘了干啥用的了,影响到GoDebug先注释
+" autocmd BufEnter *
+"        \ if !exists('t:startify_new_tab') && empty(expand('%')) && !exists('t:goyo_master') |
+"        \   let t:startify_new_tab = 1 |
+"        \   Startify |
+"        \ endif
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " leaderf
