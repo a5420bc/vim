@@ -259,6 +259,9 @@ function! s:newlsp() abort
           endif
 
           for l:diag in l:data.diagnostics
+            if l:level < l:diag.severity
+              continue
+            endif
             let [l:error, l:matchpos] = s:errorFromDiagnostic(l:diag, l:bufname, l:fname)
             let l:diagnostics = add(l:diagnostics, l:error)
 
@@ -530,6 +533,8 @@ function! s:requestComplete(ok) abort dict
   endif
 
   if go#config#EchoCommandInfo()
+    " redraw to avoid messages piling up
+    redraw
     let prefix = '[' . self.statustype . '] '
     if a:ok
       call go#util#EchoSuccess(prefix . "SUCCESS")
@@ -610,7 +615,7 @@ function! go#lsp#TypeDef(fname, line, col, handler) abort
   let l:state = s:newHandlerState('type definition')
   let l:msg = go#lsp#message#TypeDefinition(fnamemodify(a:fname, ':p'), a:line, a:col)
   let l:state.handleResult = funcref('s:typeDefinitionHandler', [function(a:handler, [], l:state)], l:state)
-  return  l:lsp.sendMessage(l:msg, l:state)
+  return l:lsp.sendMessage(l:msg, l:state)
 endfunction
 
 function! s:typeDefinitionHandler(next, msg) abort dict
@@ -622,6 +627,59 @@ function! s:typeDefinitionHandler(next, msg) abort dict
   let l:msg = a:msg[0]
   let l:args = [[printf('%s:%d:%d: %s', go#path#FromURI(l:msg.uri), l:msg.range.start.line+1, go#lsp#lsp#PositionOf(getline(l:msg.range.start.line+1), l:msg.range.start.character), 'lsp does not supply a description')]]
   call call(a:next, l:args)
+endfunction
+
+" go#lsp#Callers calls gopls to get callers of the identifier at
+" line and col in fname. handler should be a dictionary function that takes a
+" list of strings in the form 'file:line:col: message'. handler will be
+" attached to a dictionary that manages state (statuslines, sets the winid,
+" etc.)
+function! go#lsp#Callers(fname, line, col, handler) abort
+  call go#lsp#DidChange(a:fname)
+
+  let l:lsp = s:lspfactory.get()
+  let l:state = s:newHandlerState('callers')
+  let l:msg = go#lsp#message#PrepareCallHierarchy(fnamemodify(a:fname, ':p'), a:line, a:col)
+  let l:state.handleResult = funcref('s:prepareCallHierarchyHandler', [function(a:handler, [], l:state)], l:state)
+  return l:lsp.sendMessage(l:msg, l:state)
+endfunction
+
+function! s:prepareCallHierarchyHandler(next, msg) abort dict
+  if a:msg is v:null || len(a:msg) == 0
+    return
+  endif
+
+  let l:lsp = s:lspfactory.get()
+  let l:state = s:newHandlerState('callers')
+  let l:msg = go#lsp#message#IncomingCalls(a:msg[0])
+  let l:state.handleResult = funcref('s:incomingCallsHandler', [function(a:next, [], l:state)], l:state)
+  return l:lsp.sendMessage(l:msg, l:state)
+endfunction
+
+function! s:incomingCallsHandler(next, msg) abort dict
+  if a:msg is v:null || len(a:msg) == 0
+    return
+  endif
+
+  let l:locations = []
+  for l:item in a:msg
+    try
+      let l:fname = go#path#FromURI(l:item.from.uri)
+
+      for l:fromRange in l:item.fromRanges
+        let l:line = l:fromRange.start.line+1
+        let l:content = s:lineinfile(l:fname, l:line)
+        if l:content is -1
+          continue
+        endif
+        let l:locations = add(l:locations, printf('%s:%s:%s: %s', l:fname, l:line, go#lsp#lsp#PositionOf(content, l:fromRange.start.character), l:item.from.name))
+      endfor
+    catch
+    endtry
+  endfor
+
+  call call(a:next, [l:locations])
+  return
 endfunction
 
 function! go#lsp#DidOpen(fname) abort
@@ -852,26 +910,12 @@ function! s:handleLocations(next, msg) abort
   for l:loc in l:msg
     let l:fname = go#path#FromURI(l:loc.uri)
     let l:line = l:loc.range.start.line+1
-    let l:bufnr = bufnr(l:fname)
-    let l:bufinfo = getbufinfo(l:fname)
+    let l:content = s:lineinfile(l:fname, l:line)
+    if l:content is -1
+      continue
+    endif
 
-    try
-      if l:bufnr == -1 || len(l:bufinfo) == 0 || l:bufinfo[0].loaded == 0
-        let l:filecontents = readfile(l:fname, '', l:line)
-      else
-        let l:filecontents = getbufline(l:fname, l:line)
-      endif
-
-      if len(l:filecontents) == 0
-        continue
-      endif
-
-      let l:content = l:filecontents[-1]
-    catch
-      call go#util#EchoError(printf('%s (line %s): %s at %s', l:fname, l:line, v:exception, v:throwpoint))
-    endtry
-
-    let l:item = printf('%s:%s:%s: %s', go#path#FromURI(l:loc.uri), l:line, go#lsp#lsp#PositionOf(l:content, l:loc.range.start.character), l:content)
+    let l:item = printf('%s:%s:%s: %s', l:fname, l:line, go#lsp#lsp#PositionOf(l:content, l:loc.range.start.character), l:content)
 
     let l:result = add(l:result, l:item)
   endfor
@@ -988,11 +1032,21 @@ function! s:docLinkFromHoverResult(msg) abort dict
   endif
 
   if a:msg is v:null || !has_key(a:msg, 'contents')
-    return
+    return ['', 0]
+  endif
+  let l:doc = json_decode(a:msg.contents.value)
+
+  " for backward compatibility with older gopls
+  if has_key(l:doc, 'link')
+    let l:link = l:doc.link
+    return [l:doc.link, 0]
   endif
 
-  let l:doc = json_decode(a:msg.contents.value)
-  return [l:doc.link, '']
+  if !has_key(l:doc, 'linkPath') || empty(l:doc.linkPath)
+    return ['', 0]
+  endif
+  let l:link = l:doc.linkPath . "#" . l:doc.linkAnchor
+  return [l:link, 0]
 endfunction
 
 function! go#lsp#Info(showstatus)
@@ -1379,11 +1433,13 @@ function! s:highlightMatches(errorMatches, warningMatches) abort
 
   if hlexists('goDiagnosticError')
     " clear the old matches just before adding the new ones to keep flicker
-    " to a minimum.
+    " to a minimum and clear before checking the level so that if the user
+    " changed the level since the last highlighting, the highlighting will be
+    " be properly cleared.
     call go#util#ClearHighlights('goDiagnosticError')
-    if go#config#HighlightDiagnosticErrors()
+    if go#config#DiagnosticsLevel() >= 2
       let b:go_diagnostic_matches.errors = copy(a:errorMatches)
-      if go#config#DiagnosticsLevel() >= 2
+      if go#config#HighlightDiagnosticErrors()
         call go#util#HighlightPositions('goDiagnosticError', a:errorMatches)
       endif
     endif
@@ -1391,11 +1447,13 @@ function! s:highlightMatches(errorMatches, warningMatches) abort
 
   if hlexists('goDiagnosticWarning')
     " clear the old matches just before adding the new ones to keep flicker
-    " to a minimum.
+    " to a minimum and clear before checking the level so that if the user
+    " changed the level since the last highlighting, the highlighting will be
+    " be properly cleared.
     call go#util#ClearHighlights('goDiagnosticWarning')
-    if go#config#HighlightDiagnosticWarnings()
+    if go#config#DiagnosticsLevel() >= 2
       let b:go_diagnostic_matches.warnings = copy(a:warningMatches)
-      if go#config#DiagnosticsLevel() >= 2
+      if go#config#HighlightDiagnosticWarnings()
         call go#util#HighlightPositions('goDiagnosticWarning', a:warningMatches)
       endif
     endif
@@ -1494,6 +1552,63 @@ function! go#lsp#FillStruct() abort
   call l:handler.await()
 endfunction
 
+function! go#lsp#Rename(newName) abort
+  let l:fname = expand('%:p')
+  let [l:line, l:col] = go#lsp#lsp#Position()
+
+  call go#lsp#DidChange(l:fname)
+
+  let l:lsp = s:lspfactory.get()
+  let l:msg = go#lsp#message#PrepareRename(l:fname, l:line, l:col)
+  let l:state = s:newHandlerState('rename')
+  let l:resultHandler = go#promise#New(function('s:rename', [l:fname, l:line, l:col, a:newName], l:state), 10000, '')
+
+  let l:state.handleResult = l:resultHandler.wrapper
+  let l:state.error = l:resultHandler.wrapper
+  let l:state.handleError = function('s:handleRenameError', [], l:state)
+  call l:lsp.sendMessage(l:msg, l:state)
+
+  return l:resultHandler.await()
+endfunction
+
+function! s:rename(fname, line, col, newName, msg) abort dict
+  if type(a:msg) is type('')
+    call self.handleError(a:msg)
+    return
+  endif
+
+  if a:msg is v:null
+    call go#util#EchoWarning('cannot rename the identifier at the requested position')
+    return
+  endif
+
+  call go#lsp#DidChange(a:fname)
+
+  let l:lsp = s:lspfactory.get()
+  let l:msg = go#lsp#message#Rename(a:fname, a:line, a:col, a:newName)
+  let l:state = s:newHandlerState('rename')
+  let l:resultHandler = go#promise#New(function('s:handleRename', [], l:state), 10000, '')
+
+  let l:state.handleResult = l:resultHandler.wrapper
+  let l:state.error = l:resultHandler.wrapper
+  let l:state.handleError = function('s:handleRenameError', [], l:state)
+  call l:lsp.sendMessage(l:msg, l:state)
+
+  return l:resultHandler.await()
+endfunction
+
+function! s:handleRename(msg) abort dict
+  if type(a:msg) is type('')
+    call self.handleError(a:msg)
+    return
+  endif
+
+  if a:msg is v:null
+    return
+  endif
+  call s:applyDocumentChanges(a:msg.documentChanges)
+endfunction
+
 function! s:executeCommand(cmd, args) abort
   let l:lsp = s:lspfactory.get()
 
@@ -1510,7 +1625,7 @@ function! s:handleFormat(msg) abort dict
     call self.handleError(a:msg)
     return
   endif
-  call s:applyTextEdits(a:msg)
+  call s:applyTextEdits(bufnr(''), a:msg)
 endfunction
 
 function! s:handleCodeAction(kind, cmd, msg) abort dict
@@ -1526,6 +1641,11 @@ function! s:handleCodeAction(kind, cmd, msg) abort dict
   for l:item in a:msg
     if get(l:item, 'kind', '') is a:kind
       if !has_key(l:item, 'edit')
+        continue
+      endif
+
+      if has_key(l:item, 'disabled') && get(l:item.disabled, 'reason', '') isnot ''
+        call go#util#EchoWarning(printf('code action is disabled: %s', l:item.disabled.reason))
         continue
       endif
 
@@ -1545,20 +1665,65 @@ function! s:handleCodeAction(kind, cmd, msg) abort dict
 endfunction
 
 function s:applyDocumentChanges(changes)
+  let l:bufnr = bufnr('')
+
   for l:change in a:changes
     if !has_key(l:change, 'edits')
       continue
     endif
-    " TODO(bc): change to the buffer for l:change.textDocument.uri
-    call s:applyTextEdits(l:change.edits)
+    let l:fname = go#path#FromURI(l:change.textDocument.uri)
+
+    " get the buffer name relative to the current directory, because
+    " Vim says that a buffer name can't be an absolute path.
+    let l:bufname = fnamemodify(l:fname, ':.')
+
+    let l:bufadded = 0
+    let l:bufloaded = 0
+
+    let l:editbufnr = bufnr(l:bufname)
+    if l:editbufnr != bufnr('')
+      " make sure the buffer is listed and loaded before applying text edits
+      if !bufexists(l:bufname)
+        call bufadd(l:bufname)
+        let l:bufadded = 1
+      endif
+
+      if !bufloaded(l:bufname)
+        call bufload(l:bufname)
+        let l:bufloaded = 1
+      endif
+
+      let l:editbufnr = bufnr(l:bufname)
+      if l:editbufnr == -1
+        call go#util#EchoWarn(printf('could not apply changes to %s', l:fname))
+        continue
+      endif
+
+       " TODO(bc): do not edit the buffer when vim-go drops support for Vim
+       " 8.0. Instead, use the functions to modify a buffer (e.g.
+       " appendbufline, getbufline, deletebufline).
+       execute printf('keepalt keepjumps buffer! %d', l:editbufnr)
+    endif
+    call s:applyTextEdits(l:editbufnr, l:change.edits)
+
+    " TODO(bc): save the buffer?
+    " TODO(bc): unload and/or delete a buffer that was loaded or added,
+    " respectively?
   endfor
+  if bufnr('') != l:bufnr
+    execute printf('keepalt keepjumps buffer! %d', l:bufnr)
+  endif
 endfunction
 
 " s:applyTextEdit applies the list of WorkspaceEdit values in msg.
-function s:applyTextEdits(msg) abort
+function s:applyTextEdits(bufnr, msg) abort
   if a:msg is v:null
     return
   endif
+
+  " TODO(bc): start using the functions to modify a buffer (e.g. appendbufline,
+  " deletebufline, etc) instead of operating on the current buffer when vim-go
+  " drops support from Vim 8.0.
 
   " process the TextEdit list in reverse order, because the positions are
   " based on the current line numbers; processing in forward order would
@@ -1604,6 +1769,7 @@ function s:applyTextEdits(msg) abort
     " TODO(bc): deal with the undo file
     " TODO(bc): deal with folds
 
+    " TODO(bc): can we use appendbufline instead of deleting and appending?
     call s:deleteline(l:startline, l:endline)
     for l:line in split(l:text, "\n", 1)
       call append(l:startline-1, l:line)
@@ -1628,6 +1794,10 @@ endfunction
 
 function! s:handleCodeActionError(filename, msg) abort dict
   " TODO(bc): handle the error?
+endfunction
+
+function! s:handleRenameError(msg) abort dict
+  call go#util#EchoError(a:msg)
 endfunction
 
 function! s:textEditLess(left, right) abort
@@ -1685,6 +1855,28 @@ function! s:dedup(list)
   endfor
 
   return sort(keys(l:dict))
+endfunction
+
+function! s:lineinfile(fname, line) abort
+  let l:bufnr = bufnr(a:fname)
+  let l:bufinfo = getbufinfo(a:fname)
+
+  try
+    if l:bufnr == -1 || len(l:bufinfo) == 0 || l:bufinfo[0].loaded == 0
+      let l:filecontents = readfile(a:fname, '', a:line)
+    else
+      let l:filecontents = getbufline(a:fname, a:line)
+    endif
+
+    if len(l:filecontents) == 0
+      return -1
+    endif
+
+    return l:filecontents[-1]
+  catch
+    call go#util#EchoError(printf('%s (line %s): %s at %s', a:fname, a:line, v:exception, v:throwpoint))
+    return -1
+  endtry
 endfunction
 
 " restore Vi compatibility settings
