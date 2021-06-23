@@ -4,6 +4,8 @@ let g:rooter_patterns=['.git', 'Makefile', '*.sln', 'build/env.sh', '.root']
 " vim-visual-multi
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " 只使用最基本的功能, multi-cursor交互感觉差些
+let g:VM_maps = {}
+let g:VM_maps["Select All"]                  = '<c-s>'
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-translator
