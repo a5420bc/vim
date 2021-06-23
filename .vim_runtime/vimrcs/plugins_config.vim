@@ -13,7 +13,7 @@ call pathogen#infect(s:vim_runtime.'/sources_forked/{}')
 call pathogen#infect(s:vim_runtime.'/sources_non_forked/{}')
 call pathogen#infect(s:vim_runtime.'/my_plugins/{}')
 call pathogen#infect(s:vim_runtime.'/plugins_vim8/{}')
-"call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
+""call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
 call pathogen#helptags()
 
 
@@ -447,11 +447,19 @@ endif
 
 " should use `Leaderf gtags --update` first
 let g:Lf_Gtagslabel = 'pygments'
-noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
-noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
-noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
-noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+" gtags没用上过暂时全部注释掉
+" noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
+" noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
+" noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
+" noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
+" noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" ctrlsf
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:ctrlsf_default_root = "project"
+let g:ctrlsf_extra_root_markers = ['.root', '.svn', '.git', '.hg', '.project']
+
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-gitgutter
@@ -543,3 +551,12 @@ nmap F <Plug>(easymotion-overwin-w)
 " 移动到行
 map  gl <Plug>(easymotion-bd-jk)
 nmap gl <Plug>(easymotion-overwin-line)
+
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-fugitive.vim
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+map <silent> <leader>1 :diffget 1<CR> :diffupdate<CR>
+map <silent> <leader>2 :diffget 2<CR> :diffupdate<CR>
+map <silent> <leader>3 :diffget 3<CR> :diffupdate<CR>
+map <silent> <leader>4 :diffget 4<CR> :diffupdate<CR>

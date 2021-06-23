@@ -3,7 +3,7 @@
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:go_autodetect_gopath = 1
 let g:go_fmt_command = "goimports"
-let g:go_def_mode = 'godef'
+let g:go_def_mode = 'gopls'
 let g:go_doc_popup_window=1
 
 " 高亮设置
@@ -18,7 +18,7 @@ let g:go_highlight_types = 1
 
 au FileType go nmap <Leader>s <Plug>(go-implements)
 au FileType go nmap <Leader>i <Plug>(go-info)
-au FileType go nmap <Leader>gd <Plug>(go-doc)
+" au FileType go nmap <Leader>gd <Plug>(go-doc)
 au FileType go nmap <Leader>gv <Plug>(go-doc-vertical)
 "au FileType go nmap <leader>r <Plug>(go-run)
 "au FileType go nmap <leader>b <Plug>(go-build)

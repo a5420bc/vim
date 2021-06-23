@@ -23,21 +23,35 @@ vmap <silent> <Leader>tw <Plug>TranslateWV
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 augroup go_ftplugin
     autocmd!
-    autocmd Filetype go nmap <leader>db :GoDebugBreakpoint<cr>
+    autocmd Filetype go nmap <leader>db :call MyGoDebugBreakpoint()<cr>
     autocmd Filetype go nmap <leader>dd :call MyDebugStart()<cr>
     autocmd Filetype go nmap <leader>dc :call MyGoConnect()<cr>
-    autocmd Filetype go nmap <leader>de :GoDebugStop<cr>
+    autocmd Filetype go nmap <leader>ds :call MyGoStart()<cr>
+    " autocmd Filetype go nmap <leader>de :GoDebugStop<cr>
+    " autocmd Filetype go nmap <leader>dp :GoDebugPrint<cr>
 augroup END
 
-function! MyGoConnect() abort
+function MyGoStart() abort
+    exe "DlvDebug"
+endfunction
+
+function MyGoDebugBreakpoint() abort
+    exe "DlvToggleBreakpoint"
+endfunction
+
+function MyGoConnect() abort
     exe "AsyncTask debug-start"
 endfunction
 
-let g:debug_port = "127.0.0.1:2345"
-function! MyDebugStart() abort 
+let g:debug_port = ":2345"
+function MyDebugStart() abort 
     let port = g:debug_port
-    exe "GoDebugConnect " port
+    " exe "GoDebugConnect " port
+    exe "DlvConnect" port
 endfunction  
+
+" 调整一下sign的级别
+let g:delve_sign_priority = 100
 
 let g:go_debug_mappings = {
             \ '(go-debug-continue)': {'key': 'c', 'arguments': '<nowait>'},
@@ -135,6 +149,49 @@ endfunction
 let g:asyncrun_runner = get(g:, 'asyncrun_runner', {})
 let g:asyncrun_runner.floaterm = function('s:run_in_floaterm')
 let g:asynctasks_term_pos = 'floaterm'
+let g:asynctasks_template = {}
+let g:asynctasks_template.golang = [
+            \ "[debug-start]",
+            \ "command:go=make debug",
+            \ "cwd=$(VIM_ROOT)",
+            \ "output=terminal",
+            \ "errorformat=%f:%l:%m",
+            \ "save=1",
+            \ "",
+            \ "[debug-stop]",
+            \ "command:go=make stop",
+            \ "cwd=$(VIM_ROOT)",
+            \ "output=terminal",
+            \ "errorformat=%f:%l:%m",
+            \ "save=1",
+            \ "",
+            \ "[build]",
+            \ "command:go=make build",
+            \ "cwd=$(VIM_ROOT)",
+            \ "output=terminal",
+            \ "errorformat=%f:%l:%m",
+            \ "save=1",
+            \ "",
+            \ "[start]",
+            \ "command:go=make start",
+            \ "cwd=$(VIM_ROOT)",
+            \ "output=terminal",
+            \ "errorformat=%f:%l:%m",
+            \ "save=1",
+            \ "",
+            \ "[deploy]",
+            \ "command:go=make deploy",
+            \ "cwd=$(VIM_ROOT)",
+            \ "output=terminal",
+            \ "errorformat=%f:%l:%m",
+            \ "save=1",
+            \ "[init]",
+            \ "command:go=cp ~/vim/.vim_runtime/config/tasks/go/Makefile $(VIM_ROOT)/Makefile",
+            \ "cwd=$(VIM_ROOT)",
+            \ "output=terminal",
+            \ "errorformat=%f:%l:%m",
+            \ "save=1",
+            \]
 
 " 和leaderf结合
 function! s:lf_task_source(...)
@@ -592,3 +649,26 @@ let g:prefix_visual_space_map.r = {
             \"c":["rc", '提取常量'],
             \"m":["rm", '提取方法']
             \}
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-quickui
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:go_k_context = [
+            \ ["--"],
+            \ ["Project Init", "AsyncTask init"],
+            \ ["--",],
+            \ ["Build", "AsyncTask build"],
+            \ ["Start", "AsyncTask start"],
+            \ ["Deploy", "AsyncTask deploy"],
+            \ ["Stop", "AsyncTask stop"],
+			\ [ "--", "", '', 'go'],
+            \ ["Debug add breakpoint \t<leader>db", 'call MyGoDebugBreakpoint()', '', 'go'],
+            \ ["Debug Start\t<leader>dd", 'call MyDebugStart()', '', 'go'],
+            \ ["Debug Connect\t<leader>dc", 'call MyGoConnect()', '', 'go'],
+            \ ["--"],
+            \ ["JumpDefinitionSplit\tgd", 'call CocActionAsync("jumpDefinition", "vsplit")', "", 'go'],
+            \ ["Implement\tgi", 'call CocActionAsync("jumpTypeDefinition")', '', 'go'],
+            \ ["JumpTypeDefinition\tgy", 'call CocActionAsync("jumpImplementation")', "", 'go'],
+            \ ["JumpReferencedUsed\tgr", 'call CocActionAsync("jumpUsed")', "", 'go'],
+            \ ]
+autocmd Filetype go nnoremap  <silent><m-f> :call quickui#tools#clever_context('gk', g:go_k_context, {})<cr>
