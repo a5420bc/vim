@@ -13,7 +13,7 @@ call pathogen#infect(s:vim_runtime.'/sources_forked/{}')
 call pathogen#infect(s:vim_runtime.'/sources_non_forked/{}')
 call pathogen#infect(s:vim_runtime.'/my_plugins/{}')
 call pathogen#infect(s:vim_runtime.'/plugins_vim8/{}')
-""call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
+"call pathogen#infect(s:vim_runtime.'/plugins_vim7/{}')
 call pathogen#helptags()
 
 
@@ -459,6 +459,7 @@ let g:Lf_Gtagslabel = 'pygments'
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:ctrlsf_default_root = "project"
 let g:ctrlsf_extra_root_markers = ['.root', '.svn', '.git', '.hg', '.project']
+let g:ctrlsf_search_mode = 'async'
 
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
