@@ -429,6 +429,8 @@ noremap <leader>fm :<C-U><C-R>=printf("Leaderf! mru %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>fc :<C-U><C-R>=printf("Leaderf! function %s", "")<CR><CR>
 noremap <leader>fa :<C-U><C-R>=printf("Leaderf rg -F -S --match-path -e %s ", "")<CR>
+" 增加一个替换模式
+noremap <leader>fr :<C-U><C-R>=printf("Leaderf! rg --bottom -F -S --match-path -e %s ", "")<CR>
 
 noremap <leader>fw :<C-U><C-R>=printf("Leaderf! rg --current-buffer -e %s ", expand("<cword>"))<CR>
 noremap <leader>fs :<C-U><C-R>=printf("Leaderf! rg -S --match-path -e %s ", expand("<cword>"))<CR>
