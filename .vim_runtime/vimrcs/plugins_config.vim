@@ -79,7 +79,7 @@ nmap <space>nf :CocCommand explorer --no-toggle --no-focus --quit-on-open<CR>
 let g:coc_config_home = $HOME . '/vim/.vim_runtime/config/' 
 
 " 指定安装插件
-let g:coc_global_extensions = ['coc-go', 'coc-floaterm', 'coc-explorer', 'coc-phpls', 'coc-json', 'coc-snippets']
+let g:coc_global_extensions = ['coc-go', 'coc-floaterm', 'coc-explorer', 'coc-phpls', 'coc-json', 'coc-snippets', 'coc-pairs']
 
 let g:coc_explorer_global_presets = {
 \   '.vim': {
