@@ -503,148 +503,6 @@ autocmd User CocLocationsChange	CocList --normal location
 " 支持cocstatus
 autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" vim-which-key
-""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-set timeoutlen=500
-call which_key#register('<space>', "g:which_key_map")
-call which_key#register('g', "g:prefix_g_map")
-call which_key#register('visual', "g:prefix_visual_space_map")
-
-nnoremap <silent> <leader> :<c-u>WhichKey '<space>'<CR>
-nnoremap <silent> g :<c-u>WhichKey 'g'<CR>
-vnoremap <silent> <leader> :<c-u>WhichKeyVisual 'visual'<CR>
-
-" 匹配不到退回默认映射操作
-let g:which_key_fallback_to_native_key=1
-" 解决会默认多出一行的bug
-nnoremap gg 1G
-
-" Define prefix dictionary
-let g:which_key_map =  {}
-let g:prefix_g_map = {}
-let g:prefix_visual_space_map = {}
-
-let g:which_key_map = {
-            \ "name":'+快捷键说明',
-            \ "<CR>":'取消搜索高亮',
-            \ ",":'遍历paster历史',
-            \ "a":'coc代码诊断',
-            \ "ac":'coc代码动作',
-            \ "c":'coc命令[coc command]',
-            \ "cd":'设置当前目录为工作目录',
-            \ "cr":'恢复coclist界面',
-            \ "d":'git差异显示开关',
-            \ "j":'切换到下一个buffer',
-            \ "k":'切换到下一个buffer',
-            \ "l":'localtion开关',
-            \ "o": '打开buffer界面',
-            \ "pp":'粘贴模式开关',
-            \ "q":'quickfix开关',
-            \ "qf":'快速修复当前代码问题',
-            \ "m":'切换为unix空格',
-            \ "w":'保存',
-            \ "y":'shell终端情况下复制',
-            \ "z":'专注模式',
-            \ } 
-
-let g:which_key_map.p = {
-            \ "name":"+粘贴",
-            \ }
-
-let g:which_key_map.s = {
-            \ "name":"+会话操作",
-            \ "so":'打开startify',
-            \ "ss":'会话保存',
-            \ "sl":'会话加载',
-            \ "sc":'会话关闭',
-            \ "sd":'会话删除',
-            \ }
-
-" buffer操作
-let g:which_key_map.b = {
-            \ "name":"+buffer操作",
-            \ "o":'关闭除当前buffer的其他buffer',
-            \ "a":'关闭所有buffer',
-            \ "d":'关闭当前buffer',
-            \ }
-
-" 搜索功能
-let g:which_key_map.f = {
-            \ "name":'+搜索功能',
-            \ "a": '搜索关键字',
-            \ "b": '搜索buffer',
-            \ "c": '搜索方法',
-            \ "d": '查找定义',
-            \ "f": '搜索文件',
-            \ "g": '重新打开搜索界面',
-            \ "l": '搜索当前行',
-            \ "m": '搜索mru',
-            \ "n": '查看下一项',
-            \ "r": '查找引用',
-            \ "s": '正则搜索关键字',
-            \ "t": '搜索打开buf的tag',
-            \ "o": '重新打开查找界面',
-            \ "w": '正则搜索当前缓冲区关键字',
-            \ "p": '查看上一项'
-            \ } 
-
-let g:which_key_map.r = {
-            \ "name":'+代码重构',
-            \ "a": '生成php注释',
-            \ "c": '重命名类属性',
-            \ "cp": '创建属性',
-            \ "m": '重命名方法',
-            \ "n": '重命名',
-            \ "p": '提取类属性',
-            \ "s": '生成setter和getter',
-            \ "u": '提取类use前缀',
-            \ } 
-
-let g:which_key_map.t = {
-            \ "name":'+tab操作',
-            \ " ": '切换到下一个tab',
-            \ "c": '关闭tab',
-            \ "e": '当前文件路径[你自己试一下吧~]',
-            \ "l": '移动到最后一个tab',
-            \ "m": '移动到指定tab',
-            \ "n": '新建tab',
-            \ "o": '关闭除当前tab的所有tab',
-            \ "t": 'tagbar开关',
-            \ } 
-
-" 文件数配置
-let g:which_key_map.n = {
-            \ "name":'+文件树导航',
-            \ "f": '定位当前文件所在位置',
-            \ "n": '文件数开关',
-            \ }
-
-" 暂不定义
-let g:which_key_map.h = {"name": "git差异[基本不用]"}
-
-let g:prefix_g_map = {
-            \ "name":'+g前缀操作',
-            \ "a": '切换测试文件和代码文件',
-            \ "c": '选择模式注释',
-            \ "cc": '注释',
-            \ "d": '跳到定义',
-            \ "f": '跳到文件',
-            \ "i": '跳到implement',
-            \ "r": '跳到引用',
-            \ "tj": 'go文件添加json的tag',
-            \ "tx": '清除tag',
-            \ "ty": 'go文件添加yaml的tag',
-            \ "y": '跳到类型定义',
-            \ }
-
-let g:prefix_visual_space_map = {"name":"选择模式"}
-let g:prefix_visual_space_map.r = {
-            \"name":"代码重构",
-            \"c":["rc", '提取常量'],
-            \"m":["rm", '提取方法']
-            \}
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-quickui
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -667,3 +525,71 @@ let g:go_k_context = [
             \ ["JumpReferencedUsed\tgr", 'call CocActionAsync("jumpUsed")', "", 'go'],
             \ ]
 autocmd Filetype go nnoremap  <silent><m-f> :call quickui#tools#clever_context('gk', g:go_k_context, {})<cr>
+
+let linelist = [
+            \ ["explorer定位当前文件所在位置\t<leader>nf"],
+            \ ["explorer文件数开关\t<leader>nn"],
+            \ ["tab切换到下一个tab\t<leader>t<space>"],
+            \ ["tab关闭tab\t<leader>tc"],
+            \ ["tab当前文件路径[你自己试一下吧~]\t<leader>te"],
+            \ ["tab移动到最后一个tab\t<leader>tl"],
+            \ ["tab移动到指定tab\t<leader>tm"],
+            \ ["tab新建tab\t<leader>tn"],
+            \ ["tab关闭除当前tab的所有tab\t<leader>to"],
+            \ ["tagbar开关\t<leader>tt"],
+            \ ["search搜索关键字\t<leader>fa"],
+            \ ["search搜索buffer\t<leader>fb"],
+            \ ["search搜索方法\t<leader>fc"],
+            \ ["search查找定义\t<leader>fd"],
+            \ ["search搜索文件\t<leader>ff"],
+            \ ["search重新打开搜索界面\t<leader>fg"],
+            \ ["search搜索当前行\t<leader>fl"],
+            \ ["search搜索mru\t<leader>fm"],
+            \ ["search查看下一项\t<leader>fn"],
+            \ ["search查看上一项\t<leader>fp"],
+            \ ["search搜索替换\t<leader>fr"],
+            \ ["search正则搜索关键字\t<leader>fs"],
+            \ ["search重新打开查找界面\t<leader>fo"],
+            \ ["search正则搜索当前缓冲区关键字\t<leader>fw"],
+            \ ["关闭除当前buffer的其他buffer\t<leader>bo"],
+            \ ["关闭所有buffer\t<leader>ba"],
+            \ ["关闭当前buffer\t<leader>bd"],
+            \ ["打开会话界面\t<leader>so"],
+            \ ["会话保存\t<leader>ss"],
+            \ ["会话加载\t<leader>sl"],
+            \ ["会话关闭\t<leader>sc"],
+            \ ["会话删除\t<leader>sd"],
+            \ ["取消搜索高亮\t<leader><CR>"],
+            \ ["coc代码诊断\t<leader>a"],
+            \ ["coc代码动作\t<leader>ac"],
+            \ ["coc命令[coc command]\t<leader>c"],
+            \ ["设置当前目录为工作目录\t<leader>cd"],
+            \ ["恢复coclist界面\t<leader>cr"],
+            \ ["git差异显示开关\t<leader>d"],
+            \ ["切换到下一个buffer\t<leader>j"],
+            \ ["切换到下一个buffer\t<leader>k"],
+            \ ["localtion开关\t<leader>l"],
+            \ ["打开buffer界面\t<leader>o"],
+            \ ["粘贴模式开关\t<leader>pp"],
+            \ ["quickfix开关\t<leader>q"],
+            \ ["快速修复当前代码问题\t<leader>qf"],
+            \ ["切换为unix空格\t<leader>m"],
+            \ ["保存\t<leader>w"],
+            \ ["shell终端情况下复制\t<leader>y"],
+            \ ["专注模式\t<leader>z"],
+            \ ["提取常量\t<leader>rc"],
+            \ ["提取方法\t<leader>rm"],
+            \ ["选择模式注释\tgc"],
+            \ ["注释\tgcc"],
+            \ ["切换测试文件和代码文件\tga"],
+            \ ["跳到定义\tgd"],
+            \ ["跳到文件\tgf"],
+            \ ["跳到implement\tgi"],
+            \ ["跳到引用\tgr"],
+            \ ["跳到类型定义\tgy"],
+            \ ["go文件添加json的tag\tgtj", "go"],
+            \ ["清除tag\tgtx", "go"],
+            \ ["go文件添加yaml的tag\tgty", "go"],
+            \ ]
+let opts = {'index':g:quickui#listbox#cursor, 'title': '快捷键说明'}
+nnoremap <silent><m-m>  :call quickui#listbox#inputlist(linelist, opts)<CR>
