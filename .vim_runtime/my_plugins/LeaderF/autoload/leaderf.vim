@@ -124,7 +124,8 @@ call s:InitDict('g:Lf_PreviewResult', {
             \ 'BufTag': 1,
             \ 'Function': 1,
             \ 'Line': 0,
-            \ 'Colorscheme': 0
+            \ 'Colorscheme': 0,
+            \ 'Jumps': 1
             \})
 call s:InitDict('g:Lf_NormalMap', {})
 call s:InitVar('g:Lf_Extensions', {})
@@ -352,11 +353,12 @@ endfunction
 " return the visually selected text and quote it with double quote
 function! leaderf#visual() abort
     try
-        let x_save = @x
+        let x_save = getreg("x", 1)
+        let type = getregtype("x")
         norm! gv"xy
         return '"' . escape(@x, '"') . '"'
     finally
-        let @x = x_save
+        call setreg("x", x_save, type)
     endtry
 endfunction
 
@@ -605,8 +607,9 @@ function! leaderf#matchaddpos(group, pos) abort
     endfor
 endfunction
 
-function! leaderf#closeAllFloatwin(input_win_id, content_win_id, statusline_win_id, show_statusline) abort
+function! leaderf#closeAllFloatwin(input_win_id, content_win_id, statusline_win_id, show_statusline, id) abort
     if winbufnr(a:input_win_id) == -1
+        silent! call nvim_win_close(g:Lf_PreviewWindowID[a:id], 0)
         silent! call nvim_win_close(a:content_win_id, 0)
         if a:show_statusline
             silent! call nvim_win_close(a:statusline_win_id, 0)
@@ -615,6 +618,7 @@ function! leaderf#closeAllFloatwin(input_win_id, content_win_id, statusline_win_
             autocmd!
         augroup end
     elseif winbufnr(a:content_win_id) == -1
+        silent! call nvim_win_close(g:Lf_PreviewWindowID[a:id], 0)
         silent! call nvim_win_close(a:input_win_id, 0)
         if a:show_statusline
             silent! call nvim_win_close(a:statusline_win_id, 0)
@@ -623,6 +627,7 @@ function! leaderf#closeAllFloatwin(input_win_id, content_win_id, statusline_win_
             autocmd!
         augroup end
     elseif a:show_statusline && winbufnr(a:statusline_win_id) == -1
+        silent! call nvim_win_close(g:Lf_PreviewWindowID[a:id], 0)
         silent! call nvim_win_close(a:input_win_id, 0)
         silent! call nvim_win_close(a:content_win_id, 0)
         augroup Lf_Floatwin_Close

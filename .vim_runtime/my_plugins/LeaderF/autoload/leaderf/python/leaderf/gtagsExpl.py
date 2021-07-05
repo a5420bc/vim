@@ -38,13 +38,14 @@ class GtagsExplorer(Explorer):
         self._gtagslibpath = []
         self._result_format = None
         self._last_result_format = None
-        self._gtags_version = self._getGtagsVersion()
         self._evalVimVar()
         self._has_nvim = lfEval("has('nvim')") == '1'
         self._db_timestamp = 0
         self._last_command = ""
         self._content = []
         self._with_gutentags = lfEval("get(g:, 'Lf_GtagsGutentags', 0)") != '0'
+        self._is_debug = False
+        self._cmd = ''
 
         self._task_queue = Queue.Queue()
         self._worker_thread = threading.Thread(target=self._processTask)
@@ -71,6 +72,7 @@ class GtagsExplorer(Explorer):
 
     def getContent(self, *args, **kwargs):
         arguments_dict = kwargs.get("arguments", {})
+        self._is_debug = "--debug" in arguments_dict
         if "--recall" in arguments_dict:
             return []
 
@@ -101,7 +103,7 @@ class GtagsExplorer(Explorer):
                 self._accept_dotfiles = "--accept-dotfiles "
             if "--skip-unreadable" in arguments_dict:
                 self._skip_unreadable = "--skip-unreadable "
-            if "--skip-symlink" in arguments_dict:
+            if "--skip-symlink" in arguments_dict and self._skip_symlink != "":
                 skip_symlink = arguments_dict["--skip-symlink"]
                 self._skip_symlink = "--skip-symlink%s " % ('=' + skip_symlink[0] if skip_symlink else "")
             self.updateGtags(filename, single_update=False, auto=False)
@@ -178,8 +180,10 @@ class GtagsExplorer(Explorer):
                             self._gtagslabel, pattern_option, path_style, self._result_format)
 
             if not self._isDBModified(os.path.join(dbpath, 'GTAGS')) and self._content \
-                    and self._last_result_format == self._result_format:
+                    and self._cmd == cmd:
                 return self._content
+
+            self._cmd = cmd
 
             executor = AsyncExecutor()
             self._executor.append(executor)
@@ -560,15 +564,8 @@ class GtagsExplorer(Explorer):
         self._skip_unreadable = "--skip-unreadable " if lfEval("get(g:, 'Lf_GtagsSkipUnreadable', '0')") == '1' else ""
         self._skip_symlink = "--skip-symlink%s " % ('=' + lfEval("get(g:, 'Lf_GtagsSkipSymlink', '')")
                                 if lfEval("get(g:, 'Lf_GtagsSkipSymlink', '')") != '' else "")
-        # Fix issue #706, gtags error! unrecognized option --skip-symlink
-        # --skip-symlink option is only supported after global 6.6.3
-        # remove --skip-symlink option in case the version is lower then 6.6.3
-        try:
-            if self._compare_gtags_version("6.6.3") < 0:
-                self._skip_symlink = ""
-        except:
-            pass
-
+        if lfEval("get(g:, 'Lf_GtagsHigherThan6_6_2', '1')") == '0':
+            self._skip_symlink = ""
         self._gtagsconf = lfEval("get(g:, 'Lf_Gtagsconf', '')")
         if self._gtagsconf:
             self._gtagsconf = self._gtagsconf.join('""')
@@ -872,10 +869,11 @@ class GtagsExplorer(Explorer):
             else:
                 print("gtags generated successfully!")
 
-        if self._has_nvim:
-            vim.async_call(lfCmd, "let g:Lf_Debug_GtagsCmd = '%s'" % escQuote(cmd))
-        # else:
-        #     lfCmd("let g:Lf_Debug_GtagsCmd = '%s'" % escQuote(cmd)) # may cause crash
+        if self._is_debug:
+            if self._has_nvim:
+                vim.async_call(print_log, cmd)
+            else:
+                print(cmd)
 
     def getStlCategory(self):
         return 'Gtags'
@@ -897,31 +895,6 @@ class GtagsExplorer(Explorer):
     def getLastResultFormat(self):
         return self._last_result_format
 
-    def _getGtagsVersion(self):
-        env = os.environ
-        proc = subprocess.Popen("gtags --version", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=env)
-        try:
-            version = proc.stdout.readline().decode().split()[-1].split(".")
-            return int(version[0]) * 10000 + int(version[1]) * 100 + int(version[2])
-        except Exception as e:
-            return None
-
-    def _compare_gtags_version(self, specify_version):
-        """
-        comparing current gtags version with the specified version string
-        Args:
-            specify_version: the specified version string, for example 6.6.3
-        return:
-            >0, greater than the specify_version
-            0, the same version
-            <0, lower than the specify_version
-        """
-        try:
-            items = specify_version.split(".")
-            specify_vernum = int(items[0]) * 10000 + int(items[1]) * 100 + int(items[2])
-            return self._gtags_version - specify_vernum
-        except:
-            raise Exception("can not compare gtags version")
 
 #*****************************************************
 # GtagsExplManager
@@ -968,6 +941,9 @@ class GtagsExplManager(Manager):
                     lfCmd("hide edit +%s %s" % (line_num, escSpecial(file)))
             lfCmd("norm! ^zv")
             lfCmd("norm! zz")
+
+            if "preview" not in kwargs:
+                lfCmd("setlocal cursorline! | redraw | sleep 150m | setlocal cursorline!")
 
             if vim.current.window not in self._cursorline_dict:
                 self._cursorline_dict[vim.current.window] = vim.current.window.options["cursorline"]
@@ -1243,7 +1219,7 @@ class GtagsExplManager(Manager):
             file = os.path.normpath(lfEncode(file))
 
         if lfEval("bufloaded('%s')" % escQuote(file)) == '1':
-            source = int(lfEval("bufadd('%s')" % escQuote(line)))
+            source = int(lfEval("bufadd('%s')" % escQuote(file)))
         else:
             source = file
         self._createPopupPreview("", source, line_num)

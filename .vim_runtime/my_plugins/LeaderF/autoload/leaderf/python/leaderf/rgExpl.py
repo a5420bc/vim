@@ -121,6 +121,10 @@ class RgExplorer(Explorer):
             zero_args_options += "--no-messages "
         if "--no-pcre2-unicode" in arguments_dict:
             zero_args_options += "--no-pcre2-unicode "
+        if "-U" in arguments_dict:
+            zero_args_options += "-U "
+        if "--multiline-dotall" in arguments_dict:
+            zero_args_options += "--multiline-dotall "
 
         one_args_options = ''
         if "--context-separator" in arguments_dict:
@@ -224,8 +228,11 @@ class RgExplorer(Explorer):
         if pattern == '':
             pattern = '"" '
 
-        if path == '' and os.name == 'nt':
-            path = '.'
+        # as per https://github.com/macvim-dev/macvim/issues/1003
+        # the following hack code is not needed any more
+
+        # if path == '' and os.name == 'nt':
+        #     path = '.'
 
         tmpfilenames = []
         def removeFiles(names):
@@ -291,8 +298,13 @@ class RgExplorer(Explorer):
         if os.name != 'nt':
             pattern = pattern.replace('`', r"\`")
 
-        cmd = '''{} {} --no-config --no-ignore-messages --no-heading --with-filename --color never --line-number '''\
-                '''{} {}{}{}{}{}{}'''.format(self._rg, extra_options, case_flag, word_or_line, zero_args_options,
+        if "--heading" in arguments_dict:
+            heading = "--heading"
+        else:
+            heading = "--no-heading"
+
+        cmd = '''{} {} --no-config --no-ignore-messages {} --with-filename --color never --line-number '''\
+                '''{} {}{}{}{}{}{}'''.format(self._rg, extra_options, heading, case_flag, word_or_line, zero_args_options,
                                                   one_args_options, repeatable_options, lfDecode(pattern), path)
         lfCmd("let g:Lf_Debug_RgCmd = '%s'" % escQuote(cmd))
         content = executor.execute(cmd, encoding=lfEval("&encoding"), cleanup=partial(removeFiles, tmpfilenames))
@@ -419,7 +431,84 @@ class RgExplManager(Manager):
         return RgExplorer
 
     def _defineMaps(self):
-        lfCmd("call leaderf#Rg#Maps()")
+        lfCmd("call leaderf#Rg#Maps(%d)" % int("--heading" in self._arguments))
+
+    def _getFileInfo(self, args):
+        line = args[0]
+
+        if "--heading" in self._arguments:
+            buffer = args[1]
+            cursor_line = args[2]
+            if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                if not re.match(r'^\d+[:-]', line):
+                    return (None, None)
+
+                for cur_line in reversed(buffer[:cursor_line]):
+                    if cur_line == self._getExplorer().getContextSeparator():
+                        continue
+                    elif not re.match(r'^\d+[:-]', cur_line):
+                        break
+                else:
+                    return (None, None)
+
+                file = cur_line
+                if not os.path.isabs(file):
+                    file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+                line_num = re.split(r'[:-]', line, 1)[0]
+            else:
+                if not re.match(r'^\d+:', line):
+                    return (None, None)
+
+                for cur_line in reversed(buffer[:cursor_line]):
+                    if cur_line == self._getExplorer().getContextSeparator():
+                        continue
+                    elif not re.match(r'^\d+:', cur_line):
+                        break
+                else:
+                    return (None, None)
+
+                file = cur_line
+                if not os.path.isabs(file):
+                    file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+                line_num = line.split(':')[0]
+        else:
+            if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                m = re.match(r'^(.+?)([:-])(\d+)\2', line)
+                file, sep, line_num = m.group(1, 2, 3)
+                if not os.path.isabs(file):
+                    file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+
+                if not os.path.exists(lfDecode(file)):
+                    if sep == ':':
+                        sep = '-'
+                    else:
+                        sep = ':'
+                    m = re.match(r'^(.+?)%s(\d+)%s' % (sep, sep), line)
+                    if m:
+                        file, line_num = m.group(1, 2)
+                if not re.search(r"\d+_'No_Name_(\d+)'", file):
+                    i = 1
+                    while not os.path.exists(lfDecode(file)):
+                        m = re.match(r'^(.+?(?:([:-])\d+.*?){%d})\2(\d+)\2' % i, line)
+                        i += 1
+                        file, line_num = m.group(1, 3)
+            else:
+                m = re.match(r'^(.+?):(\d+):', line)
+                file, line_num = m.group(1, 2)
+                if not re.search(r"\d+_'No_Name_(\d+)'", file):
+                    if not os.path.isabs(file):
+                        file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+                    i = 1
+                    while not os.path.exists(lfDecode(file)):
+                        m = re.match(r'^(.+?(?::\d+.*?){%d}):(\d+):' % i, line)
+                        i += 1
+                        file, line_num = m.group(1, 2)
+                        if not os.path.isabs(file):
+                            file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+
+        file = os.path.normpath(lfEncode(file))
+
+        return (file, line_num)
 
     @workingDirectory
     def _acceptSelection(self, *args, **kwargs):
@@ -429,37 +518,9 @@ class RgExplManager(Manager):
         if args[0] == self._getExplorer().getContextSeparator():
             return
 
-        line = args[0]
-        if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
-            m = re.match(r'^(.+?)([:-])(\d+)\2', line)
-            file, sep, line_num = m.group(1, 2, 3)
-            if not os.path.exists(lfDecode(file)):
-                if sep == ':':
-                    sep = '-'
-                else:
-                    sep = ':'
-                m = re.match(r'^(.+?)%s(\d+)%s' % (sep, sep), line)
-                if m:
-                    file, line_num = m.group(1, 2)
-            if not re.search(r"\d+_'No_Name_(\d+)'", file):
-                i = 1
-                while not os.path.exists(lfDecode(file)):
-                    m = re.match(r'^(.+?(?:([:-])\d+.*?){%d})\2(\d+)\2' % i, line)
-                    i += 1
-                    file, line_num = m.group(1, 3)
-        else:
-            m = re.match(r'^(.+?):(\d+):', line)
-            file, line_num = m.group(1, 2)
-            if not re.search(r"\d+_'No_Name_(\d+)'", file):
-                i = 1
-                while not os.path.exists(lfDecode(file)):
-                    m = re.match(r'^(.+?(?::\d+.*?){%d}):(\d+):' % i, line)
-                    i += 1
-                    file, line_num = m.group(1, 2)
-
-        if not os.path.isabs(file):
-            file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
-            file = os.path.normpath(lfEncode(file))
+        file, line_num = self._getFileInfo(args)
+        if file is None:
+            return
 
         match = re.search(r"\d+_'No_Name_(\d+)'", file)
         if match:
@@ -470,12 +531,14 @@ class RgExplManager(Manager):
         try:
             if buf_number == -1:
                 if kwargs.get("mode", '') == 't':
-                    if lfEval("get(g:, 'Lf_JumpToExistingWindow', 1)") == '1' and lfEval("bufloaded('%s')" % escQuote(file)) == '1':
+                    if lfEval("get(g:, 'Lf_JumpToExistingWindow', 1)") == '1' \
+                            and lfEval("bufloaded('%s')" % escQuote(file)) == '1':
                         lfDrop('tab', file, line_num)
                     else:
                         lfCmd("tabe %s | %s" % (escSpecial(file), line_num))
                 else:
-                    if lfEval("get(g:, 'Lf_JumpToExistingWindow', 1)") == '1' and lfEval("bufloaded('%s')" % escQuote(file)) == '1':
+                    if lfEval("get(g:, 'Lf_JumpToExistingWindow', 1)") == '1' \
+                            and lfEval("bufloaded('%s')" % escQuote(file)) == '1':
                         lfDrop('', file, line_num)
                     else:
                         lfCmd("hide edit +%s %s" % (line_num, escSpecial(file)))
@@ -483,6 +546,9 @@ class RgExplManager(Manager):
                 lfCmd("hide buffer +%s %s" % (line_num, buf_number))
             lfCmd("norm! ^zv")
             lfCmd("norm! zz")
+
+            if "preview" not in kwargs:
+                lfCmd("setlocal cursorline! | redraw | sleep 150m | setlocal cursorline!")
 
             if vim.current.window not in self._cursorline_dict:
                 self._cursorline_dict[vim.current.window] = vim.current.window.options["cursorline"]
@@ -572,11 +638,13 @@ class RgExplManager(Manager):
         help.append('" d : delete the line under the cursor')
         help.append('" Q : output result quickfix list')
         help.append('" L : output result location list')
-        help.append('" i/<Tab> : switch to input mode')
-        help.append('" r : replace a pattern')
-        help.append('" w : apply the changes to buffer without saving')
-        help.append('" W : apply the changes to buffer and save')
-        help.append('" U : undo the last changes applied')
+        if "--heading" not in self._arguments:
+            help.append('" i/<Tab> : switch to input mode')
+        if self._getInstance().getWinPos() != 'popup':
+            help.append('" r : replace a pattern')
+            help.append('" w : apply the changes to buffer without saving')
+            help.append('" W : apply the changes to buffer and save')
+            help.append('" U : undo the last changes applied')
         help.append('" q : quit')
         help.append('" <F1> : toggle this help')
         help.append('" ---------------------------------------------------------')
@@ -585,31 +653,62 @@ class RgExplManager(Manager):
     def _afterEnter(self):
         super(RgExplManager, self)._afterEnter()
         if self._getInstance().getWinPos() == 'popup':
-            if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
-                lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgFileName'', ''^.\{-}\ze\(:\d\+:\|-\d\+-\)'', 10)')"""
+            if "--heading" in self._arguments:
+                if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                    lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgFileName'', ''\(^\d\+[:-].*\)\@<!'', 10)')"""
+                            % self._getInstance().getPopupWinId())
+                else:
+                    lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgFileName'', ''\(^\d\+:.*\)\@<!'', 10)')"""
+                            % self._getInstance().getPopupWinId())
+                id = int(lfEval("matchid"))
+                self._match_ids.append(id)
+                lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgLineNumber'', ''^\d\+:'', 11)')"""
                         % self._getInstance().getPopupWinId())
+                id = int(lfEval("matchid"))
+                self._match_ids.append(id)
+                if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                    lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgLineNumber2'', ''^\d\+-'', 11)')"""
+                            % self._getInstance().getPopupWinId())
+                    id = int(lfEval("matchid"))
+                    self._match_ids.append(id)
+                if self._has_column:
+                    lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgColumnNumber'', ''^\d\+:\zs\d\+:'', 11)')"""
+                            % self._getInstance().getPopupWinId())
+                    id = int(lfEval("matchid"))
+                    self._match_ids.append(id)
             else:
-                lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgFileName'', ''^.\{-}\ze\:\d\+:'', 10)')"""
-                        % self._getInstance().getPopupWinId())
-            id = int(lfEval("matchid"))
-            self._match_ids.append(id)
-            lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgLineNumber'', ''^.\{-}\zs:\d\+:'', 10)')"""
-                    % self._getInstance().getPopupWinId())
-            id = int(lfEval("matchid"))
-            self._match_ids.append(id)
-            if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
-                lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgLineNumber2'', ''^.\{-}\zs-\d\+-'', 10)')"""
+                if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                    lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgFileName'', ''^.\{-}\ze\(:\d\+:\|-\d\+-\)'', 10)')"""
+                            % self._getInstance().getPopupWinId())
+                else:
+                    lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgFileName'', ''^.\{-}\ze\:\d\+:'', 10)')"""
+                            % self._getInstance().getPopupWinId())
+                id = int(lfEval("matchid"))
+                self._match_ids.append(id)
+                lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgLineNumber'', ''^.\{-}\zs:\d\+:'', 10)')"""
                         % self._getInstance().getPopupWinId())
                 id = int(lfEval("matchid"))
                 self._match_ids.append(id)
-            if self._has_column:
-                lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgColumnNumber'', ''^.\{-}:\d\+:\zs\d\+:'', 10)')"""
-                        % self._getInstance().getPopupWinId())
-                id = int(lfEval("matchid"))
-                self._match_ids.append(id)
-
+                if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                    lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgLineNumber2'', ''^.\{-}\zs-\d\+-'', 10)')"""
+                            % self._getInstance().getPopupWinId())
+                    id = int(lfEval("matchid"))
+                    self._match_ids.append(id)
+                if self._has_column:
+                    lfCmd("""call win_execute(%d, 'let matchid = matchadd(''Lf_hl_rgColumnNumber'', ''^.\{-}:\d\+:\zs\d\+:'', 10)')"""
+                            % self._getInstance().getPopupWinId())
+                    id = int(lfEval("matchid"))
+                    self._match_ids.append(id)
             try:
                 for i in self._getExplorer().getPatternRegex():
+                    if "-U" in self._arguments:
+                        if self._has_column:
+                            i = i.replace(r'\n', r'\n.{-}\d+:\d+:')
+                        else:
+                            i = i.replace(r'\n', r'\n.{-}\d+:')
+                        if "--multiline-dotall" in self._arguments:
+                            i = i.replace('.', r'\_.')
+
                     lfCmd("""call win_execute(%d, "let matchid = matchadd('Lf_hl_rgHighlight', '%s', 9)")"""
                             % (self._getInstance().getPopupWinId(), re.sub(r'\\(?!")', r'\\\\', escQuote(i))))
                     id = int(lfEval("matchid"))
@@ -617,22 +716,45 @@ class RgExplManager(Manager):
             except vim.error:
                 pass
         else:
-            if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
-                id = int(lfEval("matchadd('Lf_hl_rgFileName', '^.\{-}\ze\(:\d\+:\|-\d\+-\)', 10)"))
+            if "--heading" in self._arguments:
+                if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                    id = int(lfEval("matchadd('Lf_hl_rgFileName', '\(^\d\+[:-].*\)\@<!', 10)"))
+                else:
+                    id = int(lfEval("matchadd('Lf_hl_rgFileName', '\(^\d\+:.*\)\@<!', 10)"))
+                self._match_ids.append(id)
+                id = int(lfEval("matchadd('Lf_hl_rgLineNumber', '^\d\+:', 11)"))
+                self._match_ids.append(id)
+                if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                    id = int(lfEval("matchadd('Lf_hl_rgLineNumber2', '^\d\+-', 11)"))
+                    self._match_ids.append(id)
+                if self._has_column:
+                    id = int(lfEval("matchadd('Lf_hl_rgColumnNumber', '^\d\+:\zs\d\+:', 11)"))
+                    self._match_ids.append(id)
             else:
-                id = int(lfEval("matchadd('Lf_hl_rgFileName', '^.\{-}\ze\:\d\+:', 10)"))
-            self._match_ids.append(id)
-            id = int(lfEval("matchadd('Lf_hl_rgLineNumber', '^.\{-}\zs:\d\+:', 10)"))
-            self._match_ids.append(id)
-            if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
-                id = int(lfEval("matchadd('Lf_hl_rgLineNumber2', '^.\{-}\zs-\d\+-', 10)"))
+                if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                    id = int(lfEval("matchadd('Lf_hl_rgFileName', '^.\{-}\ze\(:\d\+:\|-\d\+-\)', 10)"))
+                else:
+                    id = int(lfEval("matchadd('Lf_hl_rgFileName', '^.\{-}\ze\:\d\+:', 10)"))
                 self._match_ids.append(id)
-            if self._has_column:
-                id = int(lfEval("matchadd('Lf_hl_rgColumnNumber', '^.\{-}:\d\+:\zs\d\+:', 10)"))
+                id = int(lfEval("matchadd('Lf_hl_rgLineNumber', '^.\{-}\zs:\d\+:', 10)"))
                 self._match_ids.append(id)
+                if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                    id = int(lfEval("matchadd('Lf_hl_rgLineNumber2', '^.\{-}\zs-\d\+-', 10)"))
+                    self._match_ids.append(id)
+                if self._has_column:
+                    id = int(lfEval("matchadd('Lf_hl_rgColumnNumber', '^.\{-}:\d\+:\zs\d\+:', 10)"))
+                    self._match_ids.append(id)
 
             try:
                 for i in self._getExplorer().getPatternRegex():
+                    if "-U" in self._arguments:
+                        if self._has_column:
+                            i = i.replace(r'\n', r'\n.{-}\d+:\d+:')
+                        else:
+                            i = i.replace(r'\n', r'\n.{-}\d+:')
+                        if "--multiline-dotall" in self._arguments:
+                            i = i.replace('.', r'\_.')
+
                     id = int(lfEval("matchadd('Lf_hl_rgHighlight', '%s', 9)" % escQuote(i)))
                     self._match_ids.append(id)
             except vim.error:
@@ -706,6 +828,14 @@ class RgExplManager(Manager):
         return ""
 
     def startExplorer(self, win_pos, *args, **kwargs):
+        arguments_dict = kwargs.get("arguments", {})
+        if "--heading" in arguments_dict:
+            kwargs["bang"] = 1
+
+        if ("-A" in arguments_dict or "-B" in arguments_dict or "-C" in arguments_dict
+                or "--heading" in arguments_dict):
+            kwargs["arguments"]["--reverse"] = None
+
         self._orig_cwd = lfGetCwd()
         root_markers = lfEval("g:Lf_RootMarkers")
         wd_mode = lfEval("g:Lf_WorkingDirectoryMode")
@@ -762,6 +892,8 @@ class RgExplManager(Manager):
         else:
             lfCmd("setlocal modifiable")
         line = instance._buffer_object[instance.window.cursor[0] - 1]
+        if "--heading" in self._arguments and not re.match(r'^\d+[:-]', line):
+            return
         if len(self._content) > 0:
             self._content.remove(line)
             self._getInstance().setStlTotal(len(self._content)//self._getUnit())
@@ -782,37 +914,9 @@ class RgExplManager(Manager):
         if args[0] == self._getExplorer().getContextSeparator():
             return
 
-        line = args[0]
-        if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
-            m = re.match(r'^(.+?)([:-])(\d+)\2', line)
-            file, sep, line_num = m.group(1, 2, 3)
-            if not os.path.exists(lfDecode(file)):
-                if sep == ':':
-                    sep = '-'
-                else:
-                    sep = ':'
-                m = re.match(r'^(.+?)%s(\d+)%s' % (sep, sep), line)
-                if m:
-                    file, line_num = m.group(1, 2)
-            if not re.search(r"\d+_'No_Name_(\d+)'", file):
-                i = 1
-                while not os.path.exists(lfDecode(file)):
-                    m = re.match(r'^(.+?(?:([:-])\d+.*?){%d})\2(\d+)\2' % i, line)
-                    i += 1
-                    file, line_num = m.group(1, 3)
-        else:
-            m = re.match(r'^(.+?):(\d+):', line)
-            file, line_num = m.group(1, 2)
-            if not re.search(r"\d+_'No_Name_(\d+)'", file):
-                i = 1
-                while not os.path.exists(lfDecode(file)):
-                    m = re.match(r'^(.+?(?::\d+.*?){%d}):(\d+):' % i, line)
-                    i += 1
-                    file, line_num = m.group(1, 2)
-
-        if not os.path.isabs(file):
-            file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
-            file = os.path.normpath(lfEncode(file))
+        file, line_num = self._getFileInfo(args)
+        if file is None:
+            return
 
         match = re.search(r"\d+_'No_Name_(\d+)'", file)
         if match:
@@ -905,7 +1009,7 @@ class RgExplManager(Manager):
                 lfCmd("command! -buffer Undo call leaderf#Rg#UndoLastChange()")
 
             lfCmd("echohl Question")
-            self._orig_buffer = self._getInstance().buffer[:]
+            self._orig_buffer = self._getInstance().buffer[self._getInstance().helpLength:]
 
             text = ("" if len(self._getExplorer().getPatternRegex()) == 0
                     else self._getExplorer().getPatternRegex()[0])
@@ -914,9 +1018,14 @@ class RgExplManager(Manager):
                 return
             string = lfEval("input('Replace with: ')")
             flags = lfEval("input('flags: ', 'gc')")
-            lfCmd('%d;$s/\(^.\+\(:\d\+:\|-\d\+-\).\{-}\)\@<=%s/%s/%s' %
-                    (self._getInstance().helpLength + 1, escQuote(pattern.replace('/', '\/')),
-                     escQuote(string.replace('/', '\/')), escQuote(flags)))
+            if "--heading" in self._arguments:
+                lfCmd('%d;$s/\(^\d\+[:-].\{-}\)\@<=%s/%s/%s'
+                        % (self._getInstance().helpLength + 1, escQuote(pattern.replace('/', '\/')),
+                            escQuote(string.replace('/', '\/')), escQuote(flags)))
+            else:
+                lfCmd('%d;$s/\(^.\+\(:\d\+:\|-\d\+-\).\{-}\)\@<=%s/%s/%s'
+                        % (self._getInstance().helpLength + 1, escQuote(pattern.replace('/', '\/')),
+                            escQuote(string.replace('/', '\/')), escQuote(flags)))
             lfCmd("call histdel('search', -1)")
             lfCmd("let @/ = histget('search', -1)")
             lfCmd("nohlsearch")
@@ -946,47 +1055,75 @@ class RgExplManager(Manager):
 
             self._buf_number_dict = {}
             lfCmd("echohl WarningMsg | redraw | echo ' Applying changes ...' | echohl None")
-            for n, line in enumerate(self._getInstance().buffer):
+            file = ""
+            for n, line in enumerate(self._getInstance().buffer[self._getInstance().helpLength:]):
                 try:
+                    if line == self._getExplorer().getContextSeparator():
+                        continue
+
+                    if "--heading" in self._arguments:
+                        if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                            if not re.match(r'^\d+[:-]', line):
+                                file = line
+                                continue
+                        else:
+                            if not re.match(r'^\d+:', line):
+                                file = line
+                                continue
+
                     if self._orig_buffer[n] == line: # no changes
                         continue
 
-                    if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
-                        m = re.match(r'^(.+?)([:-])(\d+)\2(.*)', line)
-                        file, sep, line_num, content = m.group(1, 2, 3, 4)
-                        if not os.path.exists(lfDecode(file)):
-                            if sep == ':':
-                                sep = '-'
-                            else:
-                                sep = ':'
-                            m = re.match(r'^(.+?)(%s)(\d+)%s(.*)' % (sep, sep), line)
-                            if m:
-                                file, sep, line_num, content = m.group(1, 2, 3, 4)
-                        if not re.search(r"\d+_'No_Name_(\d+)'", file):
-                            i = 1
-                            while not os.path.exists(lfDecode(file)):
-                                m = re.match(r'^(.+?(?:([:-])\d+.*?){%d})\2(\d+)\2(.*)' % i, line)
-                                i += 1
-                                file, sep, line_num, content = m.group(1, 2, 3, 4)
-
-                        if self._has_column and sep == ':':
+                    if "--heading" in self._arguments:
+                        line_num, content = re.split(r'[:-]', line, 1)
+                        if self._has_column and re.match(r'^\d+:\d+:', line):
                             content = content.split(':', 1)[1]
                     else:
-                        m = re.match(r'^(.+?):(\d+):(.*)', line)
-                        file, line_num, content = m.group(1, 2, 3)
-                        if not re.search(r"\d+_'No_Name_(\d+)'", file):
-                            i = 1
-                            while not os.path.exists(lfDecode(file)):
-                                m = re.match(r'^(.+?(?::\d+.*?){%d}):(\d+):(.*)' % i, line)
-                                i += 1
-                                file, line_num, content = m.group(1, 2, 3)
+                        if "-A" in self._arguments or "-B" in self._arguments or "-C" in self._arguments:
+                            m = re.match(r'^(.+?)([:-])(\d+)\2(.*)', line)
+                            file, sep, line_num, content = m.group(1, 2, 3, 4)
+                            if not os.path.isabs(file):
+                                file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+                            if not os.path.exists(lfDecode(file)):
+                                if sep == ':':
+                                    sep = '-'
+                                else:
+                                    sep = ':'
+                                m = re.match(r'^(.+?)(%s)(\d+)%s(.*)' % (sep, sep), line)
+                                if m:
+                                    file, sep, line_num, content = m.group(1, 2, 3, 4)
+                            if not re.search(r"\d+_'No_Name_(\d+)'", file):
+                                i = 1
+                                while not os.path.exists(lfDecode(file)):
+                                    m = re.match(r'^(.+?(?:([:-])\d+.*?){%d})\2(\d+)\2(.*)' % i, line)
+                                    i += 1
+                                    file, sep, line_num, content = m.group(1, 2, 3, 4)
+                                    if not os.path.isabs(file):
+                                        file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
 
-                        if self._has_column:
-                            content = content.split(':', 1)[1]
+                            if self._has_column and sep == ':':
+                                content = content.split(':', 1)[1]
+                        else:
+                            m = re.match(r'^(.+?):(\d+):(.*)', line)
+                            file, line_num, content = m.group(1, 2, 3)
+                            if not os.path.isabs(file):
+                                file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+                            if not re.search(r"\d+_'No_Name_(\d+)'", file):
+                                i = 1
+                                while not os.path.exists(lfDecode(file)):
+                                    m = re.match(r'^(.+?(?::\d+.*?){%d}):(\d+):(.*)' % i, line)
+                                    i += 1
+                                    file, line_num, content = m.group(1, 2, 3)
+                                    if not os.path.isabs(file):
+                                        file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
+
+                            if self._has_column:
+                                content = content.split(':', 1)[1]
 
                     if not os.path.isabs(file):
                         file = os.path.join(self._getInstance().getCwd(), lfDecode(file))
-                        file = os.path.normpath(lfEncode(file))
+
+                    file = os.path.normpath(lfEncode(file))
 
                     if lfEval("bufloaded('%s')" % escQuote(file)) == '0':
                         lfCmd("hide edit %s" % escSpecial(file))

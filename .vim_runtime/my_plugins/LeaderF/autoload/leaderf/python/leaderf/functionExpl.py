@@ -230,6 +230,9 @@ class FunctionExplManager(Manager):
         lfCmd("norm! ^zv")
         lfCmd("norm! zz")
 
+        if "preview" not in kwargs:
+            lfCmd("setlocal cursorline! | redraw | sleep 150m | setlocal cursorline!")
+
         if vim.current.window not in self._cursorline_dict:
             self._cursorline_dict[vim.current.window] = vim.current.window.options["cursorline"]
 
@@ -358,7 +361,7 @@ class FunctionExplManager(Manager):
         vim.options['eventignore'] = 'BufLeave,WinEnter,BufEnter'
         try:
             vim.current.tabpage, vim.current.window, vim.current.buffer = orig_pos
-            self._acceptSelection(line)
+            self._acceptSelection(line, preview=True)
         finally:
             vim.current.tabpage, vim.current.window, vim.current.buffer = cur_pos
             vim.options['eventignore'] = saved_eventignore
@@ -379,6 +382,11 @@ class FunctionExplManager(Manager):
         self._relocateCursor()
 
     def _relocateCursor(self):
+        remember_last_status = "--recall" in self._arguments \
+                or lfEval("g:Lf_RememberLastSearch") == '1' and self._cli.pattern
+        if remember_last_status:
+            return
+
         inst = self._getInstance()
         if inst.empty():
             return

@@ -639,18 +639,16 @@ class LfCli(object):
         try:
             self._history_index = 0
             self._blinkon = True
-            idle = 10000
+            start = time.time()
             update = False
-
-            if len(self._instance._manager._content) < 100000:
-                threshold = 0
-            else:
-                if lfEval("has('nvim') && exists('g:GuiLoaded')") == '1':
-                    threshold = 2
-                else:
-                    threshold = 25
+            prefix = ""
 
             while 1:
+                if len(self._instance._manager._content) < 60000:
+                    threshold = 0.01
+                else:
+                    threshold = 0.10
+
                 self._buildPrompt()
                 self._idle = False
 
@@ -666,12 +664,14 @@ class LfCli(object):
                         if lfEval("has('nvim') && exists('g:GuiLoaded')") == '1':
                             time.sleep(0.009) # this is to solve issue 375 leaderF hangs in nvim-qt
 
-                        idle = min(idle + 1, 10000)
                         if update == True:
-                            if idle >= threshold:
+                            if time.time() - start >= threshold:
                                 update = False
-                                idle = 0
-                                yield '<Update>'
+                                if ''.join(self._cmdline).startswith(prefix):
+                                    yield '<Update>'
+                                else:
+                                    yield '<Shorten>'
+                                start = time.time()
                         else:
                             try:
                                 callback()
@@ -690,12 +690,14 @@ class LfCli(object):
                         if lfEval("has('nvim') && exists('g:GuiLoaded')") == '1':
                             time.sleep(0.009) # this is to solve issue 375 leaderF hangs in nvim-qt
 
-                        idle = min(idle + 1, 10000)
                         if update == True:
-                            if idle >= threshold:
+                            if time.time() - start >= threshold:
                                 update = False
-                                idle = 0
-                                yield '<Update>'
+                                if ''.join(self._cmdline).startswith(prefix):
+                                    yield '<Update>'
+                                else:
+                                    yield '<Shorten>'
+                                start = time.time()
                         else:
                             try:
                                 callback()
@@ -715,18 +717,21 @@ class LfCli(object):
                     self._blinkon = True
 
                 if lfEval("!type(nr) && nr >= 0x20") == '1':
+                    if update == False:
+                        update = True
+                        prefix = ''.join(self._cmdline)
+
                     self._insert(lfEval("ch"))
                     self._buildPattern()
                     if self._pattern is None or (self._refine and self._pattern[1] == ''): # e.g. abc;
                         continue
 
-                    update = True
-                    if idle < threshold:
+                    if time.time() - start < threshold:
                         continue
                     else:
-                        idle = 0
                         update = False
                         yield '<Update>'
+                        start = time.time()
                 else:
                     cmd = ''
                     for (key, value) in self._key_dict.items():
@@ -752,9 +757,20 @@ class LfCli(object):
                     elif equal(cmd, '<BS>') or equal(cmd, '<C-H>'):
                         if not self._pattern and self._refine == False:
                             continue
+
+                        if update == False:
+                            update = True
+                            prefix = ''.join(self._cmdline)
+
                         self._backspace()
                         self._buildPattern()
-                        yield '<Shorten>'
+
+                        if self._pattern and time.time() - start < threshold:
+                            continue
+                        else:
+                            update = False
+                            yield '<Shorten>'
+                            start = time.time()
                     elif equal(cmd, '<C-U>'):
                         if not self._pattern and self._refine == False:
                             continue

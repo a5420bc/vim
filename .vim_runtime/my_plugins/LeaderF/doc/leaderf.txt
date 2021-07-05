@@ -380,8 +380,8 @@ g:Lf_PreviewCode                                *g:Lf_PreviewCode*
 
 g:Lf_DefaultExternalTool                        *g:Lf_DefaultExternalTool*
     Use this option to specify the default external tool which is used to
-    index the files. Possible values are 'rg', 'pt'(not available on Windows),
-    'ag'(not available on Windows), 'find'.  If you do not want to use the external tool: >
+    index the files. Possible values are 'rg', 'pt', 'ag', 'find'.
+    If you do not want to use the external tool: >
     let g:Lf_DefaultExternalTool = ""
 <
     By default, use the external tool in the sequence of 'rg', 'pt', 'ag', 'find'
@@ -677,7 +677,7 @@ g:Lf_GtagsSkipSymlink                           *g:Lf_GtagsSkipSymlink*
     This option tells gtags to skip symbolic links. If value is 'f' then skip
     only symbolic links for file, else if 'd' then skip only symbolic links
     for directory, else if value is 'a' then all symbolic links are skipped.
-    Default value is "".
+    Default value is "a".
 
 g:Lf_Gtagsconf                                  *g:Lf_Gtagsconf*
     This option specifies the path of gtags configuration file('gtags.conf' or
@@ -708,6 +708,11 @@ g:Lf_GtagsStoreInRootMarker                     *g:Lf_GtagsStoreInRootMarker*
 
     Default value is 0.
 
+g:Lf_GtagsHigherThan6_6_2                       *g:Lf_GtagsHigherThan6_6_2*
+    If `gtag error! unrecognized option --skip-symlink` happens, set the value
+    to 0.
+    Default value is 1.
+
 g:Lf_EmptyQuery                                 *g:Lf_EmptyQuery*
     This option specifies whether to enable the empty query, i.e., if no
     pattern is input, sort the result according to the best match of current
@@ -734,7 +739,7 @@ g:Lf_PreviewHorizontalPosition                  *g:Lf_PreviewHorizontalPosition*
     'right': the preview window is on the right side of the screen.
     'cursor': the preview window is at the cursor position.
 
-    Default value is 'cursor'.
+    Default value is 'right'.
 
 g:Lf_PreviewPopupWidth                          *g:Lf_PreviewPopupWidth*
     Specify the width of preview popup window, the value should be a non-negative

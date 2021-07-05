@@ -54,6 +54,7 @@ let g:Lf_Helps = {
             \ "window":         "search windows",
             \ "quickfix":       "navigate quickfix",
             \ "loclist":        "navigate location list",
+            \ "jumps":          "navigate jumps list",
             \ }
 
 let g:Lf_Arguments = {
@@ -104,6 +105,7 @@ let g:Lf_Arguments = {
             \           {"name": ["-w", "--word-regexp"], "nargs": 0, "help": "Only show matches surrounded by word boundaries. This is roughly equivalent to putting \\b before and after all of the search patterns."},
             \           {"name": ["-x", "--line-regexp"], "nargs": 0, "help": "Only show matches surrounded by line boundaries."},
             \           {"name": ["--hidden"], "nargs": 0, "help": "Search hidden files and directories. By default, hidden files and directories are skipped."},
+            \           {"name": ["--heading"], "nargs": 0, "help": "Prints the file path above clusters of matches from each file instead of printing the file path as a prefix for each matched line."},
             \           {"name": ["--no-config"], "nargs": 0, "help": "Never read configuration files. When this flag is present, rg will not respect the RIPGREP_CONFIG_PATH environment variable."},
             \           {"name": ["--no-ignore"], "nargs": 0, "help": "Don't respect ignore files (.gitignore, .ignore, etc.). This implies --no-ignore-parent and --no-ignore-vcs."},
             \           {"name": ["--no-ignore-global"], "nargs": 0,
@@ -115,6 +117,8 @@ let g:Lf_Arguments = {
             \           {"name": ["-E", "--encoding"], "nargs": 1, "metavar": "<ENCODING>", "help": "Specify the text encoding that rg will use on all files searched."},
             \           {"name": ["-M", "--max-columns"], "nargs": 1, "metavar": "<NUM>", "help": "Don't print lines longer than this limit in bytes."},
             \           {"name": ["-m", "--max-count"], "nargs": 1, "metavar": "<NUM>", "help": "Limit the number of matching lines per file searched to NUM."},
+            \           {"name": ["-U", "--multiline"], "nargs": 0, "help": "Enable matching across multiple lines."},
+            \           {"name": ["--multiline-dotall"], "nargs": 0, "help": "This flag enables 'dot all' in your regex pattern, which causes '.' to match newlines when multiline searching is enabled."},
             \           {"name": ["--max-depth"], "nargs": 1, "metavar": "<NUM>", "help": "Limit the depth of directory traversal to NUM levels beyond the paths given."},
             \           {"name": ["--max-filesize"], "nargs": 1, "metavar": "<NUM+SUFFIX?>", "help": "Ignore files larger than NUM in size. This does not apply to directories."},
             \           {"name": ["--path-separator"], "nargs": 1, "metavar": "<SEPARATOR>", "help": "Set the path separator to use when printing file paths."},
@@ -175,6 +179,7 @@ let g:Lf_Arguments = {
             \           ],
             \           {"name": ["--result"], "nargs": 1, "choices": ["ctags", "ctags-x", "ctags-mod"], "metavar": "<FORMAT>", "help": "Show result using format, which may be one of: `ctags`(default), `ctags-x`,  `ctags-mod`."},
             \           {"name": ["--auto-jump"], "nargs": "?", "metavar": "<TYPE>", "help": "Jump to the tag directly when there is only one match. <TYPE> can be 'h', 'v' or 't', which mean jump to a horizontally, vertically split window, or a new tabpage respectively. If <TYPE> is omitted, jump to a position in current window."},
+            \           {"name": ["--debug"], "nargs": 0, "help": "debug mode, some useful messages will be printed."},
             \   ],
             \ "filetype": [],
             \ "command": [
@@ -183,6 +188,7 @@ let g:Lf_Arguments = {
             \ "window": [],
             \ "quickfix": [],
             \ "loclist": [],
+            \ "jumps": [],
             \}
 
 let g:Lf_CommonArguments = [
@@ -216,6 +222,7 @@ let g:Lf_CommonArguments = [
             \ {"name": ["--recall"], "nargs": 0, "help": "Recall last search. If the result window is closed, reopen it."},
             \ {"name": ["--popup-height"], "nargs": 1, "help": "specifies the maximum height of popup window, only available in popup mode."},
             \ {"name": ["--popup-width"], "nargs": 1, "help": "specifies the width of popup window, only available in popup mode."},
+            \ {"name": ["--no-sort"], "nargs": 0, "help": "do not sort the result."},
             \]
 
 " arguments is something like g:Lf_CommonArguments

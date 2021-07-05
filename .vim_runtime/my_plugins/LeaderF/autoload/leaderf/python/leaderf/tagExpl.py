@@ -118,6 +118,9 @@ class TagExplManager(Manager):
         lfCmd("norm! zv")
         lfCmd("norm! zz")
 
+        if "preview" not in kwargs:
+            lfCmd("setlocal cursorline! | redraw | sleep 150m | setlocal cursorline!")
+
         if vim.current.window not in self._cursorline_dict:
             self._cursorline_dict[vim.current.window] = vim.current.window.options["cursorline"]
 
@@ -189,6 +192,53 @@ class TagExplManager(Manager):
             if k.valid:
                 k.options["cursorline"] = v
         self._cursorline_dict.clear()
+
+    def _bangEnter(self):
+        super(TagExplManager, self)._bangEnter()
+
+        instance = self._getInstance()
+        if instance.isLastReverseOrder():
+            instance.window.cursor = (min(instance.cursorRow, len(instance.buffer)), 0)
+        else:
+            instance.window.cursor = (instance.cursorRow, 0)
+
+        if instance.getWinPos() == 'popup':
+            lfCmd("call win_execute(%d, 'setlocal cursorline')" % instance.getPopupWinId())
+        elif instance.getWinPos() == 'floatwin':
+            lfCmd("call nvim_win_set_option(%d, 'cursorline', v:true)" % instance.getPopupWinId())
+        else:
+            instance.window.options["cursorline"] = True
+
+    def _previewInPopup(self, *args, **kwargs):
+        if len(args) == 0:
+            return
+        line = args[0]
+        # {tagname}<Tab>{tagfile}<Tab>{tagaddress}[;"<Tab>{tagfield}..]
+        tagname, tagfile, right = line.split('\t', 2)
+        res = right.split(';"\t', 1)
+        tagaddress = res[0]
+        if tagaddress[0] not in '/?':
+            self._createPopupPreview("", tagfile, tagaddress)
+        else:
+            # In case there are mutiple matches.
+            if len(res) > 1:
+                result = re.search('(?<=\t)line:\d+', res[1])
+                if result:
+                    line_nr = result.group(0).split(':')[1]
+                    self._createPopupPreview("", tagfile, line_nr)
+                else: # for c, c++
+                    keyword = "(class|enum|struct|union)"
+                    result = re.search('(?<=\t)%s:\S+' % keyword, res[1])
+                    jump_cmd = 'exec "norm! gg"'
+                    if result:
+                        tagfield = result.group(0).split(":")
+                        name = tagfield[0]
+                        value = tagfield[-1]
+                        jump_cmd += " | call search('\m%s\_s\+%s\_[^;{]*{', 'w')" % (name, value)
+
+                    pattern = "\M" + tagaddress[1:-1]
+                    jump_cmd += " | call search('%s', 'w')" % escQuote(pattern)
+                    self._createPopupPreview("", tagfile, 0, jump_cmd)
 
 
 #*****************************************************

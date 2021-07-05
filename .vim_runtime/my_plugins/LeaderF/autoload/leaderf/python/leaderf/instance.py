@@ -8,7 +8,17 @@ import os.path
 import time
 import itertools
 from .utils import *
-from .devicons import highlightDevIcons
+from .devicons import (
+    webDevIconsGetFileTypeSymbol,
+    highlightDevIcons
+)
+
+
+def iconLine(line):
+    if lfEval("get(g:, 'Lf_ShowDevIcons', 1)") == "1":
+        return webDevIconsGetFileTypeSymbol(line) + line
+    else:
+        return line
 
 
 class FloatWindow(object):
@@ -294,6 +304,8 @@ class LfInstance(object):
         lfCmd("setlocal foldmethod=manual")
         lfCmd("setlocal shiftwidth=4")
         lfCmd("setlocal cursorline")
+        if lfEval("exists('+cursorlineopt')") == '1':
+            lfCmd("setlocal cursorlineopt=both")
         if lfEval("has('nvim')") == '1':
             lfCmd("silent! setlocal signcolumn=no")   # make vim flicker
         lfCmd("setlocal colorcolumn=")
@@ -462,6 +474,8 @@ class LfInstance(object):
                 lfCmd("call nvim_win_set_option(%d, 'foldcolumn', '0')" % winid)
             # lfCmd("call nvim_win_set_option(%d, 'signcolumn', 'no')" % winid)
             lfCmd("call nvim_win_set_option(%d, 'cursorline', v:false)" % winid)
+            if lfEval("exists('+cursorlineopt')") == '1':
+                lfCmd("call nvim_win_set_option(%d, 'cursorlineopt', 'both')" % winid)
             lfCmd("call nvim_win_set_option(%d, 'colorcolumn', '')" % winid)
             lfCmd("call nvim_win_set_option(%d, 'winhighlight', 'Normal:Lf_hl_popup_inputText')" % winid)
             lfCmd("silent! call nvim_buf_set_option(%d, 'filetype', 'leaderf')" % buf_number)
@@ -509,6 +523,8 @@ class LfInstance(object):
                     lfCmd("call nvim_win_set_option(%d, 'foldcolumn', '0')" % winid)
                 # lfCmd("call nvim_win_set_option(%d, 'signcolumn', 'no')" % winid)
                 lfCmd("call nvim_win_set_option(%d, 'cursorline', v:false)" % winid)
+                if lfEval("exists('+cursorlineopt')") == '1':
+                    lfCmd("call nvim_win_set_option(%d, 'cursorlineopt', 'both')" % winid)
                 lfCmd("call nvim_win_set_option(%d, 'colorcolumn', '')" % winid)
                 lfCmd("call nvim_win_set_option(%d, 'winhighlight', 'Normal:Lf_hl_popup_blank')" % winid)
                 lfCmd("silent! call nvim_buf_set_option(%d, 'filetype', 'leaderf')" % buf_number)
@@ -518,10 +534,10 @@ class LfInstance(object):
                 self.refreshPopupStatusline()
 
             lfCmd("augroup Lf_Floatwin_Close")
-            lfCmd("autocmd! WinEnter * call leaderf#closeAllFloatwin(%d, %d, %d, %d)" % (self._popup_instance.input_win.id,
+            lfCmd("autocmd! WinEnter * call leaderf#closeAllFloatwin(%d, %d, %d, %d, %d)" % (self._popup_instance.input_win.id,
                                                                                          self._popup_instance.content_win.id,
                                                                                          self._popup_instance.statusline_win.id if show_stl else -1,
-                                                                                         show_stl))
+                                                                                         show_stl, id(self._manager)))
             lfCmd("augroup END")
         else:
             self._win_pos = "popup"
@@ -554,6 +570,8 @@ class LfInstance(object):
             lfCmd("call win_execute(%d, 'setlocal foldmethod=manual')" % self._popup_winid)
             lfCmd("call win_execute(%d, 'setlocal shiftwidth=4')" % self._popup_winid)
             lfCmd("call win_execute(%d, 'setlocal cursorline')" % self._popup_winid)
+            if lfEval("exists('+cursorlineopt')") == '1':
+                lfCmd("call win_execute(%d, 'setlocal cursorlineopt=both')" % self._popup_winid)
             if lfEval("get(g:, 'Lf_PopupShowFoldcolumn', 1)") == '0':
                 lfCmd("call win_execute(%d, 'setlocal foldcolumn=0')" % self._popup_winid)
             else:
@@ -733,7 +751,8 @@ class LfInstance(object):
 
         if self._buffer_object is None or not self._buffer_object.valid:
             self._buffer_object = vim.current.buffer
-            self._setAttributes()
+
+        self._setAttributes()
 
         if not self._is_colorscheme_autocmd_set:
             self._is_colorscheme_autocmd_set = True
@@ -776,17 +795,17 @@ class LfInstance(object):
     def setArguments(self, arguments):
         self._last_reverse_order = self._reverse_order
         self._arguments = arguments
-        if "--reverse" in self._arguments or lfEval("get(g:, 'Lf_ReverseOrder', 0)") == '1':
-            self._reverse_order = True
+        if self._arguments.get("--reverse", 1) is None:
+            self._reverse_order = False
         else:
-            self._reverse_order = False
+            if "--reverse" in self._arguments or lfEval("get(g:, 'Lf_ReverseOrder', 0)") == '1':
+                self._reverse_order = True
+            else:
+                self._reverse_order = False
 
-        if ("--popup" in self._arguments or lfEval("g:Lf_WindowPosition") == 'popup') \
-                and "--bottom" not in self._arguments: # popup does not support reverse order
-            self._reverse_order = False
-
-    def ignoreReverse(self):
-        self._reverse_order = False
+            if ("--popup" in self._arguments or lfEval("g:Lf_WindowPosition") == 'popup') \
+                    and "--bottom" not in self._arguments: # popup does not support reverse order
+                self._reverse_order = False
 
     def useLastReverseOrder(self):
         self._reverse_order = self._last_reverse_order
@@ -1103,13 +1122,14 @@ class LfInstance(object):
                 end = self._popup_maxheight
             else:
                 end = self._window_object.height
-            if self._orig_buffer_name in content[:end]:
+            orig_buffer_name = iconLine(self._orig_buffer_name)
+            if orig_buffer_name in content[:end]:
                 self._cur_buffer_name_ignored = True
                 if need_copy:
                     content = content[:]
-                content.remove(self._orig_buffer_name)
+                content.remove(orig_buffer_name)
             elif os.name == 'nt':
-                buffer_name = self._orig_buffer_name.replace('\\', '/')
+                buffer_name = orig_buffer_name.replace('\\', '/')
                 if buffer_name in content[:end]:
                     self._cur_buffer_name_ignored = True
                     if need_copy:
@@ -1387,10 +1407,10 @@ class LfInstance(object):
 
     def gotoOriginalWindow(self):
         if self._orig_win_id is not None:
-            lfCmd("call win_gotoid(%d)" % self._orig_win_id)
+            lfCmd("keepj call win_gotoid(%d)" % self._orig_win_id)
         else:
             # 'silent!' is used to skip error E16.
-            lfCmd("silent! exec '%d wincmd w'" % self._orig_win_nr)
+            lfCmd("keepj silent! exec '%d wincmd w'" % self._orig_win_nr)
 
     def getWinPos(self):
         return self._win_pos

@@ -358,7 +358,7 @@ class FileExplorer(Explorer):
                 cmd = cd_cmd + 'rg --no-messages --files %s %s %s %s %s' % (color, ignore, followlinks, show_hidden, no_ignore)
             else:
                 cmd = 'rg --no-messages --files %s %s %s %s %s %s' % (color, ignore, followlinks, show_hidden, no_ignore, cur_dir)
-        elif default_tool["pt"] and lfEval("executable('pt')") == '1' and os.name != 'nt': # there is bug on Windows
+        elif default_tool["pt"] and lfEval("executable('pt')") == '1':
             wildignore = lfEval("g:Lf_WildIgnore")
             ignore = ""
             for i in wildignore.get("dir", []):
@@ -387,7 +387,7 @@ class FileExplorer(Explorer):
                 cmd = cd_cmd + 'pt --nocolor %s %s %s %s -g=""' % (ignore, followlinks, show_hidden, no_ignore)
             else:
                 cmd = 'pt --nocolor %s %s %s %s -g="" "%s"' % (ignore, followlinks, show_hidden, no_ignore, dir)
-        elif default_tool["ag"] and lfEval("executable('ag')") == '1' and os.name != 'nt': # https://github.com/vim/vim/issues/3236
+        elif default_tool["ag"] and lfEval("executable('ag')") == '1':
             wildignore = lfEval("g:Lf_WildIgnore")
             ignore = ""
             for i in wildignore.get("dir", []):
@@ -810,6 +810,12 @@ class FileExplManager(Manager):
     @removeDevIcons
     def _previewInPopup(self, *args, **kwargs):
         line = args[0]
+        if not os.path.isabs(line):
+            if self._getExplorer()._cmd_work_dir:
+                line = os.path.join(self._getExplorer()._cmd_work_dir, lfDecode(line))
+            else:
+                line = os.path.join(self._getInstance().getCwd(), lfDecode(line))
+            line = os.path.normpath(lfEncode(line))
         if lfEval("bufloaded('%s')" % escQuote(line)) == '1':
             source = int(lfEval("bufadd('%s')" % escQuote(line)))
         else:
@@ -844,7 +850,7 @@ class FileExplManager(Manager):
                 else:
                     lfCmd("tabe %s" % escSpecial(file))
             else:
-                if lfEval("get(g:, 'Lf_JumpToExistingWindow', 1)") == '1' and lfEval("bufloaded('%s')" % escQuote(file)) == '1':
+                if (lfEval("get(g:, 'Lf_JumpToExistingWindow', 1)") == '1' or kwargs.get("mode", 'dr')) and lfEval("bufloaded('%s')" % escQuote(file)) == '1':
                     if (kwargs.get("mode", '') == '' and lfEval("get(g:, 'Lf_DiscardEmptyBuffer', 1)") == '1'
                             and vim.current.buffer.name == ''
                             and vim.current.buffer.number == 1
