@@ -137,7 +137,7 @@ let g:lightline = {
       \ 'colorscheme': 'wombat',
       \ 'active': {
       \   'left': [ ['mode', 'paste'],
-      \             ['cocstatus', 'fugitive', 'readonly', 'filename', 'modified', 'absolutepath'] ],
+      \             ['cocstatus', 'session', 'fugitive', 'readonly', 'filename', 'modified', 'absolutepath'] ],
       \   'right': [ [ 'lineinfo' ], ['percent'], ['fileformat', 'fileencoding', 'filetype']]
       \ },
       \ 'tabline': {
@@ -154,7 +154,8 @@ let g:lightline = {
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
       \   'fugitive': '%{exists("*FugitiveHead")?FugitiveHead():""}',
       \   'relativepath': '%f',
-      \   'absolutepath': '%F'
+      \   'absolutepath': '%F',
+      \   'session':"%{fnamemodify(this_session,':t')}",
       \ },
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
@@ -164,8 +165,8 @@ let g:lightline = {
       \ 'component_function': {
       \   'cocstatus': 'coc#status'
       \ },
-      \ 'separator': { 'left': ' ', 'right': ' ' },
-      \ 'subseparator': { 'left': ' ', 'right': ' ' }
+      \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
+      \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
       \ }
 
 " 支持bufline
@@ -300,8 +301,9 @@ let g:startify_lists = [
           \ { 'type': 'bookmarks', 'header': ['   Bookmarks']       },
           \ { 'type': 'commands',  'header': ['   Commands']        },
           \ ]
-"自动保存session
-let g:startify_session_persistence = 1
+" 自动保存session
+" 将保存工作交给vim-session
+" let g:startify_session_persistence = 1
 "定义自定义标题
 let g:startify_custom_header = [
          \ '██╗   ██╗██╗███╗   ███╗██╗██████╗ ███████╗',
@@ -319,14 +321,6 @@ let g:startify_session_autoload  = 1
 
 " 显示startify页面 
 nnoremap <leader>so :Startify<CR> 
-" 保存当前的session
-nnoremap <leader>ss :SSave<CR>
-" 切换session
-nnoremap <leader>sl :SLoad
-" 关闭当前session
-nnoremap <leader>sc :SClose<CR>
-" 删除session
-nnoremap <leader>sd :SDelete<CR>
 
 " session保存时默认关闭nerdtree防止打开出错 
 " 切换session时关闭所有的terminal
@@ -426,6 +420,7 @@ noremap <leader>fb :<C-U><C-R>=printf("Leaderf buffer %s", "")<CR><CR>
 noremap <leader>fm :<C-U><C-R>=printf("Leaderf! mru %s", "")<CR><CR>
 " 我感觉基本上就用不上
 " noremap <leader>ft :<C-U><C-R>=printf("Leaderf bufTag %s", "")<CR><CR>
+noremap <leader>fo :<C-U><C-R>=printf("Leaderf! file --recall %s", "")<CR><CR>
 noremap <leader>fl :<C-U><C-R>=printf("Leaderf line %s", "")<CR><CR>
 noremap <leader>fc :<C-U><C-R>=printf("Leaderf! function %s", "")<CR><CR>
 noremap <leader>fa :<C-U><C-R>=printf("Leaderf rg -F -S --match-path -e %s ", "")<CR>
@@ -452,7 +447,6 @@ let g:Lf_Gtagslabel = 'pygments'
 " gtags没用上过暂时全部注释掉
 " noremap <leader>fr :<C-U><C-R>=printf("Leaderf! gtags -r %s --auto-jump", expand("<cword>"))<CR><CR>
 " noremap <leader>fd :<C-U><C-R>=printf("Leaderf! gtags -d %s --auto-jump", expand("<cword>"))<CR><CR>
-" noremap <leader>fo :<C-U><C-R>=printf("Leaderf! gtags --recall %s", "")<CR><CR>
 " noremap <leader>fn :<C-U><C-R>=printf("Leaderf gtags --next %s", "")<CR><CR>
 " noremap <leader>fp :<C-U><C-R>=printf("Leaderf gtags --previous %s", "")<CR><CR>
 
@@ -563,3 +557,23 @@ map <silent> <leader>1 :diffget 1<CR> :diffupdate<CR>
 map <silent> <leader>2 :diffget 2<CR> :diffupdate<CR>
 map <silent> <leader>3 :diffget 3<CR> :diffupdate<CR>
 map <silent> <leader>4 :diffget 4<CR> :diffupdate<CR>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vim-session
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:session_directory='~/.vim/session/'
+let g:session_autoload='yes'
+let g:session_autosave='yes'
+let g:session_extension=""
+let g:session_default_to_last=1
+let g:session_lock_enabled=0
+let g:session_lock_directory='~/.vim/session_lock/'
+
+" 保存当前的session
+nnoremap <leader>ss :SSave<CR>
+" 切换session
+nnoremap <leader>sl :OpenSession
+" 关闭当前session
+nnoremap <leader>sc :CloseSession<CR>
+" 删除session
+nnoremap <leader>sd :DeleteSession<CR>
