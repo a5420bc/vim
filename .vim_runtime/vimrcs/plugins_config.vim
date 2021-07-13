@@ -317,7 +317,7 @@ let g:startify_custom_header = [
 " 不展示empty buffer 和quit界面
 let g:startify_enable_special = 0
 " 自动加载session
-let g:startify_session_autoload  = 1
+let g:startify_session_autoload  = 0
 
 " 显示startify页面 
 nnoremap <leader>so :Startify<CR> 
