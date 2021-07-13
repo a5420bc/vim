@@ -160,7 +160,8 @@ let g:lightline = {
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
-      \   'fugitive': '(exists("*FugitiveHead") && ""!=FugitiveHead())'
+      \   'fugitive': '(exists("*FugitiveHead") && ""!=FugitiveHead())',
+      \   'session' : "fnamemodify(this_session,':t')!=''"
       \ },
       \ 'component_function': {
       \   'cocstatus': 'coc#status'
