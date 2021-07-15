@@ -315,6 +315,8 @@ let g:startify_custom_header = [
          \  '  ╚═══╝  ╚═╝╚═╝     ╚═╝╚═╝╚═════╝ ╚══════╝',
          \]
 
+" autocmd VimEnter * if exists(':SLoad') && !argc() | SLoad! | endif
+
 " 不展示empty buffer 和quit界面
 let g:startify_enable_special = 0
 " 自动加载session
@@ -570,11 +572,20 @@ let g:session_default_to_last=1
 let g:session_lock_enabled=0
 let g:session_lock_directory='~/.vim/session_lock/'
 
+function MySessionReload(name, bang) abort
+    call xolox#session#open_cmd(a:name, a:bang, 'OpenSession')
+    if &filetype == "php"
+        exe "silent! CocRestart"
+    endif
+endfunction
+
+command! -bar -bang -nargs=? -complete=customlist,xolox#session#complete_names MyOpenSession  call MySessionReload(<q-args>, <q-bang>)
+
 " 保存当前的session
 nnoremap <leader>ss :SSave<CR>
 " 切换session
-nnoremap <leader>sl :OpenSession
+nnoremap <leader>sl :MyOpenSession
 " 关闭当前session
 nnoremap <leader>sc :CloseSession<CR>
 " 删除session
-nnoremap <leader>sd :DeleteSession<CR>
+nnoremap <leader>sd :SDelete<CR>
