@@ -155,13 +155,13 @@ let g:lightline = {
       \   'fugitive': '%{exists("*FugitiveHead")?FugitiveHead():""}',
       \   'relativepath': '%f',
       \   'absolutepath': '%F',
-      \   'session':"%{fnamemodify(this_session,':t')}",
+      \   'session':"%{fnamemodify(v:this_session,':t')}",
       \ },
       \ 'component_visible_condition': {
       \   'readonly': '(&filetype!="help"&& &readonly)',
       \   'modified': '(&filetype!="help"&&(&modified||!&modifiable))',
       \   'fugitive': '(exists("*FugitiveHead") && ""!=FugitiveHead())',
-      \   'session' : "fnamemodify(this_session,':t')!=''"
+      \   'session' : "fnamemodify(v:this_session,':t')!=''"
       \ },
       \ 'component_function': {
       \   'cocstatus': 'coc#status'
@@ -321,6 +321,10 @@ let g:startify_custom_header = [
 let g:startify_enable_special = 0
 " 自动加载session
 let g:startify_session_autoload  = 0
+
+if has('nvim')
+    let g:startify_session_dir = '~/.config/nvim/session'
+endif
 
 " 显示startify页面 
 nnoremap <leader>so :Startify<CR> 
@@ -564,7 +568,12 @@ map <silent> <leader>4 :diffget 4<CR> :diffupdate<CR>
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-session
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-let g:session_directory='~/.vim/session/'
+if has('nvim')
+    let g:session_directory='~/.config/nvim/session/'
+else
+    let g:session_directory='~/.vim/session/'
+endif
+
 let g:session_autoload='yes'
 let g:session_autosave='yes'
 let g:session_extension=""
