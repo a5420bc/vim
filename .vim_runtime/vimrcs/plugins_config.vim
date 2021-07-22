@@ -143,12 +143,6 @@ let g:lightline = {
       \ 'tabline': {
       \   'left': [ ['buffers'] ],
       \ },
-      \ 'component_expand': {
-      \   'buffers': 'lightline#bufferline#buffers'
-      \ },
-      \ 'component_type': {
-      \   'buffers': 'tabsel'
-      \ },
       \ 'component': {
       \   'readonly': '%{&filetype=="help"?"":&readonly?"🔒":""}',
       \   'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
@@ -167,7 +161,10 @@ let g:lightline = {
       \   'cocstatus': 'coc#status'
       \ },
       \ 'separator': { 'left': "\ue0b0", 'right': "\ue0b2" },
-      \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" }
+      \ 'subseparator': { 'left': "\ue0b1", 'right': "\ue0b3" },
+      \ 'enable':{
+      \   'tabline':0
+      \ }
       \ }
 
 " 支持bufline
