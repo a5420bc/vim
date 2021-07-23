@@ -264,6 +264,10 @@ export GO111MODULE=auto
    ```
    :CocInstall coc-phpls
    ```
+   执行命令
+   npm i intelephense -g 
+   将node_modules/.bin/intelephense的二进制文件加入PATH
+   
 
    使用
 
