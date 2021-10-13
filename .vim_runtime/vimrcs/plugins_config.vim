@@ -595,3 +595,8 @@ nnoremap <leader>sl :MyOpenSession
 nnoremap <leader>sc :CloseSession<CR>
 " 删除session
 nnoremap <leader>sd :SDelete<CR>
+
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+" vem-tabline 
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:vem_tabline_show =2
