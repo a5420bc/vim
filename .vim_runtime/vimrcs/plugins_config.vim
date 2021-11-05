@@ -577,9 +577,17 @@ let g:session_extension=""
 let g:session_default_to_last=1
 let g:session_lock_enabled=0
 let g:session_lock_directory='~/.vim/session_lock/'
+let s:session_swap_name = "" 
 
 function MySessionReload(name, bang) abort
-    call xolox#session#open_cmd(a:name, a:bang, 'OpenSession')
+    if s:session_swap_name != ""  && a:name == ""
+        let s_session_name_old = s:session_swap_name
+        let s:session_swap_name =  fnamemodify(v:this_session, ':t')
+        call xolox#session#open_cmd(s_session_name_old, a:bang, 'OpenSession')
+    else
+        let s:session_swap_name =  fnamemodify(v:this_session, ':t')
+        call xolox#session#open_cmd(a:name, a:bang, 'OpenSession')
+    endif
     if &filetype == "php"
         exe "silent! CocRestart"
     endif
