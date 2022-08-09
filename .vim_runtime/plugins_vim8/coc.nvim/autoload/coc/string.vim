@@ -1,25 +1,46 @@
 scriptencoding utf-8
-" Helper methods for viml
 
-function! coc#helper#get_charactor(line, col) abort
+function! coc#string#get_character(line, col) abort
   return strchars(strpart(a:line, 0, a:col - 1))
 endfunction
 
-function! coc#helper#last_character(line) abort
+function! coc#string#last_character(line) abort
   return strcharpart(a:line, strchars(a:line) - 1, 1)
 endfunction
 
-function! coc#helper#obj_equal(one, two) abort
-  for key in keys(a:one)
-    if a:one[key] != a:two[key]
-      return 0
-    endif
+function! coc#string#reflow(lines, width) abort
+  let lines = []
+  let currlen = 0
+  let parts = []
+  for line in a:lines
+    for part in split(line, '\s\+')
+      let w = strwidth(part)
+      if currlen + w + 1 >= a:width
+        if len(parts) > 0
+          call add(lines, join(parts, ' '))
+        endif
+        if w >= a:width
+          call add(lines, part)
+          let currlen = 0
+          let parts = []
+        else
+          let currlen = w
+          let parts = [part]
+        endif
+        continue
+      endif
+      call add(parts, part)
+      let currlen = currlen + w + 1
+    endfor
   endfor
-  return 1
+  if len(parts) > 0
+    call add(lines, join(parts, ' '))
+  endif
+  return empty(lines) ? [''] : lines
 endfunction
 
 " get change between two lines
-function! coc#helper#str_diff(curr, previous, col) abort
+function! coc#string#diff(curr, previous, col) abort
   let end = strpart(a:curr, a:col - 1)
   let start = strpart(a:curr, 0, a:col -1)
   let endOffset = 0
@@ -53,7 +74,7 @@ function! coc#helper#str_diff(curr, previous, col) abort
       \ }
 endfunction
 
-function! coc#helper#str_apply(content, diff) abort
+function! coc#string#apply(content, diff) abort
   let totalLen = strchars(a:content)
   let endLen = totalLen - a:diff['end']
   return strcharpart(a:content, 0, a:diff['start']).a:diff['text'].strcharpart(a:content, a:diff['end'], endLen)
@@ -61,7 +82,7 @@ endfunction
 
 " insert inserted to line at position, use ... when result is too long
 " line should only contains character has strwidth equals 1
-function! coc#helper#str_compose(line, position, inserted) abort
+function! coc#string#compose(line, position, inserted) abort
   let width = strwidth(a:line)
   let text = a:inserted
   let res = a:line
@@ -77,7 +98,7 @@ function! coc#helper#str_compose(line, position, inserted) abort
         let a = strwidth(c)
         if w + a <= width - 1
           let w = w + a
-          let res = res.c
+          let res = res . c
         endif
       endfor
       let res = res.strcharpart(a:line, w)
@@ -89,60 +110,16 @@ function! coc#helper#str_compose(line, position, inserted) abort
         let a = strwidth(c)
         if w + a <= width - 3
           let w = w + a
-          let res = res.c
+          let res = res . c
         endif
       endfor
       let res = res.'..'
       let w = w + 2
-      let res = res.strcharpart(a:line, w)
+      let res = res . strcharpart(a:line, w)
     endif
   else
     let first = strcharpart(a:line, 0, a:position)
-    let res = first.text.strcharpart(a:line, a:position + strwidth(text))
+    let res = first . text . strcharpart(a:line, a:position + strwidth(text))
   endif
   return res
-endfunction
-
-" Return new dict with keys removed
-function! coc#helper#dict_omit(dict, keys) abort
-  let res = {}
-  for key in keys(a:dict)
-    if index(a:keys, key) == -1
-      let res[key] = a:dict[key]
-    endif
-  endfor
-  return res
-endfunction
-
-" Return new dict with keys only
-function! coc#helper#dict_pick(dict, keys) abort
-  let res = {}
-  for key in keys(a:dict)
-    if index(a:keys, key) != -1
-      let res[key] = a:dict[key]
-    endif
-  endfor
-  return res
-endfunction
-
-" support for float values
-function! coc#helper#min(first, ...) abort
-  let val = a:first
-  for i in range(0, len(a:000) - 1)
-    if a:000[i] < val
-      let val = a:000[i]
-    endif
-  endfor
-  return val
-endfunction
-
-" support for float values
-function! coc#helper#max(first, ...) abort
-  let val = a:first
-  for i in range(0, len(a:000) - 1)
-    if a:000[i] > val
-      let val = a:000[i]
-    endif
-  endfor
-  return val
 endfunction

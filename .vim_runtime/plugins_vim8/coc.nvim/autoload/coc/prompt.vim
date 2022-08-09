@@ -1,3 +1,4 @@
+scriptencoding utf-8
 let s:is_vim = !has('nvim')
 let s:activated = 0
 let s:session_names = []
@@ -20,7 +21,8 @@ let s:char_map = {
       \ "\<cr>": '<cr>',
       \ "\<PageUp>":'<PageUp>' ,
       \ "\<PageDown>":'<PageDown>' ,
-      \ "\<FocusGained>":'<FocusGained>' ,
+      \ "\<FocusGained>":'<FocusGained>',
+      \ "\<FocusLost>":'<FocusLost>',
       \ "\<ScrollWheelUp>": '<ScrollWheelUp>',
       \ "\<ScrollWheelDown>": '<ScrollWheelDown>',
       \ "\<LeftMouse>": '<LeftMouse>',
@@ -81,7 +83,7 @@ let s:char_map = {
 
 function! coc#prompt#getc() abort
   let c = getchar()
-  return type(c) == type(0) ? nr2char(c) : c
+  return type(c) is 0 ? nr2char(c) : c
 endfunction
 
 function! coc#prompt#getchar() abort
@@ -90,9 +92,13 @@ function! coc#prompt#getchar() abort
     return input
   endif
   "a language keymap is activated, so input must be resolved to the mapped values.
-  let partial_keymap = mapcheck(input, "l")
-  while partial_keymap !=# ""
-    let full_keymap = maparg(input, "l")
+  let partial_keymap = mapcheck(input, 'l')
+  while partial_keymap !=# ''
+    let dict = maparg(input, 'l', 0, 1)
+    if empty(dict) || get(dict, 'expr', 0)
+      return input
+    endif
+    let full_keymap = get(dict, 'rhs', '')
     if full_keymap ==# "" && len(input) >= 3 "HACK: assume there are no keymaps longer than 3.
       return input
     elseif full_keymap ==# partial_keymap
@@ -107,7 +113,7 @@ function! coc#prompt#getchar() abort
       return input
     endif
     let input .= c
-    let partial_keymap = mapcheck(input, "l")
+    let partial_keymap = mapcheck(input, 'l')
   endwhile
   return input
 endfunction
