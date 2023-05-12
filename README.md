@@ -1,3 +1,5 @@
+# 归档
+本仓库不再维护，请参考https://github.com/a5420bc/NvChad
 # vim8
 推荐安装vim8版本如果就是想用[vim7参考-不保证可用](README-vim7.md)
 ## 要求
